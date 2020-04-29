@@ -29,13 +29,17 @@ public class Interpreter {
     public Integer interpret(String script) {
 
         try {
-            return commands.get("block").doCommand(lexer.lex(script),0);
+            int retVal = commands.get("block").doCommand(lexer.lex(script),0);
+            if(symbolTable.get(null) != 0)
+                return retVal;
+            return 0;//default value
+
         } catch (CannotInterpretException e) {
             System.out.println("unhandled exception:\n" +
                     "token number:" +e.token_index +"\n"+
                     e.error_message);
         }
-        return  null;
+        return null;
     }
 
     public int interpret(String[] lines) {

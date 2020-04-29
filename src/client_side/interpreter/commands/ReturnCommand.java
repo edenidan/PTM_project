@@ -20,6 +20,8 @@ public class ReturnCommand implements Command {
             Double value =  Double.parseDouble(tokens[startIndex+1]);
             if(value.intValue() != value.doubleValue())//not an int
                 throw new CannotInterpretException("Cannot return a float",startIndex+1);
+
+            SymbolTable.put(null,new Double(1));
             return value.intValue();
         }
         catch (NumberFormatException ex){
@@ -33,6 +35,7 @@ public class ReturnCommand implements Command {
         if(Math.floor(retVal) != retVal)
             throw new CannotInterpretException("Cannot return a float",startIndex+1);
 
+        SymbolTable.put(null,new Double(1));
         return (int)Math.floor(retVal);
 
     }

@@ -21,6 +21,10 @@ public class BlockCommand implements Command {
         for (; i < tokens.length; ) {
             String currentToken = tokens[i];
             Command command = commands.get(currentToken);
+
+            if(currentToken == "}")//end of block
+                return i+1;
+
             int returned_from_command=0;
 
             if (command != null) // able to get command
@@ -29,7 +33,6 @@ public class BlockCommand implements Command {
                 i++;
             else
                 throw new CannotInterpretException("Cannot find symbol: "+currentToken,i);
-
 
             if(symbolTable.get(null) != 0)//returned
                 return returned_from_command;

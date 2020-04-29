@@ -11,8 +11,12 @@ public class MainTrain {
     public static void main(String[] args) {
 
         String script = "return 23.7";
-        Interpreter interpreter = new Interpreter();
-        System.out.println(interpreter.interpret(script));
+
+        HashMap<Integer,Integer> map = new HashMap<Integer, Integer>();
+        map.put(1,1);
+        map.put(1,2);
+
+        System.out.println(map.get(1));
 
         if(debug)
             return;
