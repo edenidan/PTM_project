@@ -1,9 +1,22 @@
 package test;
 
+import java.util.HashMap;
 import java.util.Random;
+import client_side.interpreter.DefaultLexer;
+import client_side.interpreter.Interpreter;
 
 public class MainTrain {
+
+    public static final boolean debug = true;
     public static void main(String[] args) {
+
+        String script = "return 23.7";
+        Interpreter interpreter = new Interpreter();
+        System.out.println(interpreter.interpret(script));
+
+        if(debug)
+            return;
+
         Random r = new Random();
         int port = r.nextInt(1001) + 5000;
         Simulator sim = new Simulator(port); // sim_client on port+1, sim_server on port
