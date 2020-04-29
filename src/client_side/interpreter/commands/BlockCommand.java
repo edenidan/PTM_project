@@ -2,6 +2,8 @@ package client_side.interpreter.commands;
 
 import client_side.interpreter.CannotInterpretException;
 import client_side.interpreter.Command;
+import client_side.*;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.util.Map;
 
@@ -9,10 +11,12 @@ public class BlockCommand implements Command {
 
     private Map<String, Double> symbolTable;
     private Map<String, Command> commands;
+    private Wrapper<Boolean> returned;
 
-    public BlockCommand(Map<String, Double> symbolTable, Map<String, Command> commands) {
+    public BlockCommand(Map<String, Double> symbolTable, Map<String, Command> commands, Wrapper<Boolean> returned) {
         this.symbolTable = symbolTable;
         this.commands = commands;
+        this.returned=returned;
     }
 
     @Override
@@ -22,19 +26,19 @@ public class BlockCommand implements Command {
             String currentToken = tokens[i];
             Command command = commands.get(currentToken);
 
-            if(currentToken == "}")//end of block
+            if(currentToken.equals("}"))//end of block
                 return i+1;
 
             int returned_from_command=0;
 
             if (command != null) // able to get command
-                returned_from_command += command.doCommand(tokens, i); // do command and advance current token by return value of command
+                returned_from_command = command.doCommand(tokens, i); // do command and advance current token by return value of command
             else if (tokens[i + 1].equals("=")) // variable name
                 i++;
             else
                 throw new CannotInterpretException("Cannot find symbol: "+currentToken,i);
 
-            if(symbolTable.get(null) != 0)//returned
+            if(returned.Get())//returned
                 return returned_from_command;
             else
                 i+=returned_from_command;

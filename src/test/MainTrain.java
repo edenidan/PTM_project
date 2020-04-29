@@ -10,14 +10,9 @@ public class MainTrain {
     public static final boolean debug = true;
     public static void main(String[] args) {
 
-        String script = "return 23.7";
+        String script = "return 23 if true{some shit} some+other-shit";
 
-        HashMap<Integer,Integer> map = new HashMap<Integer, Integer>();
-        map.put(1,1);
-        map.put(1,2);
-
-        System.out.println(map.get(1));
-
+        System.out.println(new Interpreter().interpret(script));
         if(debug)
             return;
 
