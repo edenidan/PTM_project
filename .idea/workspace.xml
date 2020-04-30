@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ee09a164-2baa-4aaf-a6fe-b6afc82d4d3c" name="Default Changelist" comment="new files">
+      <change afterPath="$PROJECT_DIR$/src/client_side/interpreter/DefaultMathematicalExpressionParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/client_side/interpreter/MathematicalExpressionParser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/client_side/interpreter/DefaultConditionParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/client_side/interpreter/DefaultConditionParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/client_side/interpreter/commands/BlockCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/client_side/interpreter/commands/BlockCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/client_side/interpreter/commands/DefineVarCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/client_side/interpreter/commands/DefineVarCommand.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,6 +14,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -111,6 +111,10 @@
     <option name="LAST_COMMIT_MESSAGE" value="new files" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="486" y="0" key="#com.intellij.ide.util.MemberChooser" timestamp="1588259968786">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="486" y="0" key="#com.intellij.ide.util.MemberChooser/0.0.1536.824/1920.-1110.2560.1400@0.0.1536.824" timestamp="1588259968786" />
     <state x="2610" y="330" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1588242936499">
       <screen x="1920" y="0" width="1920" height="1080" />
     </state>
