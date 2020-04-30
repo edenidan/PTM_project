@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fabe7a46-65da-4138-a0b8-d7730315c5cb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/artifacts/PTM_project_jar/interpreter.jar" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/PTM_project_jar/interpreter.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/client_side/interpreter/commands/IfCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/client_side/interpreter/commands/IfCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/MainTrain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/MainTrain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/client_side/interpreter/Interpreter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/client_side/interpreter/Interpreter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/client_side/interpreter/commands/BlockCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/client_side/interpreter/commands/BlockCommand.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,18 +55,6 @@
       </list>
     </recent_temporary>
   </component>
-  <component name="ServiceViewManager">
-    <option name="viewStates">
-      <list>
-        <serviceView>
-          <treeState>
-            <expand />
-            <select />
-          </treeState>
-        </serviceView>
-      </list>
-    </option>
-  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -94,13 +80,21 @@
       <option name="project" value="LOCAL" />
       <updated>1588246569774</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="format code and change variable names to camelCase">
+      <created>1588256469101</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1588256469101</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="update styles" />
     <MESSAGE value="new files" />
-    <option name="LAST_COMMIT_MESSAGE" value="new files" />
+    <MESSAGE value="format code and change variable names to camelCase" />
+    <option name="LAST_COMMIT_MESSAGE" value="format code and change variable names to camelCase" />
   </component>
   <component name="WindowStateProjectService">
     <state x="2610" y="330" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1588242936499">
@@ -152,18 +146,22 @@
       <screen x="1920" y="0" width="1920" height="1080" />
     </state>
     <state x="2360" y="114" key="SettingsEditor/0.0.1920.1080/1920.0.1920.1080@1920.0.1920.1080" timestamp="1588243192583" />
-    <state x="552" y="273" key="Vcs.Push.Dialog.v2" timestamp="1588246582002">
+    <state x="552" y="273" key="Vcs.Push.Dialog.v2" timestamp="1588256559534">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state x="552" y="273" key="Vcs.Push.Dialog.v2/0.0.1920.1080/1920.0.1920.1080@0.0.1920.1080" timestamp="1588246582002" />
-    <state x="92" y="92" width="1736" height="896" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1588245117271">
+    <state x="552" y="273" key="Vcs.Push.Dialog.v2/0.0.1920.1080/1920.0.1920.1080@0.0.1920.1080" timestamp="1588256559534" />
+    <state x="92" y="92" width="1736" height="896" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1588257380240">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state x="92" y="92" width="1736" height="896" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.1920.1080/1920.0.1920.1080@0.0.1920.1080" timestamp="1588245117271" />
+    <state x="92" y="92" width="1736" height="896" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.1920.1080/1920.0.1920.1080@0.0.1920.1080" timestamp="1588257380240" />
     <state x="322" y="151" key="com.intellij.ide.util.TipDialog" timestamp="1588247242645">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="322" y="151" key="com.intellij.ide.util.TipDialog/0.0.1536.824/1920.-1110.2560.1400@0.0.1536.824" timestamp="1588247242645" />
+    <state x="769" y="454" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1588256546902">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="769" y="454" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1080/1920.0.1920.1080@0.0.1920.1080" timestamp="1588256546902" />
     <state x="715" y="328" key="git4idea.merge.GitPullDialog" timestamp="1588245333291">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
