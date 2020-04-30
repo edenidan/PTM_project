@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class DefaultLexer implements Lexer {
     @Override
     public String[] lex(String script) {
-        script = BetweenSpaces(script,"(){}=+-*/");
+        script = BetweenSpaces(script,"<>(){}=+-*/");
         Scanner s = new Scanner(script);
         ArrayList<String> tokens = new ArrayList<>();
 
