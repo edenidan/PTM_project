@@ -1,10 +1,11 @@
 package client_side.interpreter;
 
 public class CannotInterpretException extends Exception {
-    public int token_index;
-    public String error_message;
-    public CannotInterpretException(String m, int i){
-        this.token_index=i;
-        this.error_message=m;
+    public int tokenIndex;
+    public String errorMessage;
+
+    public CannotInterpretException(String errorMessage, int tokenIndex) {
+        this.tokenIndex = tokenIndex;
+        this.errorMessage = errorMessage;
     }
 }
