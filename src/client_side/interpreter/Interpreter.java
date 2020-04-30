@@ -39,6 +39,8 @@ public class Interpreter {
             System.out.println("unhandled exception:\n" +
                     "token number:" +e.token_index +"\n"+
                     e.error_message);
+        } catch (NullPointerException e){//expect value but array ended
+            System.out.println("Cannot resolve the code.\nUnknown error.");
         }
         return null;
     }
