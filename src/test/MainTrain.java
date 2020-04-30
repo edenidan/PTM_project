@@ -12,7 +12,7 @@ public class MainTrain {
     public static final boolean debug = true;
     public static void main(String[] args) {
 
-        String script = "return 23 if true{some shit} some+other-shit";
+        String script = "return 24 if true{some shit} some+other-shit";
 
         System.out.println(new Interpreter().interpret(script));
         if(debug)
