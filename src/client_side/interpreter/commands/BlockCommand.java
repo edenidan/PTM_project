@@ -29,7 +29,6 @@ public class BlockCommand implements Command {
                 return i + 1;
 
             int returnedFromCommand = 0;
-
             if (command != null) // able to get command
                 returnedFromCommand = command.doCommand(tokens, i); // do command and advance current token by return value of command
             else if (tokens[i + 1].equals("=")) // variable name

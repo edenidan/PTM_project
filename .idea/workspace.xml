@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ee09a164-2baa-4aaf-a6fe-b6afc82d4d3c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/client_side/interpreter/BlockEdgeFinder.java" afterDir="false" />
+    <list default="true" id="ee09a164-2baa-4aaf-a6fe-b6afc82d4d3c" name="Default Changelist" comment="new files">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/client_side/interpreter/commands/IfCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/client_side/interpreter/commands/IfCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/client_side/interpreter/commands/LoopCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/client_side/interpreter/commands/LoopCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/client_side/interpreter/DefaultConditionParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/client_side/interpreter/DefaultConditionParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/client_side/interpreter/commands/BlockCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/client_side/interpreter/commands/BlockCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/client_side/interpreter/commands/DefineVarCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/client_side/interpreter/commands/DefineVarCommand.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -27,11 +27,15 @@ public class DefaultConditionParser implements ConditionParser {
                 || token.equals("!");
     }
 
-    private int getOperatorSize(String[] tokens, int startIndex) {
+    private int getOperatorSize(String[] tokens, int startIndex) throws CannotInterpretException {
         int operatorSize = 0;
-        operatorSize += isOperator(tokens[startIndex + 1]) ? 1 : 0;
-        operatorSize += isOperator(tokens[startIndex + 2]) ? 1 : 0;
-
+        try {
+            operatorSize += isOperator(tokens[startIndex + 1]) ? 1 : 0;
+            operatorSize += isOperator(tokens[startIndex + 2]) ? 1 : 0;
+        }
+        catch (NullPointerException e){
+            throw new CannotInterpretException("Wrong usage of 'if' command",startIndex);
+        }
         return operatorSize;
     }
 
