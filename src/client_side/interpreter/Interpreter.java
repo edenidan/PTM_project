@@ -27,9 +27,9 @@ public class Interpreter {
     }
 
     public Integer interpret(String script) {
-
+        String[] tokens = lexer.lex(script);
         try {
-            int retVal = commands.get("block").doCommand(lexer.lex(script), 0);
+            int retVal = commands.get("block").doCommand(tokens, 0);
             if (returned.get())
                 return retVal;
             return 0;//default value
