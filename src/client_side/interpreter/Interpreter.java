@@ -1,8 +1,7 @@
 package client_side.interpreter;
 
+import client_side.Wrapper;
 import client_side.interpreter.commands.*;
-import client_side.*;
-
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,9 +9,9 @@ import java.util.Map;
 public class Interpreter {
     private Lexer lexer = new DefaultLexer();
 
-    private Map<String, Command> commands = new HashMap<>();
-    private Map<String, Double> symbolTable = new HashMap<>();
-    private final Wrapper<Boolean> returned = new Wrapper<Boolean>(false);//false until return is called
+    private final Map<String, Command> commands = new HashMap<>();
+    private final Map<String, Double> symbolTable = new HashMap<>();
+    private final Wrapper<Boolean> returned = new Wrapper<>(false);//false until return is called
 
     public Interpreter() {
         commands.put("openDataServer", new OpenServerCommand());
@@ -22,25 +21,23 @@ public class Interpreter {
         commands.put("=", new AssignmentCommand(symbolTable));
         commands.put("if", new IfCommand(symbolTable, commands));
         commands.put("while", new LoopCommand(symbolTable, commands));
-        commands.put("block", new BlockCommand(symbolTable, commands,returned));
-        commands.put("return", new ReturnCommand(symbolTable,returned));
+        commands.put("block", new BlockCommand(symbolTable, commands, returned));
+        commands.put("return", new ReturnCommand(symbolTable, returned));
 
     }
 
     public Integer interpret(String script) {
 
         try {
-            int retVal = commands.get("block").doCommand(lexer.lex(script),0);
-            if(returned.Get())
+            int retVal = commands.get("block").doCommand(lexer.lex(script), 0);
+            if (returned.get())
                 return retVal;
             return 0;//default value
 
         } catch (CannotInterpretException e) {
             System.out.println("unhandled exception:\n" +
-                    "token number:" +e.token_index +"\n"+
+                    "token number:" + e.token_index + "\n" +
                     e.error_message);
-        } catch (NullPointerException e){//expect value but array ended
-            System.out.println("Cannot resolve the code.\nUnknown error.");
         }
         return null;
     }

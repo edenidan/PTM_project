@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="PTM_project:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/PTM_project_jar</output-path>
+    <root id="archive" name="interpreter.jar">
+      <element id="module-source" name="PTM_project" />
+      <element id="module-output" name="PTM_project" />
+    </root>
+  </artifact>
+</component>

@@ -3,7 +3,6 @@ package client_side.interpreter.commands;
 import client_side.Wrapper;
 import client_side.interpreter.CannotInterpretException;
 import client_side.interpreter.Command;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import test.MainTrain;
 
 import java.util.Map;
@@ -26,7 +25,7 @@ public class ReturnCommand implements Command {
             if(value.intValue() != value.doubleValue())//not an int
                 throw new CannotInterpretException("Cannot return a float",startIndex+1);
 
-            returned.Set(true);
+            returned.set(true);
             return value.intValue();
         }
         catch (NumberFormatException ex){
@@ -40,7 +39,7 @@ public class ReturnCommand implements Command {
         if(Math.floor(retVal) != retVal)
             throw new CannotInterpretException("Cannot return a float",startIndex+1);
 
-        returned.Set(true);
+        returned.set(true);
         return (int)Math.floor(retVal);
 
     }

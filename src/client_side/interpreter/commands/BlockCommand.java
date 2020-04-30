@@ -3,7 +3,6 @@ package client_side.interpreter.commands;
 import client_side.interpreter.CannotInterpretException;
 import client_side.interpreter.Command;
 import client_side.*;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.util.Map;
 
@@ -38,7 +37,7 @@ public class BlockCommand implements Command {
             else
                 throw new CannotInterpretException("Cannot find symbol: "+currentToken,i);
 
-            if(returned.Get())//returned
+            if(returned.get())//returned
                 return returned_from_command;
             else
                 i+=returned_from_command;
