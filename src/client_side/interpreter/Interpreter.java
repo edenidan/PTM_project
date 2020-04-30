@@ -36,8 +36,8 @@ public class Interpreter {
 
         } catch (CannotInterpretException e) {
             System.out.println("unhandled exception:\n" +
-                    "token number:" + e.token_index + "\n" +
-                    e.error_message);
+                    "token number:" + e.tokenIndex + "\n" +
+                    e.errorMessage);
         }
         return null;
     }

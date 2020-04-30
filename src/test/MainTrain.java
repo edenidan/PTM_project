@@ -1,20 +1,18 @@
 package test;
 
-import java.util.HashMap;
-import java.util.Random;
-
-import client_side.Wrapper;
-import client_side.interpreter.DefaultLexer;
 import client_side.interpreter.Interpreter;
+
+import java.util.Random;
 
 public class MainTrain {
 
     public static final boolean debug = true;
+
     public static void main(String[] args) {
 
         String script = "if 1==1{if 2>=2{return 1}}return 0";
         System.out.println(new Interpreter().interpret(script));
-        if(debug)
+        if (debug)
             return;
 
         Random r = new Random();
