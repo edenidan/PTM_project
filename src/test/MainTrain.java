@@ -12,7 +12,7 @@ public class MainTrain {
     public static final boolean debug = true;
     public static void main(String[] args) {
 
-        String script = "if 1==1{if 2==2{return 1}}return 0";
+        String script = "if 1==1{if 2>=2{return 1}}return 0";
         System.out.println(new Interpreter().interpret(script));
         if(debug)
             return;

@@ -20,7 +20,7 @@ public class Interpreter {
         commands.put("var", new DefineVarCommand(symbolTable));
         commands.put("=", new AssignmentCommand(symbolTable));
         commands.put("if", new IfCommand(symbolTable, commands));
-        commands.put("while", new LoopCommand(symbolTable, commands));
+        commands.put("while", new LoopCommand(symbolTable, commands,returned));
         commands.put("block", new BlockCommand(symbolTable, commands, returned));
         commands.put("return", new ReturnCommand(symbolTable, returned));
 
