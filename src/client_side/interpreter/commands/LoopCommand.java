@@ -1,7 +1,7 @@
 package client_side.interpreter.commands;
 
 import client_side.Wrapper;
-import client_side.interpreter.Command;
+import client_side.interpreter.*;
 
 import java.util.Map;
 
@@ -18,7 +18,21 @@ public class LoopCommand implements Command {
     }
 
     @Override
-    public int doCommand(String[] tokens, int startIndex) {
-        return 0;
+    public int doCommand(String[] tokens, int startIndex) throws CannotInterpretException {
+
+        int blockStart = BlockEdgeFinder.getBlockStart(tokens, startIndex);
+        int blockEnd = BlockEdgeFinder.getBlockEnd(tokens, startIndex);
+
+        if(blockStart == -1 || blockStart == -1)
+            throw new CannotInterpretException("Wrong {, } positions", startIndex);
+
+        ConditionParser conditionParser = new DefaultConditionParser(symbolTable);
+        while (conditionParser.parse(tokens, blockStart)) {
+            int retVal = commands.get("block").doCommand(tokens, blockStart + 1);
+            if(returned.get())
+                return retVal;
+        }
+        return blockEnd;
+
     }
 }
