@@ -13,7 +13,7 @@ public class Interpreter {
 
     private Map<String, Command> commands = new HashMap<>();
     private Map<String, Double> symbolTable = new HashMap<>();
-    private Wrapper<Boolean> returned = new Wrapper<Boolean>(false);//false until return is called
+    private final Wrapper<Boolean> returned = new Wrapper<Boolean>(false);//false until return is called
 
     public Interpreter() {
         commands.put("openDataServer", new OpenServerCommand());

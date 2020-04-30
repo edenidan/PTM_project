@@ -2,6 +2,8 @@ package test;
 
 import java.util.HashMap;
 import java.util.Random;
+
+import client_side.Wrapper;
 import client_side.interpreter.DefaultLexer;
 import client_side.interpreter.Interpreter;
 
