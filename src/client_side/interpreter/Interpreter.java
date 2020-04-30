@@ -9,7 +9,6 @@ import java.util.Map;
 
 public class Interpreter {
     private Lexer lexer = new DefaultLexer();
-    private Parser parser = new DefaultParser();
 
     private Map<String, Command> commands = new HashMap<>();
     private Map<String, Double> symbolTable = new HashMap<>();
@@ -50,11 +49,6 @@ public class Interpreter {
 
     public Interpreter useLexer(Lexer lexer) {
         this.lexer = lexer;
-        return this;
-    }
-
-    public Interpreter useParser(Parser parser) {
-        this.parser = parser;
         return this;
     }
 }
