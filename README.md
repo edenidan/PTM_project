@@ -1,4 +1,4 @@
 # PTM_project
-This is our project in Advenced Software Developing course.
+This is our project in Advanced Software Development course.
 
 creators: Erez & Idan
