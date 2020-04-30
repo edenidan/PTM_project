@@ -27,6 +27,7 @@ public class DefaultConditionParser implements ConditionParser {
                 || token.equals(">")
                 || token.equals("!");
     }
+
     private int getOperatorSize(String[] tokens, int start_index){
         int operator_size=0;
         operator_size += isOperator(tokens[start_index+1])?1:0;
