@@ -1,7 +1,7 @@
 package client_side.interpreter;
 
 public class DefaultLexer implements Lexer {
-    private final char[] spacingChars = "<>(){}=+-*/".toCharArray();
+    private final char[] spacingChars = "!<>(){}=+-*/".toCharArray();
 
     @Override
     public String[] lex(String script) {
