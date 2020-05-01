@@ -5,6 +5,7 @@ import client_side.interpreter.CannotInterpretException;
 import client_side.interpreter.Command;
 import client_side.interpreter.DefaultConditionParser;
 
+import java.util.List;
 import java.util.Map;
 
 public class IfCommand implements Command {
@@ -17,7 +18,7 @@ public class IfCommand implements Command {
     }
 
     @Override
-    public int doCommand(String[] tokens, int startIndex) throws CannotInterpretException {
+    public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
 
         int blockStart = BlockEdgeFinder.getBlockStart(tokens, startIndex);
         int blockEnd = BlockEdgeFinder.getBlockEnd(tokens, startIndex);

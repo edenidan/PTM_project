@@ -3,6 +3,7 @@ package client_side.interpreter.commands;
 import client_side.interpreter.CannotInterpretException;
 import client_side.interpreter.Command;
 
+import java.util.List;
 import java.util.Map;
 
 public class DefineVarCommand implements Command {
@@ -13,11 +14,11 @@ public class DefineVarCommand implements Command {
     }
 
     @Override
-    public int doCommand(String[] tokens, int startIndex) throws CannotInterpretException {
-        if (tokens.length - 1 == startIndex)
+    public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
+        if (tokens.size() - 1 == startIndex)
             throw new CannotInterpretException("Wrong usage of 'var' command", startIndex);
 
-        String varName = tokens[startIndex + 1];
+        String varName = tokens.get(startIndex + 1);
         if (symbolTable.get(varName) != null)//is already exists
             throw new CannotInterpretException(varName + " is already defined", startIndex);
 

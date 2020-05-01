@@ -1,16 +1,17 @@
 package client_side.interpreter;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class DefaultLexer implements Lexer {
     private final static String tokenToSpaceRegex = "==|>=|<=|[{}()<>=!+\\-*/]";
 
     @Override
-    public String[] lex(String script) {
-        String[] res = insertSpacesBeforeAfter(script).split("\\s+");
+    public List<String> lex(String script) {
+        List<String> res = Arrays.asList(insertSpacesBeforeAfter(script).split("\\s+"));
 
-        if(res[0].isEmpty())
-            return Arrays.copyOfRange(res,1,res.length);
+        if (res.get(0).isEmpty())
+            return res.subList(1, res.size());
         return res;
     }
 

@@ -4,6 +4,7 @@ import client_side.Wrapper;
 import client_side.interpreter.CannotInterpretException;
 import client_side.interpreter.Command;
 
+import java.util.List;
 import java.util.Map;
 
 public class BlockCommand implements Command {
@@ -16,10 +17,10 @@ public class BlockCommand implements Command {
     }
 
     @Override
-    public int doCommand(String[] tokens, int startIndex) throws CannotInterpretException {
+    public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
         int i = startIndex;
-        while (i < tokens.length) {
-            String currentToken = tokens[i];
+        while (i < tokens.size()) {
+            String currentToken = tokens.get(i);
             Command command = commands.get(currentToken);
 
             if (currentToken.equals("}"))//end of block
@@ -28,7 +29,7 @@ public class BlockCommand implements Command {
             int returnedFromCommand = 0;
             if (command != null) // able to get command
                 returnedFromCommand = command.doCommand(tokens, i); // do command and advance current token by return value of command
-            else if (tokens[i + 1].equals("=")) // variable name
+            else if (tokens.get(i + 1).equals("=")) // variable name
                 i++;
             else
                 throw new CannotInterpretException("Cannot find symbol: " + currentToken, i);

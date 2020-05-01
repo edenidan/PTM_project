@@ -3,6 +3,7 @@ package client_side.interpreter.commands;
 import client_side.Wrapper;
 import client_side.interpreter.*;
 
+import java.util.List;
 import java.util.Map;
 
 public class LoopCommand implements Command {
@@ -18,7 +19,7 @@ public class LoopCommand implements Command {
     }
 
     @Override
-    public int doCommand(String[] tokens, int startIndex) throws CannotInterpretException {
+    public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
         int blockStart = BlockEdgeFinder.getBlockStart(tokens, startIndex);
         int blockEnd = BlockEdgeFinder.getBlockEnd(tokens, startIndex);
 

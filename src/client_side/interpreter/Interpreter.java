@@ -4,6 +4,7 @@ import client_side.Wrapper;
 import client_side.interpreter.commands.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Interpreter {
@@ -28,7 +29,7 @@ public class Interpreter {
     }
 
     public Integer interpret(String script) {
-        String[] tokens = lexer.lex(script);
+        List<String> tokens = lexer.lex(script);
         try {
             int retVal = commands.get("block").doCommand(tokens, 0);
             if (returned.get())

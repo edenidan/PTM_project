@@ -1,7 +1,9 @@
 package client_side.interpreter;
 
-public interface MathematicalExpressionParser {
-    Double calc(String[] tokens,int startIndex) throws CannotInterpretException;
-    public int getEndOfExpression(String[] tokens, int startIndex) throws CannotInterpretException;
+import java.util.List;
 
-    }
+public interface MathematicalExpressionParser {
+    double calc(List<String> tokens, int startIndex) throws CannotInterpretException;
+
+    int getEndOfExpression(List<String> tokens, int startIndex) throws CannotInterpretException;
+}

@@ -1,6 +1,8 @@
 package client_side.interpreter;
 
+import java.util.List;
+
 public interface ConditionParser {
     //index of the first operand
-    Boolean parse(String[] tokens, int startIndex) throws CannotInterpretException;
+    Boolean parse(List<String> tokens, int startIndex) throws CannotInterpretException;
 }

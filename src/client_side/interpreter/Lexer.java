@@ -1,5 +1,7 @@
 package client_side.interpreter;
 
+import java.util.List;
+
 public interface Lexer {
-    String[] lex(String script);
+    List<String> lex(String script);
 }

@@ -2,6 +2,7 @@ package client_side.interpreter.commands;
 
 import client_side.interpreter.Command;
 
+import java.util.List;
 import java.util.Map;
 
 public class AssignmentCommand implements Command {
@@ -12,7 +13,7 @@ public class AssignmentCommand implements Command {
     }
 
     @Override
-    public int doCommand(String[] tokens, int startIndex) {
+    public int doCommand(List<String> tokens, int startIndex) {
         return 0;
     }
 }
