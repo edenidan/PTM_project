@@ -6,7 +6,7 @@ import client_side.interpreter.Command;
 import java.util.Map;
 
 public class DefineVarCommand implements Command {
-    private Map<String, Double> symbolTable;
+    private final Map<String, Double> symbolTable;
 
     public DefineVarCommand(Map<String, Double> symbolTable) {
         this.symbolTable = symbolTable;

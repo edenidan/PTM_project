@@ -6,10 +6,10 @@ import client_side.interpreter.*;
 import java.util.Map;
 
 public class LoopCommand implements Command {
-    private Map<String, Double> symbolTable;
+    private final Map<String, Double> symbolTable;
 
-    private Map<String, Command> commands;
-    private Wrapper<Boolean> returned;
+    private final Map<String, Command> commands;
+    private final Wrapper<Boolean> returned;
 
     public LoopCommand(Map<String, Double> symbolTable, Map<String, Command> commands, Wrapper<Boolean> returned) {
         this.symbolTable = symbolTable;
