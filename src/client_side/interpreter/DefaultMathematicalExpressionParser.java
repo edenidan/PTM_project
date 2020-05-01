@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 public class DefaultMathematicalExpressionParser implements MathematicalExpressionParser {
-
     private final Map<String, Double> symbolTable;
 
     public DefaultMathematicalExpressionParser(Map<String, Double> symbolTable) {
@@ -36,6 +35,12 @@ public class DefaultMathematicalExpressionParser implements MathematicalExpressi
     public double calc(List<String> tokens, int startIndex) throws CannotInterpretException {
         int endIndex = getEndOfExpression(tokens, startIndex);
         //TODO
-        return 0;
+        double res;
+        try {
+            res = Double.parseDouble(tokens.get(startIndex));
+        } catch (NumberFormatException e) {
+            res = 0;
+        }
+        return res;
     }
 }
