@@ -8,7 +8,6 @@ import test.MainTrain;
 import java.util.Map;
 
 public class ReturnCommand implements Command {
-
     private final Wrapper<Boolean> returned;
     private final Map<String, Double> SymbolTable;
 
@@ -16,7 +15,6 @@ public class ReturnCommand implements Command {
         this.SymbolTable = symbolTable;
         this.returned = returned;
     }
-
 
     @Override
     public int doCommand(String[] tokens, int startIndex) throws CannotInterpretException {
@@ -40,6 +38,5 @@ public class ReturnCommand implements Command {
 
         returned.set(true);
         return (int) Math.floor(retVal);
-
     }
 }

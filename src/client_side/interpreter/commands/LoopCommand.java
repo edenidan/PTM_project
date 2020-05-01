@@ -19,20 +19,18 @@ public class LoopCommand implements Command {
 
     @Override
     public int doCommand(String[] tokens, int startIndex) throws CannotInterpretException {
-
         int blockStart = BlockEdgeFinder.getBlockStart(tokens, startIndex);
         int blockEnd = BlockEdgeFinder.getBlockEnd(tokens, startIndex);
 
-        if(blockStart == -1 || blockEnd == -1)
+        if (blockStart == -1 || blockEnd == -1)
             throw new CannotInterpretException("Wrong {, } positions", startIndex);
 
         ConditionParser conditionParser = new DefaultConditionParser(symbolTable);
         while (conditionParser.parse(tokens, blockStart)) {
             int retVal = commands.get("block").doCommand(tokens, blockStart + 1);
-            if(returned.get())
+            if (returned.get())
                 return retVal;
         }
         return blockEnd;
-
     }
 }

@@ -14,15 +14,15 @@ public class DefineVarCommand implements Command {
 
     @Override
     public int doCommand(String[] tokens, int startIndex) throws CannotInterpretException {
-        if(tokens.length-1 == startIndex)
-            throw new CannotInterpretException("Wrong usage of 'var' command",startIndex);
+        if (tokens.length - 1 == startIndex)
+            throw new CannotInterpretException("Wrong usage of 'var' command", startIndex);
 
-        String varName=tokens[startIndex+1];
-        if(symbolTable.get(varName) != null)//is already exists
-            throw new CannotInterpretException(varName+" is already defined",startIndex);
+        String varName = tokens[startIndex + 1];
+        if (symbolTable.get(varName) != null)//is already exists
+            throw new CannotInterpretException(varName + " is already defined", startIndex);
 
-        symbolTable.put(varName,null);
+        symbolTable.put(varName, null);
 
-        return startIndex+1;
+        return startIndex + 1;
     }
 }
