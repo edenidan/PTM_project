@@ -3,7 +3,6 @@ package client_side.interpreter;
 import java.util.Map;
 
 public class DefaultConditionParser implements ConditionParser {
-
     private final Map<String, Double> symbolTable;
 
     public DefaultConditionParser(Map<String, Double> symbolTable) {
@@ -12,9 +11,6 @@ public class DefaultConditionParser implements ConditionParser {
 
     @Override
     public Boolean parse(String[] tokens, int startIndex) throws CannotInterpretException {
-//        //the operator may be one token or two
-//        int operatorSize = getOperatorSize(tokens, startIndex);
-
         double operand1, operand2;
         try {
             operand1 = getValue(tokens[startIndex]);
@@ -23,7 +19,7 @@ public class DefaultConditionParser implements ConditionParser {
             throw new CannotInterpretException("Cannot resolve condition operands", startIndex);
         }
 
-        switch (tokens[startIndex + 1]/* + (operatorSize == 2 ? tokens[startIndex + 2] : "")*/) {
+        switch (tokens[startIndex + 1]) {
             case "==":
                 return operand1 == operand2;
             case ">=":
@@ -47,25 +43,4 @@ public class DefaultConditionParser implements ConditionParser {
         }
         return value;
     }
-
-//    private Boolean isOperator(String token) {
-//        if (token == null)
-//            return false;
-//        return token.equals("=")
-//                || token.equals("<")
-//                || token.equals(">")
-//                || token.equals("!");
-//    }
-//
-//    private int getOperatorSize(String[] tokens, int startIndex) throws CannotInterpretException {
-//        int operatorSize = 0;
-//        try {
-//            operatorSize += isOperator(tokens[startIndex + 1]) ? 1 : 0;
-//            operatorSize += isOperator(tokens[startIndex + 2]) ? 1 : 0;
-//        }
-//        catch (NullPointerException e){
-//            throw new CannotInterpretException("Wrong usage of 'if' command",startIndex);
-//        }
-//        return operatorSize;
-//    }
 }
