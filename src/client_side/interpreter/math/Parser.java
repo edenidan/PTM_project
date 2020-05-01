@@ -1,39 +1,50 @@
 package client_side.interpreter.math;
 
+import client_side.interpreter.CannotInterpretException;
+
 import java.util.*;
 
 public class Parser {
-    public static int calc(String expression) throws IllegalArgumentException {
+    private final Map<String, Double> symbolTable;
+
+    public Parser(Map<String, Double> symbolTable) {
+        this.symbolTable = symbolTable;
+    }
+
+    public double calc(List<String> tokens, int startIndex) throws CannotInterpretException {
+        try {
+            return calcWithoutRethrow(tokens, startIndex);
+        } catch (IllegalArgumentException e) {
+            throw new CannotInterpretException(e.getMessage(), startIndex);
+        }
+    }
+
+    private double calcWithoutRethrow(List<String> tokens, int startIndex) throws CannotInterpretException {
         Queue<Expression> queue = new LinkedList<>();
-        Stack<Character> stack = new Stack<>();
+        Stack<String> stack = new Stack<>();
 
-        for (int i = 0; i < expression.length(); i++) {
-            char character = expression.charAt(i);
+        for (int i = startIndex; i < tokens.size(); i++) {
+            String token = tokens.get(i);
 
-            if (isDigit(character)) {
-                Object[] result = readNextNumber(expression.substring(i));
-
-                double number = (double) result[0];
-                int numberLength = (int) result[1];
-
-                queue.add(new Number(number));
-
-                i += numberLength - 1;
-            } else if (isOperator(character)) {
-                int precedence = getPrecedence(character);
+            if (isNumber(token)) {
+                queue.add(new Number(Double.parseDouble(token)));
+            } else if (isVariable(token)) {
+                queue.add(new Number(symbolTable.get(token)));
+            } else if (isOperator(token)) {
+                int precedence = getPrecedence(token);
 
                 while (!stack.empty() && isOperator(stack.peek()) && getPrecedence(stack.peek()) >= precedence)
                     queue.add(createBinExpressionFromOperator(stack.pop()));
 
-                stack.push(character);
-            } else if (character == '(') {
-                stack.push(character);
-            } else if (character == ')') {
+                stack.push(token);
+            } else if (token.equals("(")) {
+                stack.push(token);
+            } else if (token.equals(")")) {
                 try {
-                    while (stack.peek() != '(')
+                    while (!stack.peek().equals("("))
                         queue.add(createBinExpressionFromOperator(stack.pop()));
                 } catch (EmptyStackException e) {
-                    throw new IllegalArgumentException("Found a closing parentheses without a matching opening parentheses");
+                    throw new CannotInterpretException("Found a closing parentheses without a matching opening parentheses", startIndex);
                 }
 
                 stack.pop();
@@ -41,76 +52,59 @@ public class Parser {
         }
 
         while (!stack.empty()) {
-            if (stack.peek() == '(')
-                throw new IllegalArgumentException("Too many opening parentheses");
+            if (stack.peek().equals("("))
+                throw new CannotInterpretException("Too many opening parentheses", startIndex);
             else
                 queue.add(createBinExpressionFromOperator(stack.pop()));
         }
+
 
         Collections.reverse((LinkedList<Expression>) queue);
         return (int) createExpressionFromReversedPostfixQueue(queue).calculate();
     }
 
-    private static boolean isDigit(char character) {
-        return '0' <= character && character <= '9';
+    public int getEndOfExpression(List<String> tokens, int startIndex) {
+        //TODO
+        return -1;
     }
 
-    private static Object[] readNextNumber(String str) {
-        int endIndex = 0;
-        boolean decimalPointFound = false;
-
-        for (char character : str.substring(1).toCharArray()) {
-            if (!isDigit(character) && character != '.')
-                break;
-
-            if (character == '.')
-                if (decimalPointFound)
-                    break;
-                else
-                    decimalPointFound = true;
-
-            endIndex++;
+    private boolean isNumber(String token) {
+        try {
+            Double.parseDouble(token);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
-
-        if (str.charAt(endIndex) == '.') {
-            endIndex--;
-            decimalPointFound = false;
-        }
-
-        double number;
-        Scanner scanner = new Scanner(str.substring(0, endIndex + 1));
-        if (decimalPointFound)
-            number = scanner.nextDouble();
-        else
-            number = scanner.nextInt();
-
-        return new Object[]{number, endIndex + 1};
     }
 
-    private static boolean isOperator(char character) {
-        return character == '+' || character == '-' || character == '*' || character == '/';
+    private boolean isVariable(String token) {
+        return symbolTable.containsKey(token);
     }
 
-    private static int getPrecedence(char operator) throws IllegalArgumentException {
+    private boolean isOperator(String token) {
+        return token.equals("+") || token.equals("-") || token.equals("*") || token.equals("/");
+    }
+
+    private int getPrecedence(String operator) throws IllegalArgumentException {
         return createBinExpressionFromOperator(operator).getPrecedence();
     }
 
-    private static BinaryExpression createBinExpressionFromOperator(char operator) throws IllegalArgumentException {
+    private BinaryExpression createBinExpressionFromOperator(String operator) throws IllegalArgumentException {
         switch (operator) {
-            case '+':
+            case "+":
                 return new Plus();
-            case '-':
+            case "-":
                 return new Minus();
-            case '*':
+            case "*":
                 return new Mul();
-            case '/':
+            case "/":
                 return new Div();
             default:
                 throw new IllegalArgumentException("Tried to use a character that doesn't represent an operator");
         }
     }
 
-    private static Expression createExpressionFromReversedPostfixQueue(Queue<Expression> queue) throws IllegalArgumentException {
+    private Expression createExpressionFromReversedPostfixQueue(Queue<Expression> queue) throws IllegalArgumentException {
         if (queue.isEmpty())
             throw new IllegalArgumentException("Tried to create an expression from an empty queue");
 
