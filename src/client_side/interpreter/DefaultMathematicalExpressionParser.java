@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class DefaultMathematicalExpressionParser implements MathematicalExpressionParser {
 
-    private HashMap<String,Double> symbolTable;
+    private final HashMap<String,Double> symbolTable;
     public DefaultMathematicalExpressionParser(HashMap<String,Double> symbolTable){
         this.symbolTable=symbolTable;
     }
