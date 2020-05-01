@@ -1,9 +1,12 @@
 package test;
 
+import client_side.interpreter.CannotInterpretException;
 import client_side.interpreter.DefaultLexer;
 import client_side.interpreter.DefaultMathematicalExpressionParser;
 import client_side.interpreter.Interpreter;
+import client_side.interpreter.math.Parser;
 
+import java.util.HashMap;
 import java.util.Random;
 
 public class MainTrain {
@@ -14,7 +17,12 @@ public class MainTrain {
 
         String script = "return (3/(2+1))+(5/(1+4))";
         System.out.println(new Interpreter().interpret(script));
-
+        try {
+            double val = new Parser(new HashMap<>()).calc(new DefaultLexer().lex("(3/(2+1))+(5/(1+4))"), 0);
+            System.out.println(val);
+        } catch (CannotInterpretException e) {
+            e.printStackTrace();
+        }
         //String expression = "(1+3)-2";
         //System.out.println(new DefaultMathematicalExpressionParser(null).
                 //getEndOfExpression(new DefaultLexer().lex(expression),0));
