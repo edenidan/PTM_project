@@ -1,11 +1,11 @@
 package client_side.interpreter;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class DefaultMathematicalExpressionParser implements MathematicalExpressionParser {
 
-    private final HashMap<String,Double> symbolTable;
-    public DefaultMathematicalExpressionParser(HashMap<String,Double> symbolTable){
+    private final Map<String,Double> symbolTable;
+    public DefaultMathematicalExpressionParser(Map<String,Double> symbolTable){
         this.symbolTable=symbolTable;
     }
 
@@ -26,7 +26,7 @@ public class DefaultMathematicalExpressionParser implements MathematicalExpressi
         }
     }
 
-
+    @Override
     public int getEndOfExpression(String[] tokens, int startIndex) {
 
         //TODO

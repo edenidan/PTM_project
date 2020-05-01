@@ -1,5 +1,7 @@
 package test;
 
+import client_side.interpreter.DefaultLexer;
+import client_side.interpreter.DefaultMathematicalExpressionParser;
 import client_side.interpreter.Interpreter;
 
 import java.util.Random;
@@ -10,8 +12,12 @@ public class MainTrain {
 
     public static void main(String[] args) {
 
-        String script = "if 1==1{if 2>=2{return 1}}return 0";
+        String script = "return (3/(2+1))+(5/(1+4))";
         System.out.println(new Interpreter().interpret(script));
+
+        //String expression = "(1+3)-2";
+        //System.out.println(new DefaultMathematicalExpressionParser(null).
+                //getEndOfExpression(new DefaultLexer().lex(expression),0));
         if (debug)
             return;
 
