@@ -1,5 +1,7 @@
 package client_side.interpreter;
 
+import client_side.interpreter.math.Parser;
+
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +15,7 @@ public class DefaultConditionParser implements ConditionParser {
     @Override
     public Boolean parse(List<String> tokens, int startIndex) throws CannotInterpretException {
         double operand1, operand2;
-        MathematicalExpressionParser mp = new DefaultMathematicalExpressionParser(symbolTable);
+        Parser mp = new Parser(symbolTable);
         int operand1EndPos;
         try {
             operand1 = mp.calc(tokens, startIndex);

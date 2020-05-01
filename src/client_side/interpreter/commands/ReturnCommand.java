@@ -3,7 +3,7 @@ package client_side.interpreter.commands;
 import client_side.Wrapper;
 import client_side.interpreter.CannotInterpretException;
 import client_side.interpreter.Command;
-import client_side.interpreter.DefaultMathematicalExpressionParser;
+import client_side.interpreter.math.Parser;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,7 @@ public class ReturnCommand implements Command {
     @Override
     public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
         try {
-            double value = new DefaultMathematicalExpressionParser(symbolTable).calc(tokens, startIndex + 1);
+            double value = new Parser(symbolTable).calc(tokens, startIndex + 1);
             if ((int) value != value)//not an int
                 throw new CannotInterpretException("Cannot return a float", startIndex + 1);
 

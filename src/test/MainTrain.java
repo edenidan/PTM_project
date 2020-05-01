@@ -2,7 +2,6 @@ package test;
 
 import client_side.interpreter.CannotInterpretException;
 import client_side.interpreter.DefaultLexer;
-import client_side.interpreter.DefaultMathematicalExpressionParser;
 import client_side.interpreter.Interpreter;
 import client_side.interpreter.math.Parser;
 
