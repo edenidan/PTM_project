@@ -12,18 +12,19 @@ public class Parser {
     }
 
     public double calc(List<String> tokens, int startIndex) throws CannotInterpretException {
+        int endIndex = getEndOfExpression(tokens,startIndex);
         try {
-            return calcWithoutRethrow(tokens, startIndex);
+            return calcWithoutRethrow(tokens, startIndex,endIndex);
         } catch (IllegalArgumentException e) {
             throw new CannotInterpretException(e.getMessage(), startIndex);
         }
     }
 
-    private double calcWithoutRethrow(List<String> tokens, int startIndex) throws CannotInterpretException {
+    private double calcWithoutRethrow(List<String> tokens, int startIndex,int endIndex) throws CannotInterpretException {
         Queue<Expression> queue = new LinkedList<>();
         Stack<String> stack = new Stack<>();
 
-        for (int i = startIndex; i < tokens.size(); i++) {
+        for (int i = startIndex; i <= endIndex; i++) {
             String token = tokens.get(i);
 
             if (isNumber(token)) {
@@ -60,12 +61,20 @@ public class Parser {
 
 
         Collections.reverse((LinkedList<Expression>) queue);
-        return (int) createExpressionFromReversedPostfixQueue(queue).calculate();
+        return createExpressionFromReversedPostfixQueue(queue).calculate();
     }
 
     public int getEndOfExpression(List<String> tokens, int startIndex) {
-        //TODO
-        return -1;
+        int i=startIndex;
+
+        while(i<tokens.size()-1){//until the one before the last
+            if(isNumber(tokens.get(i)) || ")".equals(tokens.get(i)))
+                if(!isOperator(tokens.get(i+1)))
+                    return i;
+
+            i++;
+        }
+        return tokens.size()-1;
     }
 
     private boolean isNumber(String token) {
@@ -92,13 +101,13 @@ public class Parser {
     private BinaryExpression createBinExpressionFromOperator(String operator) throws IllegalArgumentException {
         switch (operator) {
             case "+":
-                return new Plus();
+                return new BinaryExpression((a,b)->a+b,1);
             case "-":
-                return new Minus();
+                return new BinaryExpression((a,b)->a-b,1);
             case "*":
-                return new Mul();
+                return new BinaryExpression((a,b)->a*b,2);
             case "/":
-                return new Div();
+                return new BinaryExpression((a,b)->a/b,2);
             default:
                 throw new IllegalArgumentException("Tried to use a character that doesn't represent an operator");
         }

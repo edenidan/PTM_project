@@ -14,14 +14,14 @@ public class DefaultConditionParser implements ConditionParser {
 
     @Override
     public Boolean parse(List<String> tokens, int startIndex) throws CannotInterpretException {
-        double operand1, operand2;
+        float operand1, operand2;
         Parser mp = new Parser(symbolTable);
         int operand1EndPos;
         try {
-            operand1 = mp.calc(tokens, startIndex);
+            operand1 = (float) mp.calc(tokens, startIndex);
             operand1EndPos = mp.getEndOfExpression(tokens, startIndex);
 
-            operand2 = mp.calc(tokens, operand1EndPos + /*operatorSize*/1 + 1);
+            operand2 = (float) mp.calc(tokens, operand1EndPos + /*operatorSize*/1 + 1);
         } catch (NumberFormatException e) {
             throw new CannotInterpretException("Cannot resolve condition operands", startIndex);
         }

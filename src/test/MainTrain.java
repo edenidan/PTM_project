@@ -15,16 +15,9 @@ public class MainTrain {
 
     public static void main(String[] args) {
 
+        String script = "if 1/2 + 2/3==7/6{return 1+3/4+0.25}";
 
-
-        Parser p = new Parser(new HashMap<>());
-        //String script = "(3/(2*1))+(5/(1+2*2))";
-        String script = "1/2 + 1/2 + 1/2";
-        try {
-            System.out.println(p.calc(new DefaultLexer().lex(script),0));
-        } catch (CannotInterpretException e) {
-            e.printStackTrace();
-        }
+        System.out.println(new Interpreter().interpret(script));
         if (debug)
             return;
 

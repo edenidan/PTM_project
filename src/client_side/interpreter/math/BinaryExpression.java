@@ -1,9 +1,15 @@
 package client_side.interpreter.math;
 
-public abstract class BinaryExpression implements Expression {
+import java.util.function.BiFunction;
+
+public class BinaryExpression implements Expression {
     protected Expression left, right;
 
-    public BinaryExpression() {
+    private int precedence;
+    private BiFunction<Double,Double,Double> f;
+    public BinaryExpression(BiFunction<Double,Double,Double> f,int precedence) {
+        this.f=f;
+        this.precedence=precedence;
     }
 
     public BinaryExpression(Expression left, Expression right) {
@@ -11,7 +17,14 @@ public abstract class BinaryExpression implements Expression {
         this.right = right;
     }
 
-    public abstract int getPrecedence();
+    public int getPrecedence(){
+        return this.precedence;
+    }
+
+    @Override
+    public double calculate(){
+        return this.f.apply(left.calculate(),right.calculate());
+    }
 
     public Expression getLeft() {
         return left;
