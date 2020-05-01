@@ -3,6 +3,7 @@ package test;
 import client_side.interpreter.CannotInterpretException;
 import client_side.interpreter.DefaultLexer;
 import client_side.interpreter.Interpreter;
+import client_side.interpreter.Lexer;
 import client_side.interpreter.math.Parser;
 
 import java.util.HashMap;
@@ -14,17 +15,16 @@ public class MainTrain {
 
     public static void main(String[] args) {
 
-        String script = "return (3/(2+1))+(5/(1+4))";
-        System.out.println(new Interpreter().interpret(script));
+
+
+        Parser p = new Parser(new HashMap<>());
+        //String script = "(3/(2*1))+(5/(1+2*2))";
+        String script = "1/2 + 1/2 + 1/2";
         try {
-            double val = new Parser(new HashMap<>()).calc(new DefaultLexer().lex("(3/(2+1))+(5/(1+4))"), 0);
-            System.out.println(val);
+            System.out.println(p.calc(new DefaultLexer().lex(script),0));
         } catch (CannotInterpretException e) {
             e.printStackTrace();
         }
-        //String expression = "(1+3)-2";
-        //System.out.println(new DefaultMathematicalExpressionParser(null).
-                //getEndOfExpression(new DefaultLexer().lex(expression),0));
         if (debug)
             return;
 
