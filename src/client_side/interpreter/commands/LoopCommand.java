@@ -23,7 +23,7 @@ public class LoopCommand implements Command {
         int blockStart = BlockEdgeFinder.getBlockStart(tokens, startIndex);
         int blockEnd = BlockEdgeFinder.getBlockEnd(tokens, startIndex);
 
-        if(blockStart == -1 || blockStart == -1)
+        if(blockStart == -1 || blockEnd == -1)
             throw new CannotInterpretException("Wrong {, } positions", startIndex);
 
         ConditionParser conditionParser = new DefaultConditionParser(symbolTable);
