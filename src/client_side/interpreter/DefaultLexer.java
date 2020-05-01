@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DefaultLexer implements Lexer {
-    private final static String tokenToSpaceRegex = "==|>=|<=|[{}()<>=!+\\-*/]";
+    private final static String tokenToSpaceRegex = "==|!=|>=|<=|[{}()<>=+\\-*/]";
 
     @Override
     public List<String> lex(String script) {
