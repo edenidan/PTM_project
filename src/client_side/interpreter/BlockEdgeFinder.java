@@ -7,20 +7,19 @@ public class BlockEdgeFinder {
         return Arrays.asList(tokens).subList(startIndex, tokens.length).indexOf("{") + startIndex;
     }
 
-    public static int getBlockEnd(String[] tokens, int startIndex)
-    {//the start_index is before the start of the open '{'
+    // startIndex is before the start of the open '{'
+    public static int getBlockEnd(String[] tokens, int startIndex) {
+        int blockStart = getBlockStart(tokens, startIndex);
+
         int numberOfOpens = 0;
-        startIndex = getBlockStart(tokens, startIndex);
-
-        for (; startIndex < tokens.length; startIndex++) {
-            if (tokens[startIndex].equals("}"))
+        for (int i = blockStart; i < tokens.length; i++) {
+            if (tokens[i].equals("}"))
                 numberOfOpens--;
-
-            if (tokens[startIndex].equals("{"))
+            else if (tokens[i].equals("{"))
                 numberOfOpens++;
 
             if (numberOfOpens == 0)
-                return startIndex;
+                return i;
         }
         return -1;
     }
