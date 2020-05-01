@@ -17,6 +17,7 @@ public class Interpreter {
         commands.put("openDataServer", new OpenServerCommand());
         commands.put("connect", new ConnectCommand());
         commands.put("disconnect", new DisconnectCommand());
+        commands.put("sleep", new SleepCommand(symbolTable));
         commands.put("var", new DefineVarCommand(symbolTable));
         commands.put("=", new AssignmentCommand(symbolTable));
         commands.put("if", new IfCommand(symbolTable, commands));
