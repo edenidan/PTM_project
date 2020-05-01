@@ -1,12 +1,10 @@
 package client_side.interpreter;
 
+import java.util.Arrays;
+
 public class BlockEdgeFinder {
     public static int getBlockStart(String[] tokens, int startIndex) {
-        for (; startIndex < tokens.length; startIndex++) {
-            if ("{".equals(tokens[startIndex]))
-                return startIndex;
-        }
-        return -1;
+        return Arrays.asList(tokens).subList(startIndex, tokens.length).indexOf("{") + startIndex;
     }
 
     public static int getBlockEnd(String[] tokens, int startIndex)
