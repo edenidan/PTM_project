@@ -7,13 +7,10 @@ import client_side.interpreter.Command;
 import java.util.Map;
 
 public class BlockCommand implements Command {
-
-    private final Map<String, Double> symbolTable;
     private final Map<String, Command> commands;
     private final Wrapper<Boolean> returned;
 
-    public BlockCommand(Map<String, Double> symbolTable, Map<String, Command> commands, Wrapper<Boolean> returned) {
-        this.symbolTable = symbolTable;
+    public BlockCommand(Map<String, Command> commands, Wrapper<Boolean> returned) {
         this.commands = commands;
         this.returned = returned;
     }
