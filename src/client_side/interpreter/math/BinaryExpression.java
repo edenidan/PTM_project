@@ -1,25 +1,20 @@
 package client_side.interpreter.math;
 
-import java.util.function.DoubleBinaryOperator;
-
 public class BinaryExpression implements Expression {
     protected Expression left, right;
+    protected final BinaryOperator operator;
 
-    protected final DoubleBinaryOperator operator;
-    protected final int precedence;
-
-    public BinaryExpression(DoubleBinaryOperator operator, int precedence) {
+    public BinaryExpression(BinaryOperator operator) {
         this.operator = operator;
-        this.precedence = precedence;
     }
 
     @Override
     public double calculate() {
-        return operator.applyAsDouble(left.calculate(), right.calculate());
+        return operator.getFunction().applyAsDouble(left.calculate(), right.calculate());
     }
 
     public int getPrecedence() {
-        return this.precedence;
+        return operator.getPrecedence();
     }
 
     public Expression getLeft() {

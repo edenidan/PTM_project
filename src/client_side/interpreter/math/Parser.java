@@ -7,6 +7,8 @@ import java.util.*;
 public class Parser {
     private final Map<String, Double> symbolTable;
 
+    private static final Map<String, BinaryOperator> binaryOperators = new HashMap<>();
+
     public Parser(Map<String, Double> symbolTable) {
         this.symbolTable = symbolTable;
     }
@@ -88,11 +90,14 @@ public class Parser {
     }
 
     private boolean isOperator(String token) {
-        return token.equals("+") || token.equals("-") || token.equals("*") || token.equals("/");
+        return binaryOperators.containsKey(token);
     }
 
     private int getPrecedence(String operator) throws IllegalArgumentException {
-        return createBinExpressionFromOperator(operator).getPrecedence();
+        if (!binaryOperators.containsKey(operator))
+            throw new IllegalArgumentException("Cant find operator: " + operator);
+
+        return binaryOperators.get(operator).getPrecedence();
     }
 
     private BinaryExpression createBinExpressionFromOperator(String operator) throws IllegalArgumentException {
@@ -124,5 +129,13 @@ public class Parser {
         }
 
         return expression;
+    }
+
+    static {
+        //noinspection Convert2MethodRef
+        binaryOperators.put("+", new BinaryOperator((a, b) -> a + b, 1));
+        binaryOperators.put("-", new BinaryOperator((a, b) -> a - b, 1));
+        binaryOperators.put("*", new BinaryOperator((a, b) -> a * b, 2));
+        binaryOperators.put("/", new BinaryOperator((a, b) -> a / b, 2));
     }
 }
