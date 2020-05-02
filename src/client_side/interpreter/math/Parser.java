@@ -12,9 +12,9 @@ public class Parser {
     }
 
     public double calc(List<String> tokens, int startIndex) throws CannotInterpretException {
-        int endIndex = getEndOfExpression(tokens,startIndex);
+        int endIndex = getEndOfExpression(tokens, startIndex);
         try {
-            return calcWithoutRethrow(tokens, startIndex,endIndex);
+            return calcWithoutRethrow(tokens, startIndex, endIndex);
         } catch (IllegalArgumentException e) {
             throw new CannotInterpretException(e.getMessage(), startIndex);
         }
@@ -101,13 +101,14 @@ public class Parser {
     private BinaryExpression createBinExpressionFromOperator(String operator) throws IllegalArgumentException {
         switch (operator) {
             case "+":
-                return new BinaryExpression((a,b)->a+b,1);
+                //noinspection Convert2MethodRef
+                return new BinaryExpression((a, b) -> a + b, 1);
             case "-":
-                return new BinaryExpression((a,b)->a-b,1);
+                return new BinaryExpression((a, b) -> a - b, 1);
             case "*":
-                return new BinaryExpression((a,b)->a*b,2);
+                return new BinaryExpression((a, b) -> a * b, 2);
             case "/":
-                return new BinaryExpression((a,b)->a/b,2);
+                return new BinaryExpression((a, b) -> a / b, 2);
             default:
                 throw new IllegalArgumentException("Tried to use a character that doesn't represent an operator");
         }
