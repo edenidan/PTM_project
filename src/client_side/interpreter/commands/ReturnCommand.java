@@ -6,13 +6,13 @@ import client_side.interpreter.Command;
 import client_side.interpreter.math.ArithmeticParser;
 
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 public class ReturnCommand implements Command {
     private final Wrapper<Boolean> returned;
-    private final Map<String, Double> symbolTable;
+    private final ConcurrentMap<String, Double> symbolTable;
 
-    public ReturnCommand(Map<String, Double> symbolTable, Wrapper<Boolean> returned) {
+    public ReturnCommand(ConcurrentMap<String, Double> symbolTable, Wrapper<Boolean> returned) {
         this.symbolTable = symbolTable;
         this.returned = returned;
     }

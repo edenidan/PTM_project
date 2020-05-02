@@ -5,12 +5,12 @@ import client_side.interpreter.Command;
 import client_side.interpreter.math.ArithmeticParser;
 
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 public class SleepCommand implements Command {
-    private final Map<String, Double> symbolTable;
+    private final ConcurrentMap<String, Double> symbolTable;
 
-    public SleepCommand(Map<String, Double> symbolTable) {
+    public SleepCommand(ConcurrentMap<String, Double> symbolTable) {
         this.symbolTable = symbolTable;
     }
 

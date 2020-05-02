@@ -6,12 +6,12 @@ import client_side.interpreter.Command;
 import client_side.interpreter.math.ArithmeticParser;
 
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 public class AssignmentCommand implements Command {
-    private Map<String, Double> symbolTable;
+    private final ConcurrentMap<String, Double> symbolTable;
 
-    public AssignmentCommand(Map<String, Double> symbolTable) {
+    public AssignmentCommand(ConcurrentMap<String, Double> symbolTable) {
         this.symbolTable = symbolTable;
     }
 

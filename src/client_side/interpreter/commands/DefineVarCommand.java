@@ -4,12 +4,12 @@ import client_side.interpreter.CannotInterpretException;
 import client_side.interpreter.Command;
 
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 public class DefineVarCommand implements Command {
-    private final Map<String, Double> symbolTable;
+    private final ConcurrentMap<String, Double> symbolTable;
 
-    public DefineVarCommand(Map<String, Double> symbolTable) {
+    public DefineVarCommand(ConcurrentMap<String, Double> symbolTable) {
         this.symbolTable = symbolTable;
     }
 

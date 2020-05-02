@@ -7,12 +7,13 @@ import client_side.interpreter.ConditionParser;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 public class IfCommand implements Command {
-    private final Map<String, Double> symbolTable;
+    private final ConcurrentMap<String, Double> symbolTable;
     private final Map<String, Command> commands;
 
-    public IfCommand(Map<String, Double> symbolTable, Map<String, Command> commands) {
+    public IfCommand(ConcurrentMap<String, Double> symbolTable, Map<String, Command> commands) {
         this.symbolTable = symbolTable;
         this.commands = commands;
     }
@@ -24,7 +25,7 @@ public class IfCommand implements Command {
         if (blockEnd == -1 || blockStart == -1)
             throw new CannotInterpretException("Wrong {, } positions", startIndex);
 
-        int retVal = blockEnd+1;
+        int retVal = blockEnd + 1;
         if (ConditionParser.parse(tokens, startIndex + 1, symbolTable)) {
             retVal = commands.get("block").doCommand(tokens, blockStart + 1);
         }
