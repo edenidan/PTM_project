@@ -6,12 +6,14 @@ import client_side.interpreter.commands.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class Interpreter {
     private final Lexer lexer = new Lexer();
 
     private final Map<String, Command> commands = new HashMap<>();
-    private final Map<String, Double> symbolTable = new HashMap<>();
+    private final ConcurrentMap<String, Double> symbolTable = new ConcurrentHashMap<>();
     private final Wrapper<Boolean> returned = new Wrapper<>(false);//false until return is called
 
     public Interpreter() {
