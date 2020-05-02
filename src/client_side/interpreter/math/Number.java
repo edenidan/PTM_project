@@ -3,11 +3,13 @@ package client_side.interpreter.math;
 public class Number implements Expression {
     private double value;
 
-    public Number() {
-    }
-
     public Number(double value) {
         this.value = value;
+    }
+
+    @Override
+    public double calculate() {
+        return value;
     }
 
     public double getValue() {
@@ -16,10 +18,5 @@ public class Number implements Expression {
 
     public void setValue(double value) {
         this.value = value;
-    }
-
-    @Override
-    public double calculate() {
-        return value;
     }
 }
