@@ -15,7 +15,7 @@ public class LogicParser {
     // startIndex: index of the first operand
     public Boolean parse(List<String> tokens, int startIndex) throws CannotInterpretException {
         float operand1, operand2;
-        Parser mp = new Parser(symbolTable);
+        ArithmeticParser mp = new ArithmeticParser(symbolTable);
         int operand1EndPos;
         try {
             operand1 = (float) mp.calc(tokens, startIndex);

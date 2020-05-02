@@ -4,12 +4,12 @@ import client_side.interpreter.CannotInterpretException;
 
 import java.util.*;
 
-public class Parser {
+public class ArithmeticParser {
     private final Map<String, Double> symbolTable;
 
     private static final Map<String, BinaryOperator> binaryOperators = new HashMap<>();
 
-    public Parser(Map<String, Double> symbolTable) {
+    public ArithmeticParser(Map<String, Double> symbolTable) {
         this.symbolTable = symbolTable;
     }
 
