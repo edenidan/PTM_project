@@ -1,18 +1,18 @@
-package client_side.interpreter;
+package client_side.interpreter.math;
 
-import client_side.interpreter.math.Parser;
+import client_side.interpreter.CannotInterpretException;
 
 import java.util.List;
 import java.util.Map;
 
-public class DefaultConditionParser implements ConditionParser {
+public class LogicParser {
     private final Map<String, Double> symbolTable;
 
-    public DefaultConditionParser(Map<String, Double> symbolTable) {
+    public LogicParser(Map<String, Double> symbolTable) {
         this.symbolTable = symbolTable;
     }
 
-    @Override
+    // startIndex: index of the first operand
     public Boolean parse(List<String> tokens, int startIndex) throws CannotInterpretException {
         float operand1, operand2;
         Parser mp = new Parser(symbolTable);

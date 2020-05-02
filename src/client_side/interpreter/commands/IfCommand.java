@@ -3,7 +3,7 @@ package client_side.interpreter.commands;
 import client_side.interpreter.BlockEdgeFinder;
 import client_side.interpreter.CannotInterpretException;
 import client_side.interpreter.Command;
-import client_side.interpreter.DefaultConditionParser;
+import client_side.interpreter.math.LogicParser;
 
 import java.util.List;
 import java.util.Map;
@@ -25,7 +25,7 @@ public class IfCommand implements Command {
             throw new CannotInterpretException("Wrong {, } positions", startIndex);
 
         int retVal = blockEnd;
-        if (new DefaultConditionParser(symbolTable).parse(tokens, startIndex + 1)) {
+        if (new LogicParser(symbolTable).parse(tokens, startIndex + 1)) {
             retVal = commands.get("block").doCommand(tokens, blockStart + 1);
         }
 

@@ -2,6 +2,7 @@ package client_side.interpreter.commands;
 
 import client_side.Wrapper;
 import client_side.interpreter.*;
+import client_side.interpreter.math.LogicParser;
 
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,8 @@ public class LoopCommand implements Command {
         if (blockStart == -1 || blockEnd == -1)
             throw new CannotInterpretException("Wrong {, } positions", startIndex);
 
-        ConditionParser conditionParser = new DefaultConditionParser(symbolTable);
-        while (conditionParser.parse(tokens, blockStart)) {
+        LogicParser logicParser = new LogicParser(symbolTable);
+        while (logicParser.parse(tokens, blockStart)) {
             int retVal = commands.get("block").doCommand(tokens, blockStart + 1);
             if (returned.get())
                 return retVal;
