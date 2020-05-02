@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Interpreter {
-    private Lexer lexer = new DefaultLexer();
+    private final Lexer lexer = new Lexer();
 
     private final Map<String, Command> commands = new HashMap<>();
     private final Map<String, Double> symbolTable = new HashMap<>();
@@ -48,10 +48,5 @@ public class Interpreter {
 
     public int interpret(String[] lines) {
         return interpret(String.join("\n", lines));
-    }
-
-    public Interpreter useLexer(Lexer lexer) {
-        this.lexer = lexer;
-        return this;
     }
 }
