@@ -1,4 +1,4 @@
-package client_side.interpreter.math;
+package math;
 
 public class BinaryOperator<T> {
     private final java.util.function.BinaryOperator<T> function;

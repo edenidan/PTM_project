@@ -1,23 +1,24 @@
-package client_side.interpreter.math;
+package client_side.interpreter;
 
-import client_side.interpreter.CannotInterpretException;
+import client_side.interpreter.math_parsers.ArithmeticParser;
 
 import java.util.List;
 import java.util.Map;
 
-public class LogicParser {
-    private LogicParser() {
+public class ConditionParser {
+    private ConditionParser() {
     }
 
     // startIndex: index of the first operand
     public static Boolean parse(List<String> tokens, int startIndex, Map<String, Double> symbolTable) throws CannotInterpretException {
         float operand1, operand2;
         int operand1EndPos;
+        ArithmeticParser ap = new ArithmeticParser(symbolTable);
         try {
-            operand1 = (float) ArithmeticParser.calc(tokens, startIndex, symbolTable);
-            operand1EndPos = ArithmeticParser.getEndOfExpression(tokens, startIndex);
+            operand1 = ap.calc(tokens, startIndex).floatValue();
+            operand1EndPos = ap.getEndOfExpression(tokens, startIndex);
 
-            operand2 = (float) ArithmeticParser.calc(tokens, operand1EndPos + /*operatorSize*/1 + 1, symbolTable);
+            operand2 = ap.calc(tokens, operand1EndPos + /*operatorSize*/1 + 1).floatValue();
         } catch (NumberFormatException e) {
             throw new CannotInterpretException("Cannot resolve condition operands", startIndex);
         }
