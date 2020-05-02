@@ -1,12 +1,12 @@
-package client_side.interpreter.math;
+package client_side.interpreter;
 
-import client_side.interpreter.CannotInterpretException;
+import client_side.interpreter.math.ArithmeticParser;
 
 import java.util.List;
 import java.util.Map;
 
-public class LogicParser {
-    private LogicParser() {
+public class ConditionParser {
+    private ConditionParser() {
     }
 
     // startIndex: index of the first operand
