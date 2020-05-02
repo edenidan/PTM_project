@@ -8,7 +8,7 @@ public class ArithmeticParser {
     private ArithmeticParser() {
     }
 
-    private static final Map<String, BinaryOperator> binaryOperators = new HashMap<>();
+    private static final Map<String, BinaryOperator<Double>> binaryOperators = new HashMap<>();
 
     public static double calc(List<String> tokens, int startIndex, Map<String, Double> symbolTable) throws CannotInterpretException {
         int endIndex = getEndOfExpression(tokens, startIndex);
@@ -21,7 +21,7 @@ public class ArithmeticParser {
 
     public static int getEndOfExpression(List<String> tokens, int startIndex) {
         for (int i = startIndex; i < tokens.size() - 1; i++) {
-            if (isNumber(tokens.get(i)) || tokens.get(i).equals(")")) // possible end token
+            if (isValue(tokens.get(i)) || tokens.get(i).equals(")")) // possible end token
                 if (!isOperator(tokens.get(i + 1)) && !tokens.get(i + 1).equals(")")) // possible token which means there is more
                     return i;
         }
@@ -36,7 +36,7 @@ public class ArithmeticParser {
         for (int i = startIndex; i <= endIndex; i++) {
             String token = tokens.get(i);
 
-            if (isNumber(token) || isVariable(token, symbolTable)) {
+            if (isValue(token) || isVariable(token, symbolTable)) {
                 queue.add(token);
             } else if (isOperator(token)) {
                 int precedence = getPrecedence(token);
@@ -69,7 +69,7 @@ public class ArithmeticParser {
         return createExpressionFromPostfix(queue, symbolTable).calculate();
     }
 
-    private static boolean isNumber(String token) {
+    private static boolean isValue(String token) {
         try {
             Double.parseDouble(token);
             return true;
@@ -93,18 +93,18 @@ public class ArithmeticParser {
         return binaryOperators.get(operator).getPrecedence();
     }
 
-    private static Expression createExpressionFromPostfix(LinkedList<String> tokens, Map<String, Double> symbolTable) throws IllegalArgumentException {
+    private static Expression<Double> createExpressionFromPostfix(LinkedList<String> tokens, Map<String, Double> symbolTable) throws IllegalArgumentException {
         if (tokens.isEmpty())
             throw new IllegalArgumentException("Tried to create an expression with no tokens");
 
         String token = tokens.removeLast();
 
-        if (isNumber(token))
-            return new Number(Double.parseDouble(token));
+        if (isValue(token))
+            return new Value<>(Double.parseDouble(token));
         else if (isVariable(token, symbolTable))
-            return new Number(symbolTable.get(token));
+            return new Value<>(symbolTable.get(token));
         else if (isOperator(token)) {
-            BinaryExpression binaryExpression = new BinaryExpression(binaryOperators.get(token));
+            BinaryExpression<Double> binaryExpression = new BinaryExpression<>(binaryOperators.get(token));
             binaryExpression.setRight(createExpressionFromPostfix(tokens, symbolTable));
             binaryExpression.setLeft(createExpressionFromPostfix(tokens, symbolTable));
 
@@ -116,9 +116,9 @@ public class ArithmeticParser {
 
     static {
         //noinspection Convert2MethodRef
-        binaryOperators.put("+", new BinaryOperator((a, b) -> a + b, 1));
-        binaryOperators.put("-", new BinaryOperator((a, b) -> a - b, 1));
-        binaryOperators.put("*", new BinaryOperator((a, b) -> a * b, 2));
-        binaryOperators.put("/", new BinaryOperator((a, b) -> a / b, 2));
+        binaryOperators.put("+", new BinaryOperator<>((a, b) -> a + b, 1));
+        binaryOperators.put("-", new BinaryOperator<>((a, b) -> a - b, 1));
+        binaryOperators.put("*", new BinaryOperator<>((a, b) -> a * b, 2));
+        binaryOperators.put("/", new BinaryOperator<>((a, b) -> a / b, 2));
     }
 }

@@ -1,17 +1,15 @@
 package client_side.interpreter.math;
 
-import java.util.function.DoubleBinaryOperator;
-
-public class BinaryOperator {
-    private final DoubleBinaryOperator function;
+public class BinaryOperator<T> {
+    private final java.util.function.BinaryOperator<T> function;
     private final int precedence;
 
-    public BinaryOperator(DoubleBinaryOperator function, int precedence) {
+    public BinaryOperator(java.util.function.BinaryOperator<T> function, int precedence) {
         this.function = function;
         this.precedence = precedence;
     }
 
-    public DoubleBinaryOperator getFunction() {
+    public java.util.function.BinaryOperator<T> getFunction() {
         return function;
     }
 
