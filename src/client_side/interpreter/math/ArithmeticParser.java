@@ -1,17 +1,18 @@
 package client_side.interpreter.math;
 
 import client_side.interpreter.CannotInterpretException;
+import client_side.interpreter.Classifier;
 
 import java.util.*;
 
 public class ArithmeticParser {
     private ArithmeticParser() {
     }
-
     private static final Map<String, BinaryOperator> binaryOperators = new HashMap<>();
 
+
     public static double calc(List<String> tokens, int startIndex, Map<String, Double> symbolTable) throws CannotInterpretException {
-        int endIndex = getEndOfExpression(tokens, startIndex);
+        int endIndex = getEndOfExpression(tokens, startIndex,symbolTable);
         try {
             return calcWithoutRethrow(tokens, startIndex, endIndex, symbolTable);
         } catch (IllegalArgumentException e) {
@@ -19,10 +20,10 @@ public class ArithmeticParser {
         }
     }
 
-    public static int getEndOfExpression(List<String> tokens, int startIndex) {
+    public static int getEndOfExpression(List<String> tokens, int startIndex,Map<String,Double> symbolTable) {
         for (int i = startIndex; i < tokens.size() - 1; i++) {
-            if (isNumber(tokens.get(i)) || tokens.get(i).equals(")")) // possible end token
-                if (!isOperator(tokens.get(i + 1)) && !tokens.get(i + 1).equals(")")) // possible token which means there is more
+            if (Classifier.isVariable(tokens.get(i),symbolTable) ||Classifier.isNumber(tokens.get(i)) || tokens.get(i).equals(")")) // possible end token
+                if (!Classifier.isOperator(tokens.get(i + 1)) && !tokens.get(i + 1).equals(")")) // possible token which means there is more
                     return i;
         }
 
@@ -36,12 +37,12 @@ public class ArithmeticParser {
         for (int i = startIndex; i <= endIndex; i++) {
             String token = tokens.get(i);
 
-            if (isNumber(token) || isVariable(token, symbolTable)) {
+            if (Classifier.isNumber(token) || Classifier.isVariable(token, symbolTable)) {
                 queue.add(token);
-            } else if (isOperator(token)) {
+            } else if (Classifier.isOperator(token)) {
                 int precedence = getPrecedence(token);
 
-                while (!stack.empty() && isOperator(stack.peek()) && getPrecedence(stack.peek()) >= precedence)
+                while (!stack.empty() && Classifier.isOperator(stack.peek()) && getPrecedence(stack.peek()) >= precedence)
                     queue.add(stack.pop());
 
                 stack.push(token);
@@ -69,25 +70,9 @@ public class ArithmeticParser {
         return createExpressionFromPostfix(queue, symbolTable).calculate();
     }
 
-    private static boolean isNumber(String token) {
-        try {
-            Double.parseDouble(token);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    private static boolean isVariable(String token, Map<String, Double> symbolTable) {
-        return symbolTable.containsKey(token);
-    }
-
-    private static boolean isOperator(String token) {
-        return binaryOperators.containsKey(token);
-    }
 
     private static int getPrecedence(String operator) throws IllegalArgumentException {
-        if (!binaryOperators.containsKey(operator))
+        if (!Classifier.isOperator(operator))
             throw new IllegalArgumentException("Cant find operator: " + operator);
 
         return binaryOperators.get(operator).getPrecedence();
@@ -99,11 +84,11 @@ public class ArithmeticParser {
 
         String token = tokens.removeLast();
 
-        if (isNumber(token))
+        if (Classifier.isNumber(token))
             return new Number(Double.parseDouble(token));
-        else if (isVariable(token, symbolTable))
+        else if (Classifier.isVariable(token, symbolTable))
             return new Number(symbolTable.get(token));
-        else if (isOperator(token)) {
+        else if (Classifier.isOperator(token)) {
             BinaryExpression binaryExpression = new BinaryExpression(binaryOperators.get(token));
             binaryExpression.setRight(createExpressionFromPostfix(tokens, symbolTable));
             binaryExpression.setLeft(createExpressionFromPostfix(tokens, symbolTable));

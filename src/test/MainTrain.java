@@ -10,7 +10,15 @@ public class MainTrain {
 
     public static void main(String[] args) {
 
-        String script = "if 1/2 + 2/3==7/6{return 1+3/4+0.25}";
+        String script = String.join("\n",
+                "var i = 0",
+                          "var result = 1",
+                          "while i < 5 {",
+                          "i = i+1",
+                          "result = result*2",
+                          "}",
+                          "return result"
+        );
 
         System.out.println(new Interpreter().interpret(script));
         if (debug)

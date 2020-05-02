@@ -27,11 +27,11 @@ public class LoopCommand implements Command {
         if (blockStart == -1 || blockEnd == -1)
             throw new CannotInterpretException("Wrong {, } positions", startIndex);
 
-        while (ConditionParser.parse(tokens, blockStart, symbolTable)) {
+        while (ConditionParser.parse(tokens, startIndex+1, symbolTable)) {
             int retVal = commands.get("block").doCommand(tokens, blockStart + 1);
             if (returned.get())
                 return retVal;
         }
-        return blockEnd;
+        return blockEnd+1;
     }
 }

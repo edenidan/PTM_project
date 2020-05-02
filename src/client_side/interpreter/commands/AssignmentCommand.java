@@ -1,6 +1,9 @@
 package client_side.interpreter.commands;
 
+import client_side.interpreter.CannotInterpretException;
+import client_side.interpreter.Classifier;
 import client_side.interpreter.Command;
+import client_side.interpreter.math.ArithmeticParser;
 
 import java.util.List;
 import java.util.Map;
@@ -13,7 +16,13 @@ public class AssignmentCommand implements Command {
     }
 
     @Override
-    public int doCommand(List<String> tokens, int startIndex) {
-        return 0;
+    public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
+
+        String var = tokens.get(startIndex-1);
+        if(!Classifier.isVariable(var,symbolTable))
+            throw new CannotInterpretException("wrong usage of the operator =",startIndex);
+
+        symbolTable.put(var,ArithmeticParser.calc(tokens,startIndex+1,symbolTable));
+        return ArithmeticParser.getEndOfExpression(tokens,startIndex+1,symbolTable)+1;
     }
 }

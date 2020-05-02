@@ -26,18 +26,20 @@ public class BlockCommand implements Command {
             if (currentToken.equals("}"))//end of block
                 return i + 1;
 
-            int returnedFromCommand = 0;
+            int returnedFromCommand;
             if (command != null) // able to get command
                 returnedFromCommand = command.doCommand(tokens, i); // do command and advance current token by return value of command
-            else if (tokens.get(i + 1).equals("=")) // variable name
+            else if (tokens.get(i + 1).equals("=")){ // variable name
                 i++;
+                continue;
+            }
             else
                 throw new CannotInterpretException("Cannot find symbol: " + currentToken, i);
 
             if (returned.get())//returned
                 return returnedFromCommand;
             else
-                i += returnedFromCommand;
+                i = returnedFromCommand;
         }
         return i;
     }

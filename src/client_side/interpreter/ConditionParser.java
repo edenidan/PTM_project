@@ -15,7 +15,7 @@ public class ConditionParser {
         int operand1EndPos;
         try {
             operand1 = (float) ArithmeticParser.calc(tokens, startIndex, symbolTable);
-            operand1EndPos = ArithmeticParser.getEndOfExpression(tokens, startIndex);
+            operand1EndPos = ArithmeticParser.getEndOfExpression(tokens, startIndex,symbolTable);
 
             operand2 = (float) ArithmeticParser.calc(tokens, operand1EndPos + /*operatorSize*/1 + 1, symbolTable);
         } catch (NumberFormatException e) {
