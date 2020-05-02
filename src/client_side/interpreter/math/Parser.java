@@ -65,16 +65,13 @@ public class Parser {
     }
 
     public int getEndOfExpression(List<String> tokens, int startIndex) {
-        int i=startIndex;
-
-        while(i<tokens.size()-1){//until the one before the last
-            if(isNumber(tokens.get(i)) || ")".equals(tokens.get(i)))
-                if(!isOperator(tokens.get(i+1)))
+        for (int i = startIndex; i < tokens.size() - 1; i++) {
+            if (isNumber(tokens.get(i)) || tokens.get(i).equals(")")) // possible end token
+                if (!isOperator(tokens.get(i + 1)) && !tokens.get(i + 1).equals(")")) // possible token which means there is more
                     return i;
-
-            i++;
         }
-        return tokens.size()-1;
+
+        return tokens.size() - 1;
     }
 
     private boolean isNumber(String token) {
