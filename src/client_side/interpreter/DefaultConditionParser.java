@@ -26,7 +26,8 @@ public class DefaultConditionParser implements ConditionParser {
             throw new CannotInterpretException("Cannot resolve condition operands", startIndex);
         }
 
-        switch (tokens.get(operand1EndPos + 1)) {
+        String operator = tokens.get(operand1EndPos + 1);
+        switch (operator) {
             case "==":
                 return operand1 == operand2;
             case ">=":
@@ -39,15 +40,8 @@ public class DefaultConditionParser implements ConditionParser {
                 return operand1 < operand2;
             case "!=":
                 return operand1 != operand2;
+            default:
+                throw new CannotInterpretException("Unknown operator: " + operator, startIndex);
         }
-        throw new CannotInterpretException("Unknown operator", startIndex);
-    }
-
-    private double getValue(String operand) {
-        Double value = symbolTable.get(operand);
-        if (value == null) {
-            value = Double.parseDouble(operand);
-        }
-        return value;
     }
 }

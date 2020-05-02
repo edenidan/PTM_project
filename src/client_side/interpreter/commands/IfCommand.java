@@ -19,7 +19,6 @@ public class IfCommand implements Command {
 
     @Override
     public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
-
         int blockStart = BlockEdgeFinder.getBlockStart(tokens, startIndex);
         int blockEnd = BlockEdgeFinder.getBlockEnd(tokens, startIndex);
         if (blockEnd == -1 || blockStart == -1)
