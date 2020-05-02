@@ -22,22 +22,20 @@ public class Parser {
         }
     }
 
-    private double calcWithoutRethrow(List<String> tokens, int startIndex, int endIndex) throws CannotInterpretException {
-        LinkedList<Expression> queue = new LinkedList<>();
+    private double calcWithoutRethrow(List<String> tokens, int startIndex, int endIndex) throws CannotInterpretException, IllegalArgumentException {
+        LinkedList<String> queue = new LinkedList<>();
         Stack<String> stack = new Stack<>();
 
         for (int i = startIndex; i <= endIndex; i++) {
             String token = tokens.get(i);
 
-            if (isNumber(token)) {
-                queue.add(new Number(Double.parseDouble(token)));
-            } else if (isVariable(token)) {
-                queue.add(new Number(symbolTable.get(token)));
+            if (isNumber(token) || isVariable(token)) {
+                queue.add(token);
             } else if (isOperator(token)) {
                 int precedence = getPrecedence(token);
 
                 while (!stack.empty() && isOperator(stack.peek()) && getPrecedence(stack.peek()) >= precedence)
-                    queue.add(createBinExpressionFromOperator(stack.pop()));
+                    queue.add(stack.pop());
 
                 stack.push(token);
             } else if (token.equals("(")) {
@@ -45,7 +43,7 @@ public class Parser {
             } else if (token.equals(")")) {
                 try {
                     while (!stack.peek().equals("("))
-                        queue.add(createBinExpressionFromOperator(stack.pop()));
+                        queue.add(stack.pop());
                 } catch (EmptyStackException e) {
                     throw new CannotInterpretException("Found a closing parentheses without a matching opening parentheses", startIndex);
                 }
@@ -58,12 +56,10 @@ public class Parser {
             if (stack.peek().equals("("))
                 throw new CannotInterpretException("Too many opening parentheses", startIndex);
             else
-                queue.add(createBinExpressionFromOperator(stack.pop()));
+                queue.add(stack.pop());
         }
 
-
-        Collections.reverse(queue);
-        return createExpressionFromReversedPostfixQueue(queue).calculate();
+        return createExpressionFromPostfix(queue).calculate();
     }
 
     public int getEndOfExpression(List<String> tokens, int startIndex) {
@@ -100,35 +96,25 @@ public class Parser {
         return binaryOperators.get(operator).getPrecedence();
     }
 
-    private BinaryExpression createBinExpressionFromOperator(String operator) throws IllegalArgumentException {
-        switch (operator) {
-            case "+":
-                //noinspection Convert2MethodRef
-                return new BinaryExpression((a, b) -> a + b, 1);
-            case "-":
-                return new BinaryExpression((a, b) -> a - b, 1);
-            case "*":
-                return new BinaryExpression((a, b) -> a * b, 2);
-            case "/":
-                return new BinaryExpression((a, b) -> a / b, 2);
-            default:
-                throw new IllegalArgumentException("Tried to use a character that doesn't represent an operator");
+    private Expression createExpressionFromPostfix(LinkedList<String> tokens) throws IllegalArgumentException {
+        if (tokens.isEmpty())
+            throw new IllegalArgumentException("Tried to create an expression with no tokens");
+
+        String token = tokens.removeLast();
+
+        if (isNumber(token))
+            return new Number(Double.parseDouble(token));
+        else if (isVariable(token))
+            return new Number(symbolTable.get(token));
+        else if (isOperator(token)) {
+            BinaryExpression binaryExpression = new BinaryExpression(binaryOperators.get(token));
+            binaryExpression.setRight(createExpressionFromPostfix(tokens));
+            binaryExpression.setLeft(createExpressionFromPostfix(tokens));
+
+            return binaryExpression;
+        } else {
+            throw new IllegalArgumentException("Tried to create expression from unknown token: " + token);
         }
-    }
-
-    private Expression createExpressionFromReversedPostfixQueue(Queue<Expression> queue) throws IllegalArgumentException {
-        if (queue.isEmpty())
-            throw new IllegalArgumentException("Tried to create an expression from an empty queue");
-
-        Expression expression = queue.remove();
-
-        if (expression instanceof BinaryExpression) {
-            BinaryExpression binaryExpression = (BinaryExpression) expression;
-            binaryExpression.setRight(createExpressionFromReversedPostfixQueue(queue));
-            binaryExpression.setLeft(createExpressionFromReversedPostfixQueue(queue));
-        }
-
-        return expression;
     }
 
     static {
