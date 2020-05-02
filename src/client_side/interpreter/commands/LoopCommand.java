@@ -27,8 +27,7 @@ public class LoopCommand implements Command {
         if (blockStart == -1 || blockEnd == -1)
             throw new CannotInterpretException("Wrong {, } positions", startIndex);
 
-        LogicParser logicParser = new LogicParser(symbolTable);
-        while (logicParser.parse(tokens, blockStart)) {
+        while (LogicParser.parse(tokens, blockStart, symbolTable)) {
             int retVal = commands.get("block").doCommand(tokens, blockStart + 1);
             if (returned.get())
                 return retVal;

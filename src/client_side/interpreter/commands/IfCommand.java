@@ -25,7 +25,7 @@ public class IfCommand implements Command {
             throw new CannotInterpretException("Wrong {, } positions", startIndex);
 
         int retVal = blockEnd;
-        if (new LogicParser(symbolTable).parse(tokens, startIndex + 1)) {
+        if (LogicParser.parse(tokens, startIndex + 1, symbolTable)) {
             retVal = commands.get("block").doCommand(tokens, blockStart + 1);
         }
 

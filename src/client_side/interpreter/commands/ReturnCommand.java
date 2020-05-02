@@ -20,8 +20,8 @@ public class ReturnCommand implements Command {
     @Override
     public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
         try {
-            double value = new ArithmeticParser(symbolTable).calc(tokens, startIndex + 1);
-            if ((int) value != value)//not an int
+            double value = ArithmeticParser.calc(tokens, startIndex + 1, symbolTable);
+            if ((int) value != value) // not an int
                 throw new CannotInterpretException("Cannot return a float", startIndex + 1);
 
             returned.set(true);

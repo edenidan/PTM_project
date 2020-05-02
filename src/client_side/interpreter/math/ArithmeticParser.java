@@ -5,31 +5,38 @@ import client_side.interpreter.CannotInterpretException;
 import java.util.*;
 
 public class ArithmeticParser {
-    private final Map<String, Double> symbolTable;
+    private ArithmeticParser() {
+    }
 
     private static final Map<String, BinaryOperator> binaryOperators = new HashMap<>();
 
-    public ArithmeticParser(Map<String, Double> symbolTable) {
-        this.symbolTable = symbolTable;
-    }
-
-    public double calc(List<String> tokens, int startIndex) throws CannotInterpretException {
+    public static double calc(List<String> tokens, int startIndex, Map<String, Double> symbolTable) throws CannotInterpretException {
         int endIndex = getEndOfExpression(tokens, startIndex);
         try {
-            return calcWithoutRethrow(tokens, startIndex, endIndex);
+            return calcWithoutRethrow(tokens, startIndex, endIndex, symbolTable);
         } catch (IllegalArgumentException e) {
             throw new CannotInterpretException(e.getMessage(), startIndex);
         }
     }
 
-    private double calcWithoutRethrow(List<String> tokens, int startIndex, int endIndex) throws CannotInterpretException, IllegalArgumentException {
+    public static int getEndOfExpression(List<String> tokens, int startIndex) {
+        for (int i = startIndex; i < tokens.size() - 1; i++) {
+            if (isNumber(tokens.get(i)) || tokens.get(i).equals(")")) // possible end token
+                if (!isOperator(tokens.get(i + 1)) && !tokens.get(i + 1).equals(")")) // possible token which means there is more
+                    return i;
+        }
+
+        return tokens.size() - 1;
+    }
+
+    private static double calcWithoutRethrow(List<String> tokens, int startIndex, int endIndex, Map<String, Double> symbolTable) throws CannotInterpretException, IllegalArgumentException {
         LinkedList<String> queue = new LinkedList<>();
         Stack<String> stack = new Stack<>();
 
         for (int i = startIndex; i <= endIndex; i++) {
             String token = tokens.get(i);
 
-            if (isNumber(token) || isVariable(token)) {
+            if (isNumber(token) || isVariable(token, symbolTable)) {
                 queue.add(token);
             } else if (isOperator(token)) {
                 int precedence = getPrecedence(token);
@@ -59,20 +66,10 @@ public class ArithmeticParser {
                 queue.add(stack.pop());
         }
 
-        return createExpressionFromPostfix(queue).calculate();
+        return createExpressionFromPostfix(queue, symbolTable).calculate();
     }
 
-    public int getEndOfExpression(List<String> tokens, int startIndex) {
-        for (int i = startIndex; i < tokens.size() - 1; i++) {
-            if (isNumber(tokens.get(i)) || tokens.get(i).equals(")")) // possible end token
-                if (!isOperator(tokens.get(i + 1)) && !tokens.get(i + 1).equals(")")) // possible token which means there is more
-                    return i;
-        }
-
-        return tokens.size() - 1;
-    }
-
-    private boolean isNumber(String token) {
+    private static boolean isNumber(String token) {
         try {
             Double.parseDouble(token);
             return true;
@@ -81,22 +78,22 @@ public class ArithmeticParser {
         }
     }
 
-    private boolean isVariable(String token) {
+    private static boolean isVariable(String token, Map<String, Double> symbolTable) {
         return symbolTable.containsKey(token);
     }
 
-    private boolean isOperator(String token) {
+    private static boolean isOperator(String token) {
         return binaryOperators.containsKey(token);
     }
 
-    private int getPrecedence(String operator) throws IllegalArgumentException {
+    private static int getPrecedence(String operator) throws IllegalArgumentException {
         if (!binaryOperators.containsKey(operator))
             throw new IllegalArgumentException("Cant find operator: " + operator);
 
         return binaryOperators.get(operator).getPrecedence();
     }
 
-    private Expression createExpressionFromPostfix(LinkedList<String> tokens) throws IllegalArgumentException {
+    private static Expression createExpressionFromPostfix(LinkedList<String> tokens, Map<String, Double> symbolTable) throws IllegalArgumentException {
         if (tokens.isEmpty())
             throw new IllegalArgumentException("Tried to create an expression with no tokens");
 
@@ -104,12 +101,12 @@ public class ArithmeticParser {
 
         if (isNumber(token))
             return new Number(Double.parseDouble(token));
-        else if (isVariable(token))
+        else if (isVariable(token, symbolTable))
             return new Number(symbolTable.get(token));
         else if (isOperator(token)) {
             BinaryExpression binaryExpression = new BinaryExpression(binaryOperators.get(token));
-            binaryExpression.setRight(createExpressionFromPostfix(tokens));
-            binaryExpression.setLeft(createExpressionFromPostfix(tokens));
+            binaryExpression.setRight(createExpressionFromPostfix(tokens, symbolTable));
+            binaryExpression.setLeft(createExpressionFromPostfix(tokens, symbolTable));
 
             return binaryExpression;
         } else {

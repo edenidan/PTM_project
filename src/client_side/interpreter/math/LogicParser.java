@@ -6,22 +6,18 @@ import java.util.List;
 import java.util.Map;
 
 public class LogicParser {
-    private final Map<String, Double> symbolTable;
-
-    public LogicParser(Map<String, Double> symbolTable) {
-        this.symbolTable = symbolTable;
+    private LogicParser() {
     }
 
     // startIndex: index of the first operand
-    public Boolean parse(List<String> tokens, int startIndex) throws CannotInterpretException {
+    public static Boolean parse(List<String> tokens, int startIndex, Map<String, Double> symbolTable) throws CannotInterpretException {
         float operand1, operand2;
-        ArithmeticParser mp = new ArithmeticParser(symbolTable);
         int operand1EndPos;
         try {
-            operand1 = (float) mp.calc(tokens, startIndex);
-            operand1EndPos = mp.getEndOfExpression(tokens, startIndex);
+            operand1 = (float) ArithmeticParser.calc(tokens, startIndex, symbolTable);
+            operand1EndPos = ArithmeticParser.getEndOfExpression(tokens, startIndex);
 
-            operand2 = (float) mp.calc(tokens, operand1EndPos + /*operatorSize*/1 + 1);
+            operand2 = (float) ArithmeticParser.calc(tokens, operand1EndPos + /*operatorSize*/1 + 1, symbolTable);
         } catch (NumberFormatException e) {
             throw new CannotInterpretException("Cannot resolve condition operands", startIndex);
         }
