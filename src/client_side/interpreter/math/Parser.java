@@ -20,8 +20,8 @@ public class Parser {
         }
     }
 
-    private double calcWithoutRethrow(List<String> tokens, int startIndex,int endIndex) throws CannotInterpretException {
-        Queue<Expression> queue = new LinkedList<>();
+    private double calcWithoutRethrow(List<String> tokens, int startIndex, int endIndex) throws CannotInterpretException {
+        LinkedList<Expression> queue = new LinkedList<>();
         Stack<String> stack = new Stack<>();
 
         for (int i = startIndex; i <= endIndex; i++) {
@@ -60,7 +60,7 @@ public class Parser {
         }
 
 
-        Collections.reverse((LinkedList<Expression>) queue);
+        Collections.reverse(queue);
         return createExpressionFromReversedPostfixQueue(queue).calculate();
     }
 
