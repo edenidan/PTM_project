@@ -5,15 +5,18 @@ import client_side.interpreter.math.ArithmeticParser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentMap;
 
 public class AssignmentCommand implements Command {
     private final ConcurrentMap<String, Variable> symbolTable;
     ConcurrentMap<String, Property> properties;
+    BlockingQueue<PropertyUpdate> toUpdate;
 
-    public AssignmentCommand(ConcurrentMap<String, Variable> symbolTable, ConcurrentMap<String, Property> properties) {
+    public AssignmentCommand(ConcurrentMap<String, Variable> symbolTable, ConcurrentMap<String, Property> properties, BlockingQueue<PropertyUpdate> toUpdate) {
         this.symbolTable = symbolTable;
         this.properties = properties;
+        this.toUpdate = toUpdate;
     }
 
     @Override
@@ -29,17 +32,23 @@ public class AssignmentCommand implements Command {
         double value = ArithmeticParser.calc(tokens, startIndex + 1, symbolTable);
         symbolTable.get(var).setValue(value);
 
-        // TODO: 03/05/2020
-        //insert to q: symbolTable.get(var).getBinding().getName(), value
+        Property p = symbolTable.get(var).getBinding();
+        if(p!=null)
+            toUpdate.add(new PropertyUpdate(p.getName(),value));
 
         return ArithmeticParser.getEndOfExpression(tokens, startIndex + 1, symbolTable) + 1;
     }
 
-    private int bind(List<String> tokens, int startIndex) {
+    private int bind(List<String> tokens, int startIndex) throws CannotInterpretException {
         String p = getProperty(tokens, startIndex + 2);
         String var = tokens.get(startIndex - 1);
 
-        symbolTable.get(var).setBinding(properties.get(p));//link the var to the property
+        // TODO: 03/05/2020 maybe get rid of this if
+        if(properties.get(p)==null)
+            properties.put(p,new Property(p,0.0));
+        
+        try{ symbolTable.get(var).setBinding(properties.get(p));}
+        catch (Exception e){throw new CannotInterpretException(e.getMessage(),startIndex);}
 
         return getEndOfProperty(tokens, startIndex+2)+1;
     }

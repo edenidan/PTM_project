@@ -19,7 +19,6 @@ public class Interpreter {
     private final Wrapper<Boolean> returned = new Wrapper<>(false);//false until return is called
 
     public ConcurrentMap<String,Property> properties = new ConcurrentHashMap<>();
-
     private BlockingQueue<PropertyUpdate> toUpdate = new LinkedBlockingDeque();
 
     public Interpreter() {
@@ -28,7 +27,7 @@ public class Interpreter {
         commands.put("disconnect", new DisconnectCommand());
         commands.put("sleep", new SleepCommand(symbolTable));
         commands.put("var", new DefineVarCommand(symbolTable));
-        commands.put("=", new AssignmentCommand(symbolTable, properties));
+        commands.put("=", new AssignmentCommand(symbolTable, properties,toUpdate));
         commands.put("if", new IfCommand(symbolTable, commands));
         commands.put("while", new LoopCommand(symbolTable, commands, returned));
         commands.put("block", new BlockCommand(commands, returned));
@@ -51,7 +50,7 @@ public class Interpreter {
                     e.tokenIndex,
                     e.errorMessage);
         }
-        return null;
+        return -1;//error value
     }
 
     public int interpret(String[] lines) {

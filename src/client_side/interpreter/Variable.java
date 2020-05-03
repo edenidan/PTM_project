@@ -38,17 +38,18 @@ public class Variable extends Observable implements Observer {
         return binding;
     }
 
-    public void setBinding(Property newBinding) {
+    public void setBinding(Property newBinding) throws Exception {
         if(binding!=null)
             binding.deleteObserver(this);
 
         binding = newBinding;
 
-        if(newBinding!=null) {
-            newBinding.addObserver(this);
-            addObserver(newBinding);
-            this.value=newBinding.getValue();
-        }
+        if(newBinding == null)
+            throw new Exception("unknown property");
+        newBinding.addObserver(this);
+        addObserver(newBinding);
+        this.value=newBinding.getValue();
+
     }
 
     @Override

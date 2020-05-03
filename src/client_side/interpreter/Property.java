@@ -19,13 +19,13 @@ public class Property extends Observable implements Observer {
     public void setValue(double value){
         this.value=value;
         setChanged();
-        notifyObservers();
+        notifyObservers(value);
     }
 
     public double getValue(){return this.value;}
 
     @Override
     public void update(Observable o, Object arg) {
-        this.value=(Double)arg;
+        setValue((Double)arg);
     }
 }

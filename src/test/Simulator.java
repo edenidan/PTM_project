@@ -58,12 +58,17 @@ public class Simulator {
                     String line = null;
                     while (!(line = in.readLine()).equals("bye")) {
                         try {
+
+
                             if (line.startsWith("set simX"))
                                 simX = Double.parseDouble(line.split(" ")[2]);
                             if (line.startsWith("set simY"))
                                 simY = Double.parseDouble(line.split(" ")[2]);
                             if (line.startsWith("set simZ"))
                                 simZ = Double.parseDouble(line.split(" ")[2]);
+
+
+
                         } catch (NumberFormatException e) {
                         }
                     }

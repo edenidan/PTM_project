@@ -45,15 +45,19 @@ public class ConnectCommand implements Command {
     }
 
     private void dataSender(Writer out) {
+
         while (true) {
             PropertyUpdate pu = null;
             try { pu = updates.poll(1, TimeUnit.SECONDS); }
-            catch (InterruptedException e) {}
+            catch (Exception e) { continue;}
+            if(pu==null)
+                continue;
 
             try {
                 out.write("set " + pu.getProperty() + " " + pu.getValue());
             } catch (IOException e) {
                 //TODO
+System.out.println("no send");
             }
         }
     }
