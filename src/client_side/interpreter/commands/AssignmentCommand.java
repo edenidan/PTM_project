@@ -1,9 +1,6 @@
 package client_side.interpreter.commands;
 
-import client_side.interpreter.CannotInterpretException;
-import client_side.interpreter.Classifier;
-import client_side.interpreter.Command;
-import client_side.interpreter.Variable;
+import client_side.interpreter.*;
 import client_side.interpreter.math.ArithmeticParser;
 
 import java.util.ArrayList;
@@ -12,13 +9,11 @@ import java.util.concurrent.ConcurrentMap;
 
 public class AssignmentCommand implements Command {
     private final ConcurrentMap<String, Variable> symbolTable;
-    ConcurrentMap<String, List<String>> property2bonded;
-    ConcurrentMap<String, Double> infoFromServer;
+    ConcurrentMap<String, Property> properties;
 
-    public AssignmentCommand(ConcurrentMap<String, Variable> symbolTable, ConcurrentMap<String, List<String>> property2bonded, ConcurrentMap<String, Double> infoFromServer) {
+    public AssignmentCommand(ConcurrentMap<String, Variable> symbolTable, ConcurrentMap<String, Property> properties) {
         this.symbolTable = symbolTable;
-        this.property2bonded = property2bonded;
-        this.infoFromServer = infoFromServer;
+        this.properties = properties;
     }
 
     @Override
@@ -33,14 +28,9 @@ public class AssignmentCommand implements Command {
 
         double value = ArithmeticParser.calc(tokens, startIndex + 1, symbolTable);
         symbolTable.get(var).setValue(value);
-        String p = symbolTable.get(var).getBinding();
-        if (p != null) {
-            //Insert to q
-                infoFromServer.put(p,value);
 
-            for (String v : property2bonded.get(p))//for each var bounded update their values
-                symbolTable.get(v).setValue(value);
-        }
+        // TODO: 03/05/2020
+        //insert to q: symbolTable.get(var).getBinding().getName(), value
 
         return ArithmeticParser.getEndOfExpression(tokens, startIndex + 1, symbolTable) + 1;
     }
@@ -49,19 +39,7 @@ public class AssignmentCommand implements Command {
         String p = getProperty(tokens, startIndex + 2);
         String var = tokens.get(startIndex - 1);
 
-        String oldProperty = symbolTable.get(var).getBinding();
-        if (oldProperty != null)
-            property2bonded.get(oldProperty).remove(var);//remove the var to the list of bounded to the old property
-
-        symbolTable.get(var).setBinding(p);//link the var to the property
-
-        symbolTable.get(var).setValue(infoFromServer.get(p));//change the value to the new property's value
-
-        if(!property2bonded.containsKey(p))
-            property2bonded.put(p,new ArrayList<>());
-
-        property2bonded.get(p).add(var);//add the var to the list of bounded to that property
-
+        symbolTable.get(var).setBinding(properties.get(p));//link the var to the property
 
         return getEndOfProperty(tokens, startIndex+2)+1;
     }

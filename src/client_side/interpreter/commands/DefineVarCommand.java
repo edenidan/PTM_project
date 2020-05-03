@@ -23,7 +23,7 @@ public class DefineVarCommand implements Command {
         if (symbolTable.get(varName) != null || "bind".equals(varName))//is already exists
             throw new CannotInterpretException(varName + " is already defined", startIndex);
 
-        symbolTable.put(varName, new Variable(0));
+        symbolTable.put(varName, new Variable(varName,0));
 
         return startIndex + 2;
     }

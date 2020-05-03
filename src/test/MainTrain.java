@@ -1,6 +1,7 @@
 package test;
 
 import client_side.interpreter.Interpreter;
+import client_side.interpreter.Property;
 
 import java.util.Random;
 
@@ -11,14 +12,14 @@ public class MainTrain {
     public static void main(String[] args) {
 
         //Interpreter i =new Interpreter();
-        //i.infoFromServer.put("simx",1.0);
-        //i.infoFromServer.put("simy",2.0);
-
+        //i.properties.put("simx",new Property("simy",1.0));
+        //i.properties.put("simy",new Property("simy",2.0));
+//
         //String script = "var x = bind simx x=23 var y=bind simx return y";
         //System.out.println(i.interpret(script));
-
-        if (debug)
-            return;
+//
+        //if (debug)
+        //    return;
 
         Random r = new Random();
         int port = r.nextInt(1001) + 5000;
