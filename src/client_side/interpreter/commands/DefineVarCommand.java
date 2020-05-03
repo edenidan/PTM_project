@@ -2,14 +2,15 @@ package client_side.interpreter.commands;
 
 import client_side.interpreter.CannotInterpretException;
 import client_side.interpreter.Command;
+import client_side.interpreter.Variable;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
 public class DefineVarCommand implements Command {
-    private final ConcurrentMap<String, Double> symbolTable;
+    private final ConcurrentMap<String, Variable> symbolTable;
 
-    public DefineVarCommand(ConcurrentMap<String, Double> symbolTable) {
+    public DefineVarCommand(ConcurrentMap<String, Variable> symbolTable) {
         this.symbolTable = symbolTable;
     }
 
@@ -22,8 +23,8 @@ public class DefineVarCommand implements Command {
         if (symbolTable.get(varName) != null || "bind".equals(varName))//is already exists
             throw new CannotInterpretException(varName + " is already defined", startIndex);
 
-        symbolTable.put(varName, null);
+        symbolTable.put(varName, new Variable(0));
 
-        return startIndex + 1;
+        return startIndex + 2;
     }
 }

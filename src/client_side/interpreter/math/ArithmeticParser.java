@@ -2,8 +2,10 @@ package client_side.interpreter.math;
 
 import client_side.interpreter.CannotInterpretException;
 import client_side.interpreter.Classifier;
+import client_side.interpreter.Variable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentMap;
 
 public class ArithmeticParser {
     private ArithmeticParser() {
@@ -11,7 +13,7 @@ public class ArithmeticParser {
     private static final Map<String, BinaryOperator> binaryOperators = new HashMap<>();
 
 
-    public static double calc(List<String> tokens, int startIndex, Map<String, Double> symbolTable) throws CannotInterpretException {
+    public static double calc(List<String> tokens, int startIndex, ConcurrentMap<String, Variable> symbolTable) throws CannotInterpretException {
         int endIndex = getEndOfExpression(tokens, startIndex,symbolTable);
         try {
             return calcWithoutRethrow(tokens, startIndex, endIndex, symbolTable);
@@ -20,7 +22,7 @@ public class ArithmeticParser {
         }
     }
 
-    public static int getEndOfExpression(List<String> tokens, int startIndex,Map<String,Double> symbolTable) {
+    public static int getEndOfExpression(List<String> tokens, int startIndex,ConcurrentMap<String, Variable> symbolTable) {
         for (int i = startIndex; i < tokens.size() - 1; i++) {
             if (Classifier.isVariable(tokens.get(i),symbolTable) ||Classifier.isNumber(tokens.get(i)) || tokens.get(i).equals(")")) // possible end token
                 if (!Classifier.isOperator(tokens.get(i + 1)) && !tokens.get(i + 1).equals(")")) // possible token which means there is more
@@ -30,7 +32,7 @@ public class ArithmeticParser {
         return tokens.size() - 1;
     }
 
-    private static double calcWithoutRethrow(List<String> tokens, int startIndex, int endIndex, Map<String, Double> symbolTable) throws CannotInterpretException, IllegalArgumentException {
+    private static double calcWithoutRethrow(List<String> tokens, int startIndex, int endIndex, ConcurrentMap<String, Variable> symbolTable) throws CannotInterpretException, IllegalArgumentException {
         LinkedList<String> queue = new LinkedList<>();
         Stack<String> stack = new Stack<>();
 
@@ -78,7 +80,7 @@ public class ArithmeticParser {
         return binaryOperators.get(operator).getPrecedence();
     }
 
-    private static Expression createExpressionFromPostfix(LinkedList<String> tokens, Map<String, Double> symbolTable) throws IllegalArgumentException {
+    private static Expression createExpressionFromPostfix(LinkedList<String> tokens, ConcurrentMap<String, Variable> symbolTable) throws IllegalArgumentException {
         if (tokens.isEmpty())
             throw new IllegalArgumentException("Tried to create an expression with no tokens");
 
@@ -87,7 +89,7 @@ public class ArithmeticParser {
         if (Classifier.isNumber(token))
             return new Number(Double.parseDouble(token));
         else if (Classifier.isVariable(token, symbolTable))
-            return new Number(symbolTable.get(token));
+            return new Number(symbolTable.get(token).getValue());
         else if (Classifier.isOperator(token)) {
             BinaryExpression binaryExpression = new BinaryExpression(binaryOperators.get(token));
             binaryExpression.setRight(createExpressionFromPostfix(tokens, symbolTable));

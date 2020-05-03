@@ -2,15 +2,16 @@ package client_side.interpreter.commands;
 
 import client_side.interpreter.CannotInterpretException;
 import client_side.interpreter.Command;
+import client_side.interpreter.Variable;
 import client_side.interpreter.math.ArithmeticParser;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
 public class SleepCommand implements Command {
-    private final ConcurrentMap<String, Double> symbolTable;
+    private final ConcurrentMap<String, Variable> symbolTable;
 
-    public SleepCommand(ConcurrentMap<String, Double> symbolTable) {
+    public SleepCommand(ConcurrentMap<String, Variable> symbolTable) {
         this.symbolTable = symbolTable;
     }
 

@@ -4,9 +4,12 @@ import java.util.Optional;
 
 public class Variable {
     private double value;
-    private Optional<String> binding;
+    private String binding;
 
-    public Variable(double value, Optional<String> binding) {
+    public Variable(double value){
+        this(value,null);
+    }
+    public Variable(double value, String binding) {
         this.value = value;
         this.binding = binding;
     }
@@ -19,11 +22,11 @@ public class Variable {
         this.value = value;
     }
 
-    public Optional<String> getBinding() {
+    public String getBinding() {
         return binding;
     }
 
-    public void setBinding(Optional<String> binding) {
+    public void setBinding(String binding) {
         this.binding = binding;
     }
 }

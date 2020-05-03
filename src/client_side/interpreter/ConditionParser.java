@@ -4,13 +4,14 @@ import client_side.interpreter.math.ArithmeticParser;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 public class ConditionParser {
     private ConditionParser() {
     }
 
     // startIndex: index of the first operand
-    public static Boolean parse(List<String> tokens, int startIndex, Map<String, Double> symbolTable) throws CannotInterpretException {
+    public static Boolean parse(List<String> tokens, int startIndex, ConcurrentMap<String, Variable> symbolTable) throws CannotInterpretException {
         float operand1, operand2;
         int operand1EndPos;
         try {

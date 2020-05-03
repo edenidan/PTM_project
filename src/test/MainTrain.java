@@ -10,17 +10,13 @@ public class MainTrain {
 
     public static void main(String[] args) {
 
-        String script = String.join("\n",
-                "var i = 0",
-                          "var result = 1",
-                          "while i < 5 {",
-                            "i = i+1",
-                            "result = result*2",
-                          "}",
-                          "return result"
-        );
+        //Interpreter i =new Interpreter();
+        //i.infoFromServer.put("simx",1.0);
+        //i.infoFromServer.put("simy",2.0);
 
-        System.out.println(new Interpreter().interpret(script));
+        //String script = "var x = bind simx x=23 var y=bind simx return y";
+        //System.out.println(i.interpret(script));
+
         if (debug)
             return;
 
@@ -36,6 +32,7 @@ public class MainTrain {
 
         if (MyInterpreter.interpret(test1) != rand * 5 - (8 + 2))
             System.out.println("failed test1 (-20)");
+        System.out.println("pass1");
 
         String[] test2 = {
                 "var x",
@@ -46,6 +43,7 @@ public class MainTrain {
 
         if (MyInterpreter.interpret(test2) != rand + 3)
             System.out.println("failed test2 (-20)");
+        System.out.println("pass2");
 
         String[] test3 = {
                 "openDataServer " + (port + 1) + " 10",
@@ -60,6 +58,8 @@ public class MainTrain {
 
         if (MyInterpreter.interpret(test3) != rand * 2)
             System.out.println("failed test3 (-20)");
+        System.out.println("pass3");
+
 
         String[] test4 = {
                 "openDataServer " + (port + 1) + " 10",
@@ -74,6 +74,7 @@ public class MainTrain {
 
         if (MyInterpreter.interpret(test4) != sim.simX + sim.simY * sim.simZ)
             System.out.println("failed test4 (-20)");
+        System.out.println("pass4");
 
         String[] test5 = {
                 "var x = 0",
@@ -85,8 +86,10 @@ public class MainTrain {
                 "return y"
         };
 
+
         if (MyInterpreter.interpret(test5) != rand + 2 * 5)
             System.out.println("failed test5 (-20)");
+        System.out.println("pass5");
 
         sim.close();
         System.out.println("done");

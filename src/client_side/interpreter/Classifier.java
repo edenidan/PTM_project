@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 public class Classifier {
 
@@ -20,7 +21,7 @@ public class Classifier {
         }
     }
 
-    public static boolean isVariable(String token, Map<String, Double> symbolTable) {
+    public static boolean isVariable(String token, ConcurrentMap<String, Variable> symbolTable) {
         return symbolTable.containsKey(token);
     }
 

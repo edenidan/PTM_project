@@ -1,19 +1,16 @@
 package client_side.interpreter.commands;
 
-import client_side.interpreter.BlockEdgeFinder;
-import client_side.interpreter.CannotInterpretException;
-import client_side.interpreter.Command;
-import client_side.interpreter.ConditionParser;
+import client_side.interpreter.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
 public class IfCommand implements Command {
-    private final ConcurrentMap<String, Double> symbolTable;
+    private final ConcurrentMap<String, Variable> symbolTable;
     private final Map<String, Command> commands;
 
-    public IfCommand(ConcurrentMap<String, Double> symbolTable, Map<String, Command> commands) {
+    public IfCommand(ConcurrentMap<String, Variable> symbolTable, Map<String, Command> commands) {
         this.symbolTable = symbolTable;
         this.commands = commands;
     }
