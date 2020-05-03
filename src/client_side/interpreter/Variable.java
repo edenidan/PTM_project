@@ -1,14 +1,13 @@
 package client_side.interpreter;
 
-import java.util.Optional;
-
 public class Variable {
-    private double value;
-    private String binding;
+    private volatile double value;
+    private volatile String binding;
 
-    public Variable(double value){
-        this(value,null);
+    public Variable(double value) {
+        this(value, null);
     }
+
     public Variable(double value, String binding) {
         this.value = value;
         this.binding = binding;
