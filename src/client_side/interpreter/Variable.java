@@ -1,8 +1,8 @@
 package client_side.interpreter;
 
 public class Variable {
-    private volatile double value;
-    private volatile String binding;
+    private double value;
+    private String binding;
 
     public Variable(double value) {
         this(value, null);

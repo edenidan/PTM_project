@@ -6,7 +6,9 @@ import client_side.interpreter.commands.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ConcurrentMap;
 
 public class Interpreter {
@@ -19,9 +21,11 @@ public class Interpreter {
     private ConcurrentMap<String, List<String>> property2bonded = new ConcurrentHashMap<>();
     private ConcurrentMap<String,Double> infoFromServer = new ConcurrentHashMap<>();
 
+    private BlockingQueue<PropertyUpdate> toUpdate = new LinkedBlockingDeque();
+
     public Interpreter() {
         commands.put("openDataServer", new OpenServerCommand());
-        commands.put("connect", new ConnectCommand());
+        commands.put("connect", new ConnectCommand(toUpdate,symbolTable));
         commands.put("disconnect", new DisconnectCommand());
         commands.put("sleep", new SleepCommand(symbolTable));
         commands.put("var", new DefineVarCommand(symbolTable));
@@ -42,7 +46,7 @@ public class Interpreter {
             return 0;//default value
 
         } catch (CannotInterpretException e) {
-            System.out.printf("unhandled exception:\n" +
+            System.out.printf("Syntax error\n" +
                             "token number: %s\n" +
                             "error message: %s\n",
                     e.tokenIndex,
