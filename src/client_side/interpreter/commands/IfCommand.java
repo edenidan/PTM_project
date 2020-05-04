@@ -22,11 +22,10 @@ public class IfCommand implements Command {
         if (blockEnd == -1 || blockStart == -1)
             throw new CannotInterpretException("Wrong {, } positions", startIndex);
 
-        int retVal = blockEnd + 1;
         if (ConditionParser.parse(tokens, startIndex + 1, symbolTable)) {
-            retVal = commands.get("block").doCommand(tokens, blockStart + 1);
+            return commands.get("block").doCommand(tokens, blockStart + 1);
+        } else {
+            return blockEnd + 1;
         }
-
-        return retVal;
     }
 }
