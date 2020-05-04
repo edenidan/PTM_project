@@ -1,16 +1,11 @@
 package client_side.interpreter;
 
-import client_side.interpreter.math.BinaryOperator;
-
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 public class Classifier {
-
-    final private static HashSet<String> binaryOperators = new HashSet<String>();
+    final private static Set<String> binaryOperators = new HashSet<>();
 
     public static boolean isNumber(String token) {
         try {
@@ -45,5 +40,4 @@ public class Classifier {
         binaryOperators.add("*");
         binaryOperators.add("/");
     }
-
 }
