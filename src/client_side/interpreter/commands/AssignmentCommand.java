@@ -60,7 +60,7 @@ public class AssignmentCommand implements Command {
 
     private int getEndOfProperty(List<String> tokens, int startIndex) {
         for (int i = startIndex; i < tokens.size(); i++)
-            if (!"/".equals(tokens.get(i)) && !"/".equals(tokens.get(i + 1)))
+            if (!tokens.get(i).equals("/") && !tokens.get(i + 1).equals("/"))
                 return i;
         return -1;
     }
