@@ -20,10 +20,12 @@ public class DefineVarCommand implements Command {
             throw new CannotInterpretException("Wrong usage of 'var' command", startIndex);
 
         String varName = tokens.get(startIndex + 1);
-        if (symbolTable.get(varName) != null || varName.equals("bind"))//is already exists
+        if (varName.equals("bind")) // keyword
+            throw new CannotInterpretException("can't define variable with the name: bind, it's a keyword", startIndex);
+        else if (symbolTable.containsKey(varName)) // already exists
             throw new CannotInterpretException(varName + " is already defined", startIndex);
 
-        symbolTable.put(varName, new Variable(varName,0));
+        symbolTable.put(varName, new Variable(varName, 0));
 
         return startIndex + 2;
     }
