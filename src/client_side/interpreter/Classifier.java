@@ -34,6 +34,10 @@ public class Classifier {
         return ip.matches(PATTERN);
     }
 
+    public static boolean isInt(double value) {
+        return (value % 1) == 0;
+    }
+
     static {
         binaryOperators.add("+");
         binaryOperators.add("-");
