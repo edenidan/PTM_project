@@ -21,34 +21,35 @@ public class OpenServerCommand implements Command {
     private final Thread mainThread;
 
     public OpenServerCommand(Wrapper<Boolean> stopServer, ConcurrentMap<String, Variable> symbolTable, ConcurrentMap<String, Property> properties) {
-        this.stopServer=stopServer;
-        this.symbolTable=symbolTable;
-        this.properties=properties;
-        this.mainThread=Thread.currentThread();
+        this.stopServer = stopServer;
+        this.symbolTable = symbolTable;
+        this.properties = properties;
+        this.mainThread = Thread.currentThread();
     }
 
     @Override
-    public int doCommand(List<String> tokens, int startIndex)throws CannotInterpretException {
+    public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
         // blocking call until starting to receive data
-        double port = ArithmeticParser.calc(tokens,startIndex+1,symbolTable);
-        if(!Classifier.isPort(port))
-            throw new CannotInterpretException("illegal port",startIndex);
+        double port = ArithmeticParser.calc(tokens, startIndex + 1, symbolTable);
+        if (!Classifier.isPort(port))
+            throw new CannotInterpretException("illegal port", startIndex);
         //double timesPerSec = ArithmeticParser.calc(tokens,startIndex+2,symbolTable);
 
-        this.properties.put("simX",new Property("simX",0.0));
-        this.properties.put("simY",new Property("simY",0.0));
-        this.properties.put("simZ",new Property("simZ",0.0));
+        this.properties.put("simX", new Property("simX", 0.0));
+        this.properties.put("simY", new Property("simY", 0.0));
+        this.properties.put("simZ", new Property("simZ", 0.0));
 
-        new Thread(()->runServer((int)port)).start();
+        new Thread(() -> runServer((int) port)).start();
         try {
             Thread.sleep(Long.MAX_VALUE);//wait for the first message from the simulator
-        } catch (InterruptedException e) { }
+        } catch (InterruptedException e) {
+        }
 
-        return startIndex+3;
+        return startIndex + 3;
     }
 
-    private void runServer(int port){
-        boolean first=true;
+    private void runServer(int port) {
+        boolean first = true;
         try {
             ServerSocket server = new ServerSocket(port);
             server.setSoTimeout(1000);
@@ -57,17 +58,18 @@ public class OpenServerCommand implements Command {
                     Socket client = server.accept();
                     BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                     String line;
-                    while (!"bye".equals((line = in.readLine())) && line!=null) {
+                    while (!"bye".equals((line = in.readLine())) && line != null) {
                         try {
                             String[] properties = line.split(",");
                             this.properties.get("simX").setValue(Double.parseDouble(properties[0]));
                             this.properties.get("simY").setValue(Double.parseDouble(properties[1]));
                             this.properties.get("simZ").setValue(Double.parseDouble(properties[2]));
 
-                        } catch (NumberFormatException e) { }
+                        } catch (NumberFormatException e) {
+                        }
 
-                        if(first){
-                            first=false;
+                        if (first) {
+                            first = false;
                             mainThread.interrupt();
                         }
                     }
