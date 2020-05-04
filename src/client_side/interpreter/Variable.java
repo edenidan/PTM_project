@@ -31,7 +31,7 @@ public class Variable extends Observable {
         return boundProperty;
     }
 
-    public void setBoundProperty(Property property) throws Exception {
+    public void setBoundProperty(Property property) {
         if (boundProperty != null) {
             boundProperty.deleteObserver(observer); // remove me listening for old property's changes
             this.deleteObserver(boundProperty); // remove old property listening for my changes
@@ -42,8 +42,6 @@ public class Variable extends Observable {
             this.addObserver(property); // make property listen for my changes
 
             value = property.getValue();
-        } else {
-            throw new Exception("unknown property");
         }
 
         boundProperty = property;
