@@ -1,28 +1,20 @@
 package client_side.interpreter;
 
+import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
 
 public class Variable extends Observable implements Observer {
-
     private final String name;
     private double value;
-    private Property binding;
+    private Property boundProperty;
 
-    public Variable(String name,double value) {
-        this(name,value,null);
-    }
-
-    public Variable(String name,double value, Property binding) {
+    public Variable(String name, double value) {
         this.name = name;
         this.value = value;
-        this.binding = binding;
+        this.boundProperty = null;
     }
 
-
-    public String getName() {
-        return name;
-    }
 
     public double getValue() {
         return value;
@@ -37,35 +29,42 @@ public class Variable extends Observable implements Observer {
         notifyObservers(value);
     }
 
-    public Property getBinding() {
-        return binding;
+    public Property getBoundProperty() {
+        return boundProperty;
     }
 
-    public void setBinding(Property newBinding) throws Exception {
-        if(binding!=null)
-            binding.deleteObserver(this);
+    public void setBoundProperty(Property property) throws Exception {
+        if (boundProperty != null) {
+            boundProperty.deleteObserver(this); // remove me listening for old property's changes
+            this.deleteObserver(boundProperty); // remove old property listening for my changes
+        }
 
-        binding = newBinding;
+        if (property != null) {
+            property.addObserver(this); // make me listen for property's changes
+            this.addObserver(property); // make property listen for my changes
 
-        if(newBinding == null)
+            value = property.getValue();
+        } else {
             throw new Exception("unknown property");
-        newBinding.addObserver(this);
-        addObserver(newBinding);
-        this.value=newBinding.getValue();
+        }
 
+        boundProperty = property;
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        this.value=(Double)arg;
+        this.value = (double) arg;
     }
 
+    /*
+    TODO if this method is for observer adding and removing to pick the right observer, it's probably unnecessary
+      because comparing with address (the default) will work because we don't have multiple Variable objects for one variable
+     */
     @Override
-    public boolean equals(Object o){
-        Variable other;
-        try { other = (Variable) o; }
-        catch (Exception e){return false;}
-
-        return other.getName().equals(this.getName());
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Variable variable = (Variable) o;
+        return Objects.equals(name, variable.name);
     }
 }

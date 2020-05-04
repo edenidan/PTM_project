@@ -3,7 +3,6 @@ package client_side.interpreter.commands;
 import client_side.interpreter.*;
 import client_side.interpreter.math.ArithmeticParser;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentMap;
@@ -32,7 +31,7 @@ public class AssignmentCommand implements Command {
         double value = ArithmeticParser.calc(tokens, startIndex + 1, symbolTable);
         symbolTable.get(var).setValue(value);
 
-        Property p = symbolTable.get(var).getBinding();
+        Property p = symbolTable.get(var).getBoundProperty();
         if(p!=null)
             toUpdate.add(new PropertyUpdate(p.getName(),value));
 
@@ -48,7 +47,7 @@ public class AssignmentCommand implements Command {
             //properties.put(p,new Property(p,0.0));
             throw new CannotInterpretException("property is not exists",startIndex);
         
-        try{ symbolTable.get(var).setBinding(properties.get(p));}
+        try{ symbolTable.get(var).setBoundProperty(properties.get(p));}
         catch (Exception e){throw new CannotInterpretException(e.getMessage(),startIndex);}
 
         return getEndOfProperty(tokens, startIndex+2)+1;
