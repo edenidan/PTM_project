@@ -4,28 +4,33 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class Property extends Observable implements Observer {
+    private final String name;
+    private double value;
 
-    private final String property;
-    private Double value;
-
-    public Property(String name,Double value){
-        this.property=name;
-        this.value=value;
+    public Property(String name, double value) {
+        this.name = name;
+        this.value = value;
     }
 
-    public String getName(){return this.property;}
+    public String getName() {
+        return name;
+    }
 
+    public double getValue() {
+        return value;
+    }
 
-    public void setValue(double value){
-        this.value=value;
+    public void setValue(double value) {
+        if (value == this.value)
+            return;
+
+        this.value = value;
         setChanged();
         notifyObservers(value);
     }
 
-    public double getValue(){return this.value;}
-
     @Override
     public void update(Observable o, Object arg) {
-        setValue((Double)arg);
+        setValue((double) arg);
     }
 }
