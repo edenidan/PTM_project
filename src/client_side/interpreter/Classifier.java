@@ -29,6 +29,16 @@ public class Classifier {
         return binaryOperators.contains(token);
     }
 
+    public static boolean isPort(Double port) {
+        return port.intValue() == port && 0 < port && port < Math.pow(2, 16);
+    }
+
+    public static boolean isAddress(String ip) {
+        String PATTERN = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
+
+        return ip.matches(PATTERN);
+    }
+
     static {
         binaryOperators.add("+");
         binaryOperators.add("-");

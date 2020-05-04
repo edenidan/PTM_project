@@ -45,7 +45,8 @@ public class AssignmentCommand implements Command {
 
         // TODO: 03/05/2020 maybe get rid of this if
         if(properties.get(p)==null)
-            properties.put(p,new Property(p,0.0));
+            //properties.put(p,new Property(p,0.0));
+            throw new CannotInterpretException("property is not exists",startIndex);
         
         try{ symbolTable.get(var).setBinding(properties.get(p));}
         catch (Exception e){throw new CannotInterpretException(e.getMessage(),startIndex);}

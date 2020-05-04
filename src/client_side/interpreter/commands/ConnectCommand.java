@@ -1,14 +1,11 @@
 package client_side.interpreter.commands;
 
+import client_side.Wrapper;
 import client_side.interpreter.*;
 import client_side.interpreter.math.ArithmeticParser;
-import jdk.internal.org.objectweb.asm.util.TraceAnnotationVisitor;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.Socket;
-import java.io.Writer;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentMap;
@@ -17,56 +14,77 @@ import java.util.concurrent.TimeUnit;
 public class ConnectCommand implements Command {
     private BlockingQueue<PropertyUpdate> updates;
     private ConcurrentMap<String, Variable> symbolTable;
+    private final Wrapper<Boolean> stop;
+    private final Thread mainThread;
 
-    public ConnectCommand(BlockingQueue<PropertyUpdate> toUpdate, ConcurrentMap<String, Variable> symbolTable) {
+    public ConnectCommand(BlockingQueue<PropertyUpdate> toUpdate, ConcurrentMap<String, Variable> symbolTable,Wrapper<Boolean> stop) {
         this.updates = toUpdate;
         this.symbolTable = symbolTable;
+        this.stop=stop;
+
+        this.mainThread=Thread.currentThread();
     }
+
+
 
     @Override
     public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
 
         String ip = tokens.get(startIndex + 1);
         double port = ArithmeticParser.calc(tokens, startIndex + 2, symbolTable);
-        if(!isPort(port) || !isAddress(ip))
-            throw new CannotInterpretException("ip/port is illegal",startIndex);
+        if (!Classifier.isPort(port) || !Classifier.isAddress(ip))
+            throw new CannotInterpretException("ip/port is illegal", startIndex);
 
-        final Writer w;
-        try {
-            Socket serverConn = new Socket(ip,(int)port);
-            w = new OutputStreamWriter(new BufferedOutputStream(serverConn.getOutputStream()));
-        } catch (IOException e) {
-            throw new CannotInterpretException(e.getMessage(),startIndex);
-        }
+
         //Connected to server
-
-        new Thread(() -> dataSender(w)).start();
-        return ArithmeticParser.getEndOfExpression(tokens,startIndex+2,symbolTable)+1;
+        this.stop.set(false);
+        new Thread(() -> client(ip,(int)port)).start();
+        return ArithmeticParser.getEndOfExpression(tokens, startIndex + 2, symbolTable) + 1;
     }
 
-    private void dataSender(Writer out) {
+    private void client(String ip, int port) {
 
-        while (true) {
-            PropertyUpdate pu = null;
-            try { pu = updates.poll(1, TimeUnit.SECONDS); }
-            catch (Exception e) { continue;}
-            if(pu==null)
-                continue;
+        final BufferedWriter w;
+        Socket server=null;
+        try {
+            server = new Socket(ip, (int) port);
+            w = new BufferedWriter(new OutputStreamWriter(server.getOutputStream()));
+        } catch (IOException e) {
+            mainThread.interrupt();
+            return;
+        }
 
+
+        PropertyUpdate update;
+        while (this.stop.get()) {//while !stop
             try {
-                out.write("set " + pu.getProperty() + " " + pu.getValue());
-            } catch (IOException e) {
-                //TODO
-System.out.println("no send");
+                update = updates.poll(500, TimeUnit.MILLISECONDS);//check stop every 500 millis
+                if (update == null)
+                    continue;//timeout happened
+
+                w.write(RequestToServer(update));
+                w.flush();
+            }
+            catch (InterruptedException ignored) { }
+            catch (IOException e) {
+                mainThread.interrupt();
+                return;
             }
         }
+
+        disconnect(server,w);
     }
 
-    private boolean isPort(double port){
-        return true;
+    private void disconnect(Socket server, BufferedWriter w) {
+        try {
+            w.write("bye\n");
+            w.close();
+            server.close();
+        } catch (IOException ignored) { }
     }
-    private boolean isAddress(String ip){
-        return true;
+
+    private String RequestToServer(PropertyUpdate update) {
+        return "set " + update.getProperty() + " " + update.getValue() + "\n";
     }
 
 }

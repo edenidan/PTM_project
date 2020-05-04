@@ -48,6 +48,7 @@ public class Simulator {
     }
 
     private void runServer() {
+
         try {
             ServerSocket server = new ServerSocket(port);
             server.setSoTimeout(1000);
@@ -58,7 +59,6 @@ public class Simulator {
                     String line = null;
                     while (!(line = in.readLine()).equals("bye")) {
                         try {
-
 
                             if (line.startsWith("set simX"))
                                 simX = Double.parseDouble(line.split(" ")[2]);
