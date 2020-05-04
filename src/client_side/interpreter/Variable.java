@@ -29,6 +29,9 @@ public class Variable extends Observable implements Observer {
     }
 
     public void setValue(double value) {
+        if (value == this.value)
+            return;
+
         this.value = value;
         setChanged();
         notifyObservers(value);
