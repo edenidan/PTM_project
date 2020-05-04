@@ -20,6 +20,7 @@ public class AssignmentCommand implements Command {
 
     @Override
     public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
+
         String var = tokens.get(startIndex - 1);
         if (!Classifier.isVariable(var, symbolTable))
             throw new CannotInterpretException("wrong usage of the operator =", startIndex);
