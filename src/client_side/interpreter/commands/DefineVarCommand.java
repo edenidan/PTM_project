@@ -25,7 +25,7 @@ public class DefineVarCommand implements Command {
         else if (symbolTable.containsKey(varName)) // already exists
             throw new CannotInterpretException(varName + " is already defined", startIndex);
 
-        symbolTable.put(varName, new Variable(varName, 0));
+        symbolTable.put(varName, new Variable(0));
 
         return startIndex + 2;
     }
