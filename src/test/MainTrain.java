@@ -58,9 +58,8 @@ public class MainTrain {
         };
 
         if (MyInterpreter.interpret(test3) != rand * 2)
-            System.out.println("failed test3 (-20)");
+           System.out.println("failed test3 (-20)");
         System.out.println("pass3");
-
 
         String[] test4 = {
                 "openDataServer " + (port + 1) + " 10",
@@ -73,9 +72,10 @@ public class MainTrain {
                 "return x+y*z"
         };
 
-        if (MyInterpreter.interpret(test4) != sim.simX + sim.simY * sim.simZ)
+        int temp =MyInterpreter.interpret(test4);
+        if (temp != sim.simX + sim.simY * sim.simZ)
             System.out.println("failed test4 (-20)");
-        System.out.println("pass4");
+        //System.out.println("pass4");
 
         String[] test5 = {
                 "var x = 0",

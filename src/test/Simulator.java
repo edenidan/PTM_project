@@ -33,6 +33,8 @@ public class Simulator {
                     out.flush();
                     try {
                         Thread.sleep(100);
+                        break;
+
                     } catch (InterruptedException e1) {
                     }
                 }
