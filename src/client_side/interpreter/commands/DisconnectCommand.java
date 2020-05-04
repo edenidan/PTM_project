@@ -1,20 +1,20 @@
 package client_side.interpreter.commands;
 
-import client_side.Wrapper;
 import client_side.interpreter.Command;
+import client_side.interpreter.EmptyObservable;
 
 import java.util.List;
 
 public class DisconnectCommand implements Command {
-    private final Wrapper<Boolean> disconnect;
+    private final EmptyObservable disconnect;
 
-    public DisconnectCommand(Wrapper<Boolean> disconnect) {
+    public DisconnectCommand(EmptyObservable disconnect) {
         this.disconnect = disconnect;
     }
 
     @Override
     public int doCommand(List<String> tokens, int startIndex) {
-        disconnect.set(true);
+        disconnect.setChangedAndNotify();
         return startIndex + 1;
     }
 }

@@ -17,8 +17,8 @@ public class Interpreter {
     private final Map<String, Command> commands = new HashMap<>();
 
     private final Wrapper<Boolean> returned = new Wrapper<>(false);//false until return is called
-    private final Wrapper<Boolean> stopServer = new Wrapper<>(false);
-    private final Wrapper<Boolean> disconnect = new Wrapper<>(false);
+    private final EmptyObservable stopServer = new EmptyObservable();
+    private final EmptyObservable stopClient = new EmptyObservable();
 
     public Interpreter() {
         ConcurrentMap<String, Variable> symbolTable = new ConcurrentHashMap<>();
@@ -27,8 +27,8 @@ public class Interpreter {
         BlockingQueue<PropertyUpdate> toUpdate = new LinkedBlockingDeque<>();
 
         commands.put("openDataServer", new OpenServerCommand(stopServer, symbolTable, properties));
-        commands.put("connect", new ConnectCommand(toUpdate, symbolTable, disconnect));
-        commands.put("disconnect", new DisconnectCommand(disconnect));
+        commands.put("connect", new ConnectCommand(toUpdate, symbolTable, stopClient));
+        commands.put("disconnect", new DisconnectCommand(stopClient));
         commands.put("sleep", new SleepCommand(symbolTable));
         commands.put("var", new DefineVarCommand(symbolTable));
         commands.put("=", new AssignmentCommand(symbolTable, properties, toUpdate));
@@ -53,8 +53,15 @@ public class Interpreter {
                     e.tokenIndex,
                     e.errorMessage);
         } finally {
-            disconnect.set(true);
-            stopServer.set(true);
+            stopClient.setChangedAndNotify();
+            stopServer.setChangedAndNotify();
+
+            // Give time for the threads to close, otherwise the ports may be still taken
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         return -1;//error value
     }
