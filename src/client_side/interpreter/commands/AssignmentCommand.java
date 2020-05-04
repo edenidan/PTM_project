@@ -39,32 +39,36 @@ public class AssignmentCommand implements Command {
     }
 
     private int bind(List<String> tokens, int startIndex) throws CannotInterpretException {
-        String p = getProperty(tokens, startIndex + 2);
-        String var = tokens.get(startIndex - 1);
-
-        // TODO: 03/05/2020 maybe get rid of this if
-        if (properties.get(p) == null)
-            //properties.put(p,new Property(p,0.0));
-            throw new CannotInterpretException("property is not exists", startIndex);
-
+        String propertyName;
         try {
-            symbolTable.get(var).setBoundProperty(properties.get(p));
-        } catch (Exception e) {
-            throw new CannotInterpretException(e.getMessage(), startIndex);
+            propertyName = getPropertyName(tokens, startIndex + 2);
+        } catch (IllegalArgumentException e) {
+            throw new CannotInterpretException("Cannot interpret name of binding", startIndex + 2);
         }
 
-        return getEndOfProperty(tokens, startIndex + 2) + 1;
+        if (!properties.containsKey(propertyName))
+            throw new CannotInterpretException("property does not exist", startIndex);
+
+        String variableName = tokens.get(startIndex - 1);
+        symbolTable.get(variableName).setBoundProperty(properties.get(propertyName));
+
+        return getEndOfPropertyName(tokens, startIndex + 2) + 1;
     }
 
-    private String getProperty(List<String> tokens, int startIndex) {
-        int endOfProperty = getEndOfProperty(tokens, startIndex);
+    private static String getPropertyName(List<String> tokens, int startIndex) throws IllegalArgumentException {
+        int endOfProperty = getEndOfPropertyName(tokens, startIndex);
         return String.join("", tokens.subList(startIndex, endOfProperty + 1));
     }
 
-    private int getEndOfProperty(List<String> tokens, int startIndex) {
-        for (int i = startIndex; i < tokens.size(); i++)
-            if (!tokens.get(i).equals("/") && !tokens.get(i + 1).equals("/"))
-                return i;
-        return -1;
+    private static int getEndOfPropertyName(List<String> tokens, int startIndex) throws IllegalArgumentException {
+        for (int i = startIndex; i < tokens.size() - 1; i++)
+            if (!tokens.get(i).equals("/")) // word
+                if (!tokens.get(i + 1).equals("/")) // isn't followed by /
+                    return i;
+
+        if (!tokens.get(tokens.size() - 1).equals("/"))
+            return tokens.size() - 1;
+        else
+            throw new IllegalArgumentException("No property found");
     }
 }
