@@ -32,8 +32,8 @@ public class AssignmentCommand implements Command {
         symbolTable.get(var).setValue(value);
 
         Property p = symbolTable.get(var).getBoundProperty();
-        if(p!=null)
-            toUpdate.add(new PropertyUpdate(p.getName(),value));
+        if (p != null)
+            toUpdate.add(new PropertyUpdate(p.getName(), value));
 
         return ArithmeticParser.getEndOfExpression(tokens, startIndex + 1, symbolTable) + 1;
     }
@@ -43,14 +43,17 @@ public class AssignmentCommand implements Command {
         String var = tokens.get(startIndex - 1);
 
         // TODO: 03/05/2020 maybe get rid of this if
-        if(properties.get(p)==null)
+        if (properties.get(p) == null)
             //properties.put(p,new Property(p,0.0));
-            throw new CannotInterpretException("property is not exists",startIndex);
-        
-        try{ symbolTable.get(var).setBoundProperty(properties.get(p));}
-        catch (Exception e){throw new CannotInterpretException(e.getMessage(),startIndex);}
+            throw new CannotInterpretException("property is not exists", startIndex);
 
-        return getEndOfProperty(tokens, startIndex+2)+1;
+        try {
+            symbolTable.get(var).setBoundProperty(properties.get(p));
+        } catch (Exception e) {
+            throw new CannotInterpretException(e.getMessage(), startIndex);
+        }
+
+        return getEndOfProperty(tokens, startIndex + 2) + 1;
     }
 
     private String getProperty(List<String> tokens, int startIndex) {

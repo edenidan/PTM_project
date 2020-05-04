@@ -12,51 +12,46 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 public class ConnectCommand implements Command {
-    private BlockingQueue<PropertyUpdate> updates;
-    private ConcurrentMap<String, Variable> symbolTable;
+    private final BlockingQueue<PropertyUpdate> updates;
+    private final ConcurrentMap<String, Variable> symbolTable;
     private final Wrapper<Boolean> stop;
     private final Thread mainThread;
 
-    public ConnectCommand(BlockingQueue<PropertyUpdate> toUpdate, ConcurrentMap<String, Variable> symbolTable,Wrapper<Boolean> stop) {
+    public ConnectCommand(BlockingQueue<PropertyUpdate> toUpdate, ConcurrentMap<String, Variable> symbolTable, Wrapper<Boolean> stop) {
         this.updates = toUpdate;
         this.symbolTable = symbolTable;
-        this.stop=stop;
+        this.stop = stop;
 
-        this.mainThread=Thread.currentThread();
+        this.mainThread = Thread.currentThread();
     }
-
 
 
     @Override
     public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
-
         String ip = tokens.get(startIndex + 1);
         double port = ArithmeticParser.calc(tokens, startIndex + 2, symbolTable);
         if (!Classifier.isPort(port) || !Classifier.isAddress(ip))
             throw new CannotInterpretException("ip/port is illegal", startIndex);
 
-
         //Connected to server
-        this.stop.set(false);
-        new Thread(() -> client(ip,(int)port)).start();
+        stop.set(false);
+        new Thread(() -> client(ip, (int) port)).start();
         return ArithmeticParser.getEndOfExpression(tokens, startIndex + 2, symbolTable) + 1;
     }
 
     private void client(String ip, int port) {
-
         final BufferedWriter w;
-        Socket server=null;
+        Socket server;
         try {
-            server = new Socket(ip, (int) port);
+            server = new Socket(ip, port);
             w = new BufferedWriter(new OutputStreamWriter(server.getOutputStream()));
         } catch (IOException e) {
             mainThread.interrupt();
             return;
         }
 
-
         PropertyUpdate update;
-        while (this.stop.get()) {//while !stop
+        while (stop.get()) {//while !stop
             try {
                 update = updates.poll(500, TimeUnit.MILLISECONDS);//check stop every 500 millis
                 if (update == null)
@@ -64,15 +59,14 @@ public class ConnectCommand implements Command {
 
                 w.write(RequestToServer(update));
                 w.flush();
-            }
-            catch (InterruptedException ignored) { }
-            catch (IOException e) {
+            } catch (InterruptedException ignored) {
+            } catch (IOException e) {
                 mainThread.interrupt();
                 return;
             }
         }
 
-        disconnect(server,w);
+        disconnect(server, w);
     }
 
     private void disconnect(Socket server, BufferedWriter w) {
@@ -80,11 +74,11 @@ public class ConnectCommand implements Command {
             w.write("bye\n");
             w.close();
             server.close();
-        } catch (IOException ignored) { }
+        } catch (IOException ignored) {
+        }
     }
 
     private String RequestToServer(PropertyUpdate update) {
         return "set " + update.getProperty() + " " + update.getValue() + "\n";
     }
-
 }
