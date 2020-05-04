@@ -52,13 +52,18 @@ public class Interpreter {
                             "error message: %s\n",
                     e.tokenIndex,
                     e.errorMessage);
-        } finally {
+        }
+        catch (Exception e){
+            System.out.println("unknown error: "+e.getMessage());
+        }
+        finally {
             stopClient.setChangedAndNotify();
             stopServer.setChangedAndNotify();
 
             // Give time for the threads to close, otherwise the ports may be still taken
             try {
-                Thread.sleep(2000);
+                //Thread.sleep(2000);
+                Thread.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
