@@ -10,21 +10,19 @@ import java.util.concurrent.ConcurrentMap;
 public class ArithmeticParser {
     private ArithmeticParser() {
     }
-    private static final Map<String, BinaryOperator> binaryOperators = new HashMap<>();
-
 
     public static double calc(List<String> tokens, int startIndex, ConcurrentMap<String, Variable> symbolTable) throws CannotInterpretException {
-        int endIndex = getEndOfExpression(tokens, startIndex,symbolTable);
+        int endIndex = getEndOfExpression(tokens, startIndex, symbolTable);
         try {
-            return calcWithoutRethrow(tokens, startIndex, endIndex, symbolTable);
+            return calcInfix(tokens.subList(startIndex, endIndex + 1), symbolTable);
         } catch (IllegalArgumentException e) {
             throw new CannotInterpretException(e.getMessage(), startIndex);
         }
     }
 
-    public static int getEndOfExpression(List<String> tokens, int startIndex,ConcurrentMap<String, Variable> symbolTable) {
+    public static int getEndOfExpression(List<String> tokens, int startIndex, ConcurrentMap<String, Variable> symbolTable) {
         for (int i = startIndex; i < tokens.size() - 1; i++) {
-            if (Classifier.isVariable(tokens.get(i),symbolTable) ||Classifier.isNumber(tokens.get(i)) || tokens.get(i).equals(")")) // possible end token
+            if (Classifier.isVariable(tokens.get(i), symbolTable) || Classifier.isNumber(tokens.get(i)) || tokens.get(i).equals(")")) // possible end token
                 if (!Classifier.isOperator(tokens.get(i + 1)) && !tokens.get(i + 1).equals(")")) // possible token which means there is more
                     return i;
         }
@@ -32,13 +30,16 @@ public class ArithmeticParser {
         return tokens.size() - 1;
     }
 
-    private static double calcWithoutRethrow(List<String> tokens, int startIndex, int endIndex, ConcurrentMap<String, Variable> symbolTable) throws CannotInterpretException, IllegalArgumentException {
+    private static double calcInfix(List<String> tokens, ConcurrentMap<String, Variable> symbolTable) throws IllegalArgumentException {
+        LinkedList<String> postfix = infixToPostfix(tokens, symbolTable);
+        return calcPostfix(postfix, symbolTable);
+    }
+
+    private static LinkedList<String> infixToPostfix(List<String> tokens, ConcurrentMap<String, Variable> symbolTable) {
         LinkedList<String> queue = new LinkedList<>();
         Stack<String> stack = new Stack<>();
 
-        for (int i = startIndex; i <= endIndex; i++) {
-            String token = tokens.get(i);
-
+        for (String token : tokens) {
             if (Classifier.isNumber(token) || Classifier.isVariable(token, symbolTable)) {
                 queue.add(token);
             } else if (Classifier.isOperator(token)) {
@@ -55,7 +56,7 @@ public class ArithmeticParser {
                     while (!stack.peek().equals("("))
                         queue.add(stack.pop());
                 } catch (EmptyStackException e) {
-                    throw new CannotInterpretException("Found a closing parentheses without a matching opening parentheses", startIndex);
+                    throw new IllegalArgumentException("Found a closing parentheses without a matching opening parentheses");
                 }
 
                 stack.pop();
@@ -64,41 +65,44 @@ public class ArithmeticParser {
 
         while (!stack.empty()) {
             if (stack.peek().equals("("))
-                throw new CannotInterpretException("Too many opening parentheses", startIndex);
+                throw new IllegalArgumentException("Too many opening parentheses");
             else
                 queue.add(stack.pop());
         }
 
-        return createExpressionFromPostfix(queue, symbolTable).calculate();
+        return queue;
     }
 
+    private static final Map<String, BinaryOperator> binaryOperators = new HashMap<>();
+
+    // Warning: removes elements from tokens parameter
+    private static double calcPostfix(LinkedList<String> tokens, ConcurrentMap<String, Variable> symbolTable) throws IllegalArgumentException {
+        if (tokens.isEmpty())
+            throw new IllegalArgumentException("Tried to calculate with no tokens");
+
+        String token = tokens.removeLast();
+
+        if (Classifier.isNumber(token))
+            return Double.parseDouble(token);
+        else if (Classifier.isVariable(token, symbolTable))
+            return symbolTable.get(token).getValue();
+        else if (Classifier.isOperator(token)) {
+            BinaryOperator operator = binaryOperators.get(token);
+
+            double rightOperand = calcPostfix(tokens, symbolTable);
+            double leftOperand = calcPostfix(tokens, symbolTable);
+
+            return operator.getFunction().applyAsDouble(leftOperand, rightOperand);
+        } else {
+            throw new IllegalArgumentException("Tried to calculate with unknown token: " + token);
+        }
+    }
 
     private static int getPrecedence(String operator) throws IllegalArgumentException {
         if (!Classifier.isOperator(operator))
             throw new IllegalArgumentException("Cant find operator: " + operator);
 
         return binaryOperators.get(operator).getPrecedence();
-    }
-
-    private static Expression createExpressionFromPostfix(LinkedList<String> tokens, ConcurrentMap<String, Variable> symbolTable) throws IllegalArgumentException {
-        if (tokens.isEmpty())
-            throw new IllegalArgumentException("Tried to create an expression with no tokens");
-
-        String token = tokens.removeLast();
-
-        if (Classifier.isNumber(token))
-            return new Number(Double.parseDouble(token));
-        else if (Classifier.isVariable(token, symbolTable))
-            return new Number(symbolTable.get(token).getValue());
-        else if (Classifier.isOperator(token)) {
-            BinaryExpression binaryExpression = new BinaryExpression(binaryOperators.get(token));
-            binaryExpression.setRight(createExpressionFromPostfix(tokens, symbolTable));
-            binaryExpression.setLeft(createExpressionFromPostfix(tokens, symbolTable));
-
-            return binaryExpression;
-        } else {
-            throw new IllegalArgumentException("Tried to create expression from unknown token: " + token);
-        }
     }
 
     static {
