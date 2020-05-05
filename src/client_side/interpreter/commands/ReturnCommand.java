@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
 public class ReturnCommand implements Command {
-    private final Wrapper<Boolean> returned;
+    private final Wrapper<Integer> returned;
     private final ConcurrentMap<String, Variable> symbolTable;
 
-    public ReturnCommand(ConcurrentMap<String, Variable> symbolTable, Wrapper<Boolean> returned) {
+    public ReturnCommand(ConcurrentMap<String, Variable> symbolTable, Wrapper<Integer> returned) {
         this.symbolTable = symbolTable;
         this.returned = returned;
     }
@@ -25,7 +25,7 @@ public class ReturnCommand implements Command {
         if (!Classifier.isInt(value)) // not an int
             throw new CannotInterpretException("Cannot return a float", startIndex + 1);
 
-        returned.set(true);
-        return (int) value;
+        returned.set((int) value);
+        return ArithmeticParser.getEndOfExpression(tokens, startIndex + 1, symbolTable) + 1; // supposed to be ignored
     }
 }

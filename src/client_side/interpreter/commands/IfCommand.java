@@ -23,6 +23,7 @@ public class IfCommand implements Command {
             throw new CannotInterpretException("Wrong {, } positions", startIndex);
 
         if (ConditionParser.parse(tokens, startIndex + 1, symbolTable)) {
+            // if there was a return inside, the return value of this doCommand should be ignored
             return commands.get("block").doCommand(tokens, blockStart + 1);
         } else {
             return blockEnd + 1;

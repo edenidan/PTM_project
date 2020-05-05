@@ -11,9 +11,9 @@ public class LoopCommand implements Command {
     private final ConcurrentMap<String, Variable> symbolTable;
 
     private final Map<String, Command> commands;
-    private final Wrapper<Boolean> returned;
+    private final Wrapper<Integer> returned;
 
-    public LoopCommand(ConcurrentMap<String, Variable> symbolTable, Map<String, Command> commands, Wrapper<Boolean> returned) {
+    public LoopCommand(ConcurrentMap<String, Variable> symbolTable, Map<String, Command> commands, Wrapper<Integer> returned) {
         this.symbolTable = symbolTable;
         this.commands = commands;
         this.returned = returned;
@@ -28,9 +28,9 @@ public class LoopCommand implements Command {
             throw new CannotInterpretException("Wrong {, } positions", startIndex);
 
         while (ConditionParser.parse(tokens, startIndex + 1, symbolTable)) {
-            int retVal = commands.get("block").doCommand(tokens, blockStart + 1);
-            if (returned.get())
-                return retVal;
+            commands.get("block").doCommand(tokens, blockStart + 1);
+            if (returned.get() != null)
+                return blockEnd + 1; // can be anything, calling command is supposed to ignore anyway
         }
         return blockEnd + 1;
     }

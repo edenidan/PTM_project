@@ -9,9 +9,9 @@ import java.util.Map;
 
 public class BlockCommand implements Command {
     private final Map<String, Command> commands;
-    private final Wrapper<Boolean> returned;
+    private final Wrapper<Integer> returned;
 
-    public BlockCommand(Map<String, Command> commands, Wrapper<Boolean> returned) {
+    public BlockCommand(Map<String, Command> commands, Wrapper<Integer> returned) {
         this.commands = commands;
         this.returned = returned;
     }
@@ -30,8 +30,8 @@ public class BlockCommand implements Command {
             if (command != null) { // able to get command
                 int returnedFromCommand = command.doCommand(tokens, i); // do command and advance current token by return value of command
 
-                if (returned.get())//returned
-                    return returnedFromCommand;
+                if (returned.get() != null) // returned
+                    return returnedFromCommand; // supposed to be ignored
                 else
                     i = returnedFromCommand;
             } else if (tokens.get(i + 1).equals("=")) { // variable name
