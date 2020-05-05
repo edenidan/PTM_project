@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Observable;
@@ -45,13 +44,16 @@ public class OpenServerCommand implements Command {
         this.properties.put("simZ", new Property("simZ", 0.0));
 
         stop = false;
-        new Thread(() -> runServer((int) port)).start();
+        serverThread = new Thread(() -> runServer((int) port));
+        serverThread.start();
         try {
             Thread.sleep(Long.MAX_VALUE);//wait for the first message from the simulator
         } catch (InterruptedException ignored) {
         }
 
-        return startIndex + 3;
+        int endOfPortExpression = ArithmeticParser.getEndOfExpression(tokens, startIndex + 1, symbolTable);
+        int endOfTimesPerSecExpression = ArithmeticParser.getEndOfExpression(tokens, endOfPortExpression + 1, symbolTable);
+        return endOfTimesPerSecExpression + 1;
     }
 
 //    private Socket currentClientSocket = null;
