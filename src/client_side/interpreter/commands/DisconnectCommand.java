@@ -1,7 +1,7 @@
 package client_side.interpreter.commands;
 
 import client_side.interpreter.Command;
-import client_side.interpreter.EmptyObservable;
+import client_side.EmptyObservable;
 
 import java.util.List;
 

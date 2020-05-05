@@ -1,5 +1,6 @@
 package client_side.interpreter;
 
+import client_side.EmptyObservable;
 import client_side.Wrapper;
 import client_side.interpreter.commands.*;
 
