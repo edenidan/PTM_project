@@ -1,4 +1,4 @@
-package client_side;
+package utility;
 
 import java.util.Observable;
 

@@ -1,4 +1,4 @@
-package client_side;
+package utility;
 
 public class Wrapper<T> {
     private T t;

@@ -1,7 +1,7 @@
 package client_side.interpreter;
 
-import client_side.EmptyObservable;
-import client_side.Wrapper;
+import utility.EmptyObservable;
+import utility.Wrapper;
 import client_side.interpreter.commands.*;
 
 import java.util.HashMap;

@@ -1,6 +1,6 @@
 package client_side.interpreter.commands;
 
-import client_side.Wrapper;
+import utility.Wrapper;
 import client_side.interpreter.*;
 
 import java.util.List;
