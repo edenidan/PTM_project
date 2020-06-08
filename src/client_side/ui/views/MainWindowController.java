@@ -1,4 +1,4 @@
-package client_side.ui;
+package client_side.ui.views;
 
 import client_side.interpreter.Interpreter;
 import javafx.beans.property.SimpleStringProperty;
@@ -7,7 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 
-public class MainWindowController {
+public class MainWindowController implements MainWindowView {
     @FXML
     TextArea inputTextArea;
     @FXML
