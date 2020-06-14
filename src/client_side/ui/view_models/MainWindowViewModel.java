@@ -1,16 +1,19 @@
 package client_side.ui.view_models;
 
-public interface MainWindowViewModel {
+import java.io.IOException;
+import java.util.Observer;
+
+public interface MainWindowViewModel extends Observer{
 
 
     //sim ip,port
     //searching server ip,port
-    void connect(String ip,int port);
-    void calculatePath(String ip,int port);
+    void connect(String ip,int port) throws IOException;
+    void calculatePath(String ip, int port, double[][] heights, int sourceRow, int sourceCol, int destRow, int destCol);
     //void loadData();
 
     //script
-    void startAutoPilotScript();
+    void startAutoPilotScript() throws IllegalAccessException;
     void stopAutoPilotScript();
 
 
