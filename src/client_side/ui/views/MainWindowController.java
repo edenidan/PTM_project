@@ -1,7 +1,10 @@
 package client_side.ui.views;
 
+import client_side.ui.Position;
 import client_side.ui.view_models.MainWindowViewModelImpl;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
@@ -68,27 +71,31 @@ public class MainWindowController implements MainWindowView {
 
     @Override
     public void setViewModel(MainWindowViewModelImpl vm) {
-        vm.script.bind(scriptTextArea.textProperty());
-        vm.rudderValue.bind(rudderSlider.valueProperty());
-        vm.throttleValue.bind(throttleSlider.valueProperty());
-        vm.aileronValue.bind(smallJoystickCircle.translateXProperty().divide(this.limit));
-        vm.elevatorValue.bind(smallJoystickCircle.translateYProperty().divide(-this.limit));
+        vm.scriptProperty().bind(scriptTextArea.textProperty());
+        vm.rudderValueProperty().bind(rudderSlider.valueProperty());
+        vm.throttleValueProperty().bind(throttleSlider.valueProperty());
+        vm.aileronValueProperty().bind(smallJoystickCircle.translateXProperty().divide(this.limit));
+        vm.elevatorValueProperty().bind(smallJoystickCircle.translateYProperty().divide(-this.limit));
 
-        vm.posChanged.addObserver((o, arg) -> map.setPlanePosition(getRow(vm.planeY), getCol(vm.planeX)));
-
-        vm.planeHeading.addListener((observable, oldValue, newValue) -> map.setPlaneAngle(newValue.doubleValue()));
+        map.planePositionProperty().bind(Bindings.createObjectBinding(() -> {
+            Point2D planePosition = vm.getPlanePosition();
+            int row = getRow(planePosition.getY());
+            int column = getCol(planePosition.getX());
+            return new Position(row, column);
+        }, vm.planePositionProperty()));
+        map.planeHeadingProperty().bind(vm.planeHeadingProperty());
     }
 
-    private double angle = 0; // TODO: delete this variable and actually implement loadDataFromCSV()
+    private double heading = 0; // TODO: delete this variable and actually implement loadDataFromCSV()
 
     @FXML
     private void loadDataFromCSV() {
-        angle += 20;
-        map.setPath(Arrays.asList(
-                new ColoredMap.PathPoint(0, 0),
-                new ColoredMap.PathPoint(0, 1),
-                new ColoredMap.PathPoint(1, 1)));
-        map.setPlaneAngle(angle);
         map.setElevations(new double[][]{{1, 5}, {2, 10}});
+        map.setPlanePosition(new Position(0, 0));
+        map.setPlaneHeading(heading += 20);
+        map.setPath(Arrays.asList(
+                new Position(0, 0),
+                new Position(0, 1),
+                new Position(1, 1)));
     }
 }

@@ -1,23 +1,18 @@
 package client_side.ui.view_models;
 
-import javafx.beans.Observable;
 import javafx.beans.property.*;
-import utility.EmptyObservable;
+import javafx.geometry.Point2D;
 
 public class MainWindowViewModelImpl implements MainWindowViewModel {
+    private final StringProperty script = new SimpleStringProperty();
 
+    private final DoubleProperty aileronValue = new SimpleDoubleProperty();
+    private final DoubleProperty elevatorValue = new SimpleDoubleProperty();
+    private final DoubleProperty rudderValue = new SimpleDoubleProperty();
+    private final DoubleProperty throttleValue = new SimpleDoubleProperty();
 
-    public StringProperty script = new SimpleStringProperty();
-
-    public DoubleProperty aileronValue = new SimpleDoubleProperty();
-    public DoubleProperty elevatorValue = new SimpleDoubleProperty();
-    public DoubleProperty rudderValue = new SimpleDoubleProperty();
-    public DoubleProperty throttleValue = new SimpleDoubleProperty();
-
-    public DoubleProperty planeHeading = new SimpleDoubleProperty();
-    public Double planeX = null;
-    public Double planeY = null;
-    public EmptyObservable posChanged;
+    private final ReadOnlyDoubleWrapper planeHeading = new ReadOnlyDoubleWrapper();
+    private final ReadOnlyObjectWrapper<Point2D> planePosition = new ReadOnlyObjectWrapper<>();
 
     public MainWindowViewModelImpl() {
         aileronValue.addListener((observable, oldValue, newValue) -> aileronChanged());
@@ -28,38 +23,66 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
 
     @Override
     public void connect(String ip, int port) {
-
     }
 
     @Override
     public void calculatePath(String ip, int port) {
-
     }
 
     @Override
     public void startAutoPilotScript() {
-
     }
 
     @Override
     public void stopAutoPilotScript() {
-
     }
 
 
     private void aileronChanged() {
-
     }
 
     private void elevatorChanged() {
-
     }
 
     private void rudderChanged() {
-
     }
 
     private void throttleChanged() {
+    }
 
+    public StringProperty scriptProperty() {
+        return script;
+    }
+
+    public DoubleProperty aileronValueProperty() {
+        return aileronValue;
+    }
+
+    public DoubleProperty elevatorValueProperty() {
+        return elevatorValue;
+    }
+
+    public DoubleProperty rudderValueProperty() {
+        return rudderValue;
+    }
+
+    public DoubleProperty throttleValueProperty() {
+        return throttleValue;
+    }
+
+    public double getPlaneHeading() {
+        return planeHeading.get();
+    }
+
+    public ReadOnlyDoubleProperty planeHeadingProperty() {
+        return planeHeading.getReadOnlyProperty();
+    }
+
+    public Point2D getPlanePosition() {
+        return planePosition.get();
+    }
+
+    public ReadOnlyObjectProperty<Point2D> planePositionProperty() {
+        return planePosition.getReadOnlyProperty();
     }
 }

@@ -1,11 +1,14 @@
 package client_side.ui.views;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import client_side.ui.Position;
+import javafx.beans.property.*;
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 import java.io.File;
@@ -15,24 +18,46 @@ import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
 public class ColoredMap extends Canvas {
-    private int planeRow, planeColumn;
-    private double planeAngle;
+    private final ObjectProperty<Position> planePosition = new SimpleObjectProperty<>();
+    private final DoubleProperty planeHeading = new SimpleDoubleProperty();
 
     private List<List<Color>> elevationColors;
 
-    private Integer markerRow, markerColumn;
+    private Position markerPosition;
 
-    private List<PathPoint> path;
+    private List<Position> path;
 
     private final StringProperty planeImageFileName = new SimpleStringProperty();
     private Image planeImage;
     private final StringProperty markerImageFileName = new SimpleStringProperty();
     private Image markerImage;
 
+    private Double cellWidth, cellHeight;
+
+    public ColoredMap() {
+        planePosition.addListener((observable, oldValue, newValue) -> draw());
+        planeHeading.addListener((observable, oldValue, newValue) -> draw());
+
+        setOnMouseClicked(event -> {
+            if (elevationColors == null) return;
+
+            if (event.getButton() == MouseButton.PRIMARY) {
+                int row = (int) (event.getY() / cellHeight);
+                int column = (int) (event.getX() / cellWidth);
+                markerPosition = new Position(row, column);
+            } else if (event.getButton() == MouseButton.SECONDARY) {
+                markerPosition = null;
+            } else {
+                return;
+            }
+            draw();
+        });
+    }
+
     private void draw() {
         if (elevationColors == null) return;
-        double cellWidth = getWidth() / elevationColors.get(0).size();
-        double cellHeight = getHeight() / elevationColors.size();
+        cellWidth = getWidth() / elevationColors.get(0).size();
+        cellHeight = getHeight() / elevationColors.size();
 
         GraphicsContext g = getGraphicsContext2D();
 
@@ -50,33 +75,33 @@ public class ColoredMap extends Canvas {
         if (path != null) {
             double pointWidth = cellWidth / 3, pointHeight = cellHeight / 3;
             g.setFill(Color.YELLOW);
-            for (PathPoint point : path) {
+            for (Position point : path) {
                 g.fillOval(
-                        point.column * cellWidth + cellWidth / 2 - pointWidth / 2,
-                        point.row * cellHeight + cellHeight / 2 - pointHeight / 2,
+                        point.getColumn() * cellWidth + cellWidth / 2 - pointWidth / 2,
+                        point.getRow() * cellHeight + cellHeight / 2 - pointHeight / 2,
                         pointWidth,
                         pointHeight);
             }
         }
 
         // draw marker
-        if (markerImage != null && markerRow != null && markerColumn != null) {
+        if (markerImage != null && markerPosition != null) {
             double markerWidth = cellWidth / 2, markerHeight = cellHeight / 2;
             g.drawImage(markerImage,
-                    markerColumn * cellWidth + cellWidth / 2 - markerWidth / 2,
-                    markerRow * cellHeight + cellHeight / 2 - markerHeight / 2,
+                    markerPosition.getColumn() * cellWidth + cellWidth / 2 - markerWidth / 2,
+                    markerPosition.getRow() * cellHeight + cellHeight / 2 - markerHeight / 2,
                     markerWidth,
                     markerHeight);
         }
 
         // draw airplane
-        if (planeImage != null) {
+        if (planeImage != null && planePosition.get() != null) {
             double planeWidth = cellWidth / 1.5, planeHeight = cellHeight / 1.5;
 
             g.save();
-            g.translate(planeColumn * cellWidth + cellWidth / 2,
-                    planeRow * cellHeight + cellHeight / 2);
-            g.rotate(planeAngle);
+            g.translate(planePosition.get().getColumn() * cellWidth + cellWidth / 2,
+                    planePosition.get().getRow() * cellHeight + cellHeight / 2);
+            g.rotate(planeHeading.get());
             g.drawImage(planeImage, -planeWidth / 2, -planeHeight / 2, planeWidth, planeHeight);
             g.restore();
         }
@@ -87,15 +112,20 @@ public class ColoredMap extends Canvas {
         return Color.rgb(255 - normalizedElevation, normalizedElevation, 0);
     }
 
-    public void setPlanePosition(int planeRow, int planeColumn) {
-        this.planeRow = planeRow;
-        this.planeColumn = planeColumn;
-        draw();
+    public void setPlanePosition(Position planePosition) {
+        this.planePosition.set(planePosition);
     }
 
-    public void setPlaneAngle(double planeAngle) {
-        this.planeAngle = planeAngle;
-        draw();
+    public ObjectProperty<Position> planePositionProperty() {
+        return planePosition;
+    }
+
+    public void setPlaneHeading(double planeHeading) {
+        this.planeHeading.set(planeHeading);
+    }
+
+    public DoubleProperty planeHeadingProperty() {
+        return planeHeading;
     }
 
     public void setElevations(double[][] elevations) {
@@ -111,15 +141,11 @@ public class ColoredMap extends Canvas {
         draw();
     }
 
-    public Integer getMarkerRow() {
-        return markerRow;
+    public Position getMarkerPosition() {
+        return markerPosition;
     }
 
-    public Integer getMarkerColumn() {
-        return markerColumn;
-    }
-
-    public void setPath(List<PathPoint> path) {
+    public void setPath(List<Position> path) {
         this.path = path;
         draw();
     }
@@ -142,22 +168,5 @@ public class ColoredMap extends Canvas {
         this.markerImageFileName.set(markerImageFileName);
         markerImage = new Image(new File(markerImageFileName).toURI().toString());
         draw();
-    }
-
-    public static class PathPoint {
-        private final int row, column;
-
-        public PathPoint(int row, int column) {
-            this.row = row;
-            this.column = column;
-        }
-
-        public int getRow() {
-            return row;
-        }
-
-        public int getColumn() {
-            return column;
-        }
     }
 }
