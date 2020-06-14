@@ -1,11 +1,8 @@
 package client_side.ui.view_models;
 
 import java.io.IOException;
-import java.util.Observer;
 
-public interface MainWindowViewModel extends Observer{
-
-
+public interface MainWindowViewModel {
     //sim ip,port
     //searching server ip,port
     void connect(String ip,int port) throws IOException;

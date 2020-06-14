@@ -32,8 +32,7 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
         throttleValue.addListener((observable, oldValue, newValue) -> throttleChanged());
 
         this.PathDoneObservable =  m.getPathDoneObservable();
-        PathDoneObservable.addObserver(this);
-
+        PathDoneObservable.addObserver((o, arg) -> pathCalculated.setValue(m.getPath()));
     }
 
     @Override
@@ -72,13 +71,6 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
 
     private void throttleChanged() {
         m.setThrottle(throttleValue.get());
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        //notifications from the model
-        if(o == this.PathDoneObservable)
-            pathCalculated.setValue(m.getPath());
     }
 
     public StringProperty scriptProperty() {
