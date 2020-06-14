@@ -69,6 +69,10 @@ public class MainWindowController implements MainWindowView {
         return 0;
     }
 
+    boolean pathCalculationInProgress = false;
+
+    //on click findPath check if bool above is true
+    //save source and dest of last path calculation
     @Override
     public void setViewModel(MainWindowViewModelImpl vm) {
         vm.scriptProperty().bind(scriptTextArea.textProperty());
@@ -84,6 +88,10 @@ public class MainWindowController implements MainWindowView {
             return new Position(row, column);
         }, vm.planePositionProperty()));
         map.planeHeadingProperty().bind(vm.planeHeadingProperty());
+
+        vm.pathCalculated.addListener((observable, oldValue, newValue) -> {
+            //map.drawPath(source,dest,path)
+        });
     }
 
     private double heading = 0; // TODO: delete this variable and actually implement loadDataFromCSV()
