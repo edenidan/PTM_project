@@ -2,6 +2,7 @@ package client_side.ui.views;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -17,9 +18,11 @@ public class ColoredMap extends Canvas {
     private int planeRow, planeColumn;
     private double planeAngle;
 
+    private List<List<Color>> elevationColors;
+
     private Integer markerRow, markerColumn;
 
-    private List<List<Color>> elevationColors;
+    private List<PathPoint> path;
 
     private final StringProperty planeImageFileName = new SimpleStringProperty();
     private Image planeImage;
@@ -43,9 +46,32 @@ public class ColoredMap extends Canvas {
             }
         }
 
+        // draw path
+        if (path != null) {
+            double pointWidth = cellWidth / 3, pointHeight = cellHeight / 3;
+            g.setFill(Color.YELLOW);
+            for (PathPoint point : path) {
+                g.fillOval(
+                        point.column * cellWidth + cellWidth / 2 - pointWidth / 2,
+                        point.row * cellHeight + cellHeight / 2 - pointHeight / 2,
+                        pointWidth,
+                        pointHeight);
+            }
+        }
+
+        // draw marker
+        if (markerImage != null && markerRow != null && markerColumn != null) {
+            double markerWidth = cellWidth / 2, markerHeight = cellHeight / 2;
+            g.drawImage(markerImage,
+                    markerColumn * cellWidth + cellWidth / 2 - markerWidth / 2,
+                    markerRow * cellHeight + cellHeight / 2 - markerHeight / 2,
+                    markerWidth,
+                    markerHeight);
+        }
+
         // draw airplane
         if (planeImage != null) {
-            double planeWidth = 30, planeHeight = 30;
+            double planeWidth = cellWidth / 1.5, planeHeight = cellHeight / 1.5;
 
             g.save();
             g.translate(planeColumn * cellWidth + cellWidth / 2,
@@ -53,16 +79,6 @@ public class ColoredMap extends Canvas {
             g.rotate(planeAngle);
             g.drawImage(planeImage, -planeWidth / 2, -planeHeight / 2, planeWidth, planeHeight);
             g.restore();
-        }
-
-        // draw marker
-        if (markerImage != null && markerRow != null && markerColumn != null) {
-            double markerWidth = 20, markerHeight = 20;
-            g.drawImage(markerImage,
-                    markerColumn * cellWidth + cellWidth / 2 - markerWidth / 2,
-                    markerRow * cellHeight + cellHeight / 2 - markerHeight / 2,
-                    markerWidth,
-                    markerHeight);
         }
     }
 
@@ -95,6 +111,19 @@ public class ColoredMap extends Canvas {
         draw();
     }
 
+    public Integer getMarkerRow() {
+        return markerRow;
+    }
+
+    public Integer getMarkerColumn() {
+        return markerColumn;
+    }
+
+    public void setPath(List<PathPoint> path) {
+        this.path = path;
+        draw();
+    }
+
     public String getPlaneImageFileName() {
         return planeImageFileName.get();
     }
@@ -102,6 +131,7 @@ public class ColoredMap extends Canvas {
     public void setPlaneImageFileName(String planeImageFileName) {
         this.planeImageFileName.set(planeImageFileName);
         planeImage = new Image(new File(planeImageFileName).toURI().toString());
+        draw();
     }
 
     public String getMarkerImageFileName() {
@@ -111,13 +141,23 @@ public class ColoredMap extends Canvas {
     public void setMarkerImageFileName(String markerImageFileName) {
         this.markerImageFileName.set(markerImageFileName);
         markerImage = new Image(new File(markerImageFileName).toURI().toString());
+        draw();
     }
 
-    public Integer getMarkerRow() {
-        return markerRow;
-    }
+    public static class PathPoint {
+        private final int row, column;
 
-    public Integer getMarkerColumn() {
-        return markerColumn;
+        public PathPoint(int row, int column) {
+            this.row = row;
+            this.column = column;
+        }
+
+        public int getRow() {
+            return row;
+        }
+
+        public int getColumn() {
+            return column;
+        }
     }
 }

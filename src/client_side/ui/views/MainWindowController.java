@@ -1,12 +1,13 @@
 package client_side.ui.views;
 
 import client_side.ui.view_models.MainWindowViewModelImpl;
-import javafx.beans.property.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
+
+import java.util.Arrays;
 
 public class MainWindowController implements MainWindowView {
     @FXML
@@ -83,6 +84,10 @@ public class MainWindowController implements MainWindowView {
     @FXML
     private void loadDataFromCSV() {
         angle += 20;
+        map.setPath(Arrays.asList(
+                new ColoredMap.PathPoint(0, 0),
+                new ColoredMap.PathPoint(0, 1),
+                new ColoredMap.PathPoint(1, 1)));
         map.setPlaneAngle(angle);
         map.setElevations(new double[][]{{1, 5}, {2, 10}});
     }
