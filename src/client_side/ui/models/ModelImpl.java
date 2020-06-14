@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class ModelImpl implements Model {
 
@@ -68,21 +69,19 @@ public class ModelImpl implements Model {
     }
 
 
-
     @Override
     public String calculatePath(String ip, int port, double[][] heights, int sourceRow, int sourceCol, int destRow, int destCol) throws IOException {
-        Socket conn = new Socket(ip, port);
-        PrintWriter out = new PrintWriter(new BufferedOutputStream(conn.getOutputStream()));
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        try (Socket conn = new Socket(ip, port);
+             PrintWriter out = new PrintWriter(new BufferedOutputStream(conn.getOutputStream()));
+             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
 
-        for (int i = 0; i < heights.length; i++)
-            out.println(
-                    String.join(",", Arrays.stream(heights[i]).mapToObj(Double::toString).toArray(String[]::new))
-            );
-        out.println(sourceRow + "," + sourceCol);
-        out.println(destRow + "," + destCol);
+            for (double[] height : heights)
+                out.println(Arrays.stream(height).mapToObj(Double::toString).collect(Collectors.joining(",")));
+            out.println(sourceRow + "," + sourceCol);
+            out.println(destRow + "," + destCol);
 
-        return in.readLine();
+            return in.readLine();
+        }
     }
 
     @Override
