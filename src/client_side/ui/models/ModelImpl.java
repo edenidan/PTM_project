@@ -10,8 +10,7 @@ import java.util.Arrays;
 import java.util.Observable;
 import java.util.stream.Collectors;
 
-public class ModelImpl implements Model  {
-
+public class ModelImpl implements Model {
     private final int DATA_SERVER_PORT = 5400;
 
     private boolean autopilotRunning = false;
@@ -24,7 +23,6 @@ public class ModelImpl implements Model  {
     private Interpreter interpreter = null;
 
     public ModelImpl() {
-
     }
 
     private void sendSetCommand(String property, double value) {
@@ -70,28 +68,25 @@ public class ModelImpl implements Model  {
         autopilotRunning = false;
     }
 
-    String pathCalculated=null;
+    String pathCalculated = null;
     EmptyObservable pathReadyObservable = new EmptyObservable();
+
     @Override
     public void calculatePath(String ip, int port, double[][] heights, int sourceRow, int sourceCol, int destRow, int destCol) {
-
         new Thread(() -> {
             try {
                 Socket conn = new Socket(ip, port);
                 PrintWriter out = new PrintWriter(new BufferedOutputStream(conn.getOutputStream()));
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-                for (int i = 0; i < heights.length; i++)
-                    out.println(
-                            String.join(",", Arrays.stream(heights[i]).mapToObj(Double::toString).toArray(String[]::new))
-                    );
+                for (double[] height : heights)
+                    out.println(Arrays.stream(height).mapToObj(Double::toString).collect(Collectors.joining(",")));
                 out.println(sourceRow + "," + sourceCol);
                 out.println(destRow + "," + destCol);
 
                 this.pathCalculated = in.readLine();
-            }
-            catch (IOException e){
-                this.pathCalculated=null;
+            } catch (IOException e) {
+                this.pathCalculated = null;
             }
             pathReadyObservable.setChangedAndNotify();
         }).start();
@@ -105,12 +100,10 @@ public class ModelImpl implements Model  {
     @Override
     public Observable getPathDoneObservable() {
         return this.pathReadyObservable;
-
     }
 
     @Override
     public void connect(String ip, int port) throws IOException {
-
         this.commandsSocket = new Socket(ip, port);
         this.commandOutput = new PrintWriter(commandsSocket.getOutputStream());
 

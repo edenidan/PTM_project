@@ -94,10 +94,11 @@ public class MainWindowController implements MainWindowView {
         });
     }
 
-    private double heading = 0; // TODO: delete this variable and actually implement loadDataFromCSV()
+    private double heading = 0;
 
     @FXML
     private void loadDataFromCSV() {
+        // TODO
         map.setElevations(new double[][]{{1, 5}, {2, 10}});
         map.setPlanePosition(new Position(0, 0));
         map.setPlaneHeading(heading += 20);

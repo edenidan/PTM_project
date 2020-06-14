@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.Observable;
 
 public class MainWindowViewModelImpl implements MainWindowViewModel {
-    Model m;
+    private final Model m;
 
     private final StringProperty script = new SimpleStringProperty();
 
@@ -37,12 +37,12 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
 
     @Override
     public void connect(String ip, int port) throws IOException {
-        m.connect(ip,port);
+        m.connect(ip, port);
     }
 
     @Override
     public void calculatePath(String ip, int port, double[][] heights, int sourceRow, int sourceCol, int destRow, int destCol) {
-        m.calculatePath(ip,port,heights,sourceRow,sourceCol,destRow,destCol);
+        m.calculatePath(ip, port, heights, sourceRow, sourceCol, destRow, destCol);
     }
 
     @Override
@@ -66,7 +66,6 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
 
     private void rudderChanged() {
         m.setRudder(rudderValue.get());
-
     }
 
     private void throttleChanged() {
