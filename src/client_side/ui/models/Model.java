@@ -1,9 +1,7 @@
 package client_side.ui.models;
 
-import javafx.beans.Observable;
-import utility.EmptyObservable;
-
 import java.io.IOException;
+import java.util.Observable;
 
 public interface Model {
 
@@ -17,7 +15,7 @@ public interface Model {
 
     void calculatePath(String ip, int port, double[][] heights, int sourceRow, int sourceCol, int destRow, int destCol);
     String getPath();
-    EmptyObservable getPathDoneObservable();
+    Observable getPathDoneObservable();
 
     void connect(String ip, int port) throws IOException;
 

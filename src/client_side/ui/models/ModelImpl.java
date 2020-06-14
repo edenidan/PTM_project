@@ -7,7 +7,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
-
+import java.util.Observable;
 import java.util.stream.Collectors;
 
 public class ModelImpl implements Model  {
@@ -103,7 +103,7 @@ public class ModelImpl implements Model  {
     }
 
     @Override
-    public EmptyObservable getPathDoneObservable() {
+    public Observable getPathDoneObservable() {
         return this.pathReadyObservable;
 
     }

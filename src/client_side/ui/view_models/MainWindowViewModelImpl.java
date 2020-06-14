@@ -3,7 +3,6 @@ package client_side.ui.view_models;
 import client_side.ui.models.Model;
 import javafx.beans.property.*;
 import javafx.geometry.Point2D;
-import utility.EmptyObservable;
 
 import java.io.IOException;
 import java.util.Observable;
@@ -22,7 +21,7 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
     private final ReadOnlyObjectWrapper<Point2D> planePosition = new ReadOnlyObjectWrapper<>();
 
     public StringProperty pathCalculated = new SimpleStringProperty();
-    EmptyObservable PathDoneObservable;
+    Observable PathDoneObservable;
 
     public MainWindowViewModelImpl(Model m) {
         this.m = m;
