@@ -80,6 +80,12 @@ public class Interpreter {
         return -1;//error value
     }
 
+    public void abort(){
+        returnValue.set(-1);
+        stopClient.setChangedAndNotify();
+        stopServer.setChangedAndNotify();
+    }
+
     public int interpret(String[] lines) {
         return interpret(String.join("\n", lines));
     }
