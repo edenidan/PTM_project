@@ -12,7 +12,7 @@ public interface Model {
     void runScript(String script) throws IllegalAccessException;
     void stopScript();
 
-    void calculatePath(String ip,int port,double[][] heights,int destRow,int destCol);
+    String calculatePath(String ip, int port, double[][] heights, int sourceRow, int sourceCol, int destRow, int destCol) throws IOException;
 
-    void connect(String ip,int port) throws IOException;
+    void connect(String ip, int port) throws IOException;
 }
