@@ -33,7 +33,7 @@ public class OpenServerCommand implements Command {
         this.mainThread = Thread.currentThread();
     }
 
-    private void initPropertiesDefault(){
+    private void initPropertiesDefault() {
         this.properties.put("simX", new Property("simX", 0.0));
         this.properties.put("simY", new Property("simY", 0.0));
         this.properties.put("simZ", new Property("simZ", 0.0));
@@ -59,9 +59,10 @@ public class OpenServerCommand implements Command {
 
         try {
             Thread.sleep(Long.MAX_VALUE);//wait for the first message from the simulator
-        } catch (InterruptedException ignored) { }
+        } catch (InterruptedException ignored) {
+        }
 
-        if(dataConnection != null)
+        if (dataConnection != null)
             return startIndex + 1;
         //else:
         int endOfPortExpression = ArithmeticParser.getEndOfExpression(tokens, startIndex + 1, symbolTable);
@@ -75,7 +76,7 @@ public class OpenServerCommand implements Command {
         ServerSocket server = null;
         BufferedReader in = null;
         try {
-            if(port != null) {
+            if (port != null) {
                 server = new ServerSocket(port);
                 server.setSoTimeout(1000);
             }
@@ -83,11 +84,10 @@ public class OpenServerCommand implements Command {
             while (!stop) {
                 try {
 
-                    if(port!=null) {
+                    if (port != null) {
                         Socket client = server.accept();
                         in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                    }
-                    else
+                    } else
                         in = new BufferedReader(new InputStreamReader(dataConnection.getInputStream()));
 
                     String line;
@@ -100,6 +100,9 @@ public class OpenServerCommand implements Command {
                             this.properties.get("simZ").setValue(Double.parseDouble(properties[2]));
 
                         } catch (NumberFormatException ignored) {
+                        } finally {
+                            if (this.dataConnection == null)
+                                in.close();
                         }
 
                         if (first) {
@@ -114,6 +117,12 @@ public class OpenServerCommand implements Command {
             }
         } catch (IOException e) {
             mainThread.interrupt();
+        } finally {
+            if (this.dataConnection == null)
+                try {
+                    server.close();
+                } catch (IOException e) {
+                }
         }
     }
 
