@@ -1,5 +1,7 @@
 package client_side.ui.models;
 
+import client_side.interpreter.Interpreter;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -11,10 +13,14 @@ public class ModelImpl implements Model {
 
     private final int DATA_SERVER_PORT = 5400;
 
-    private Socket commandsSocket;
-    private PrintWriter commandOutput;
-    private Socket dataSocket;
-    private Reader dataInput;
+    private boolean autopilotRunning = false;
+
+    private Socket commandsSocket=null;
+    private PrintWriter commandOutput=null;
+    private Socket dataSocket=null;
+    private Reader dataInput=null;
+
+    private Interpreter interpreter=null;
 
     public ModelImpl(){
 
@@ -46,13 +52,18 @@ public class ModelImpl implements Model {
     }
 
     @Override
-    public void runScript(String script) {
-
+    public void runScript(String script) throws IllegalAccessException {
+        if(autopilotRunning)
+            throw new IllegalAccessException("an autopilot script is already running.");
+        autopilotRunning = true;
+        interpreter.interpret(script);
     }
 
     @Override
     public void stopScript() {
-
+        if(autopilotRunning)
+            interpreter.abort();
+        autopilotRunning = false;
     }
 
     @Override
@@ -69,5 +80,7 @@ public class ModelImpl implements Model {
         ServerSocket dataServer = new ServerSocket(DATA_SERVER_PORT);
         this.dataSocket = dataServer.accept();
         this.dataInput = new InputStreamReader(dataSocket.getInputStream());
+
+        interpreter = new Interpreter(commandsSocket,dataSocket);
     }
 }
