@@ -4,6 +4,7 @@ import utility.EmptyObservable;
 import utility.Wrapper;
 import client_side.interpreter.commands.*;
 
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,14 +22,22 @@ public class Interpreter {
     private final EmptyObservable stopServer = new EmptyObservable();
     private final EmptyObservable stopClient = new EmptyObservable();
 
-    public Interpreter() {
+    public Interpreter(){
+        initInterpreter(null,null);
+    }
+
+    public Interpreter(Socket commandsConnection,Socket dataConnection){
+        initInterpreter(commandsConnection,dataConnection);
+    }
+
+    public void initInterpreter(Socket commandsConnection,Socket dataConnection) {
         ConcurrentMap<String, Variable> symbolTable = new ConcurrentHashMap<>();
         ConcurrentMap<String, Property> properties = new ConcurrentHashMap<>();
 
         BlockingQueue<PropertyUpdate> toUpdate = new LinkedBlockingDeque<>();
 
-        commands.put("openDataServer", new OpenServerCommand(stopServer, symbolTable, properties));
-        commands.put("connect", new ConnectCommand(toUpdate, symbolTable, stopClient));
+        commands.put("openDataServer", new OpenServerCommand(stopServer, symbolTable, properties,dataConnection));
+        commands.put("connect", new ConnectCommand(toUpdate, symbolTable, stopClient,commandsConnection));
         commands.put("disconnect", new DisconnectCommand(stopClient));
         commands.put("sleep", new SleepCommand(symbolTable));
         commands.put("var", new DefineVarCommand(symbolTable));

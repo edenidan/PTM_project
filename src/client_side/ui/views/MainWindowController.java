@@ -81,6 +81,8 @@ public class MainWindowController implements MainWindowView {
         vm.script.bind(scriptTextArea.textProperty());
         vm.rudderValue.bind(rudderSlider.valueProperty());
         vm.throttleValue.bind(throttleSlider.valueProperty());
+        vm.aileronValue.bind(joystickCircle.translateXProperty().divide(this.limit));
+        vm.elevatorValue.bind(joystickCircle.translateYProperty().divide(-this.limit));
 
         vm.posChanged.addObserver((o, arg) ->
                 map.setPlanePosition(getRow(vm.planeY), getCol(vm.planeX)));
@@ -89,8 +91,7 @@ public class MainWindowController implements MainWindowView {
                 map.setPlaneAngle(newValue.doubleValue()));
 
 
-        vm.aileronValue.bind(joystickCircle.translateXProperty().divide(this.limit));
-        vm.elevatorValue.bind(joystickCircle.translateYProperty().divide(-this.limit));
+
     }
 
 

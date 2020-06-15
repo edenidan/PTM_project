@@ -16,15 +16,17 @@ import java.util.concurrent.ConcurrentMap;
 public class ConnectCommand implements Command {
     private final BlockingQueue<PropertyUpdate> updates;
     private final ConcurrentMap<String, Variable> symbolTable;
+    private Socket commandsConnection;
 
     private Thread clientThread = null;
     private volatile boolean stop = false;
 
     private final Thread mainThread;
 
-    public ConnectCommand(BlockingQueue<PropertyUpdate> toUpdate, ConcurrentMap<String, Variable> symbolTable, Observable stopClient) {
+    public ConnectCommand(BlockingQueue<PropertyUpdate> toUpdate, ConcurrentMap<String, Variable> symbolTable, Observable stopClient, Socket commandsConnection) {
         this.updates = toUpdate;
         this.symbolTable = symbolTable;
+        this.commandsConnection = commandsConnection;
 
         stopClient.addObserver((o, arg) -> stopClientThread());
 
@@ -34,28 +36,42 @@ public class ConnectCommand implements Command {
 
     @Override
     public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
-        String ip = tokens.get(startIndex + 1);
-        double port = ArithmeticParser.calc(tokens, startIndex + 2, symbolTable);
+        String ip = null;
+        Double port = null;
+        if(this.commandsConnection == null) {
+            ip = tokens.get(startIndex + 1);
+            port = ArithmeticParser.calc(tokens, startIndex + 2, symbolTable);
 
-        if (!Classifier.isAddress(ip))
-            throw new CannotInterpretException("ip is illegal", startIndex + 1);
-        if (!Classifier.isPort(port))
-            throw new CannotInterpretException("port is illegal", startIndex + 2);
-
+            if (!Classifier.isAddress(ip))
+                throw new CannotInterpretException("ip is illegal", startIndex + 1);
+            if (!Classifier.isPort(port))
+                throw new CannotInterpretException("port is illegal", startIndex + 2);
+        }
         stopClientThread();
-
         stop = false;
-        clientThread = new Thread(() -> client(ip, (int) port));
+
+        final String finalIp = ip;
+        final Integer finalPort = port.intValue();
+        clientThread = new Thread(() -> client(finalIp, finalPort));
         clientThread.start();
 
-        return ArithmeticParser.getEndOfExpression(tokens, startIndex + 2, symbolTable) + 1;
+        if(this.commandsConnection == null)
+            return ArithmeticParser.getEndOfExpression(tokens, startIndex + 2, symbolTable) + 1;
+        return startIndex + 1;//if the commands connection is given then the ip,port are not given
     }
 
-    private void client(String ip, int port) {
-        // connect to the server
-        try (Socket server = new Socket(ip, port);
-             Writer writer = new BufferedWriter(new OutputStreamWriter(server.getOutputStream()))) {
+    private Writer connectAndGetWriter(String ip,Integer port) throws IOException {
+        if(ip == null && port == null)
+            return new BufferedWriter(new OutputStreamWriter(this.commandsConnection.getOutputStream()));
+        Socket server = new Socket(ip, port);
+        return new BufferedWriter(new OutputStreamWriter(server.getOutputStream()));
+    }
 
+    private void client(String ip, Integer port) {
+        // connect to the server
+        Writer writer=null;
+        try {
+            writer = connectAndGetWriter(ip,port);
             // send set messages every time a property is updated
             while (!stop) {
                 PropertyUpdate update;
@@ -71,8 +87,18 @@ public class ConnectCommand implements Command {
 
             writer.write("bye\n");
             writer.flush();
+
+
+
         } catch (IOException e) {
             mainThread.interrupt();
+        }
+        finally {
+            if(this.commandsConnection == null) {
+                try {
+                    writer.close();
+                } catch (IOException e) { }
+            }
         }
     }
 

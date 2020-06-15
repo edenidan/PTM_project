@@ -16,132 +16,80 @@ import java.util.concurrent.ConcurrentMap;
 public class OpenServerCommand implements Command {
     private final ConcurrentMap<String, Variable> symbolTable;
     private final ConcurrentMap<String, Property> properties;
+    private Socket dataConnection;
 
     private Thread serverThread = null;
     private volatile boolean stop = false;
 
     private final Thread mainThread;
 
-    public OpenServerCommand(Observable stopServer, ConcurrentMap<String, Variable> symbolTable, ConcurrentMap<String, Property> properties) {
+    public OpenServerCommand(Observable stopServer, ConcurrentMap<String, Variable> symbolTable, ConcurrentMap<String, Property> properties, Socket dataConnection) {
         this.symbolTable = symbolTable;
         this.properties = properties;
+        this.dataConnection = dataConnection;
 
         stopServer.addObserver((o, arg) -> stopServerThread());
 
         this.mainThread = Thread.currentThread();
     }
 
-    @Override
-    public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
-        // blocking call until starting to receive data
-        double port = ArithmeticParser.calc(tokens, startIndex + 1, symbolTable);
-        if (!Classifier.isPort(port))
-            throw new CannotInterpretException("illegal port", startIndex);
-        //double timesPerSec = ArithmeticParser.calc(tokens,startIndex+2,symbolTable);
-
+    private void initPropertiesDefault(){
         this.properties.put("simX", new Property("simX", 0.0));
         this.properties.put("simY", new Property("simY", 0.0));
         this.properties.put("simZ", new Property("simZ", 0.0));
+    }
 
+    @Override
+    public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
+        // blocking call until starting to receive data
+        Double port = null;
+        if (dataConnection == null) {
+            port = ArithmeticParser.calc(tokens, startIndex + 1, symbolTable);
+            if (!Classifier.isPort(port))
+                throw new CannotInterpretException("illegal port", startIndex);
+            //double timesPerSec = ArithmeticParser.calc(tokens,startIndex+2,symbolTable);
+        }
+        initPropertiesDefault();
+
+        stopServerThread();
         stop = false;
-        serverThread = new Thread(() -> runServer((int) port));
+        final Integer finalPort = port.intValue();
+        serverThread = new Thread(() -> runServer(finalPort));
         serverThread.start();
+
         try {
             Thread.sleep(Long.MAX_VALUE);//wait for the first message from the simulator
-        } catch (InterruptedException ignored) {
-        }
+        } catch (InterruptedException ignored) { }
 
+        if(dataConnection != null)
+            return startIndex + 1;
+        //else:
         int endOfPortExpression = ArithmeticParser.getEndOfExpression(tokens, startIndex + 1, symbolTable);
         int endOfTimesPerSecExpression = ArithmeticParser.getEndOfExpression(tokens, endOfPortExpression + 1, symbolTable);
         return endOfTimesPerSecExpression + 1;
     }
 
-//    private Socket currentClientSocket = null;
-//
-//    private void runServerAndWait(int port, int startIndex) throws CannotInterpretException {
-//        ServerSocket server = null;
-//        currentClientSocket = null;
-//        BufferedReader in = null;
-//        try {
-//            server = new ServerSocket(port);
-//            currentClientSocket = server.accept();
-//            in = new BufferedReader(new InputStreamReader(currentClientSocket.getInputStream()));
-//
-//            String[] propertyValues = in.readLine().split(",");
-//            properties.get("simX").setValue(Double.parseDouble(propertyValues[0]));
-//            properties.get("simY").setValue(Double.parseDouble(propertyValues[1]));
-//            properties.get("simZ").setValue(Double.parseDouble(propertyValues[2]));
-//        } catch (IOException e) {
-//            try {
-//                if (in != null) in.close();
-//                if (currentClientSocket != null) currentClientSocket.close();
-//                if (server != null) server.close();
-//            } catch (IOException ioException) {
-//                ioException.printStackTrace();
-//                throw new CannotInterpretException("Error in starting server", startIndex);
-//            }
-//
-//            e.printStackTrace();
-//            throw new CannotInterpretException("Error in starting server", startIndex);
-//        }
-//
-//        BufferedReader finalIn = in;
-//        ServerSocket finalServer = server;
-//        serverThread = new Thread(() -> {
-//            try {
-//                String line;
-//                while ((line = finalIn.readLine()) != null) {
-//                    String[] propertyValuesInThread = line.split(",");
-//                    properties.get("simX").setValue(Double.parseDouble(propertyValuesInThread[0]));
-//                    properties.get("simY").setValue(Double.parseDouble(propertyValuesInThread[1]));
-//                    properties.get("simZ").setValue(Double.parseDouble(propertyValuesInThread[2]));
-//                }
-//                finalIn.close();
-//                this.currentClientSocket.close();
-//                this.currentClientSocket = null;
-//
-//                finalServer.setSoTimeout(500); // check to stop every 500 milliseconds
-//                while (!stop) {
-//                    BufferedReader inInLoop = null;
-//                    try {
-//                        this.currentClientSocket = finalServer.accept();
-//                        inInLoop = new BufferedReader(new InputStreamReader(this.currentClientSocket.getInputStream()));
-//
-//                        String lineInLoop;
-//                        while ((lineInLoop = inInLoop.readLine()) != null) {
-//                            String[] propertyValuesInLoop = lineInLoop.split(",");
-//                            properties.get("simX").setValue(Double.parseDouble(propertyValuesInLoop[0]));
-//                            properties.get("simY").setValue(Double.parseDouble(propertyValuesInLoop[1]));
-//                            properties.get("simZ").setValue(Double.parseDouble(propertyValuesInLoop[2]));
-//                        }
-//                    } catch (SocketTimeoutException ignored) {
-//                    } catch (IOException e) {
-//                        try {
-//                            if (this.currentClientSocket != null) this.currentClientSocket.close();
-//                            if (inInLoop != null) inInLoop.close();
-//                        } catch (IOException e2) {
-//                            e.printStackTrace();
-//                        }
-//                        mainThread.interrupt();
-//                    }
-//                }
-//
-//                finalServer.close();
-//            } catch (IOException ignored) {
-//                mainThread.interrupt();
-//            }
-//        });
-//        serverThread.start();
-//
-//    }
 
-    private void runServer(int port) {
+    private void runServer(Integer port) {
         boolean first = true;
-        try (ServerSocket server = new ServerSocket(port)) {
-            server.setSoTimeout(1000);
+        ServerSocket server = null;
+        BufferedReader in = null;
+        try {
+            if(port != null) {
+                server = new ServerSocket(port);
+                server.setSoTimeout(1000);
+            }
+
             while (!stop) {
-                try (Socket client = server.accept();
-                     BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()))) {
+                try {
+
+                    if(port!=null) {
+                        Socket client = server.accept();
+                        in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                    }
+                    else
+                        in = new BufferedReader(new InputStreamReader(dataConnection.getInputStream()));
+
                     String line;
                     while (!"bye".equals((line = in.readLine())) && line != null) {
 
@@ -174,13 +122,7 @@ public class OpenServerCommand implements Command {
 
         if (serverThread != null) {
             serverThread.interrupt();
-//            try {
-//                if (currentClientSocket != null)
-//                    currentClientSocket.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            System.out.println("Stopping the server");
+
         }
     }
 }
