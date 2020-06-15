@@ -1,6 +1,5 @@
 package client_side.ui.views;
 
-import client_side.ui.view_models.MainWindowViewModel;
 import client_side.ui.view_models.MainWindowViewModelImpl;
 import javafx.beans.property.*;
 import javafx.fxml.FXML;
@@ -10,6 +9,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 
 public class MainWindowController implements MainWindowView {
+
 
     @FXML
     Circle bigJoystickCircle;
@@ -46,6 +46,7 @@ public class MainWindowController implements MainWindowView {
         }
         joystickCircle.setTranslateX(XToSet);
         joystickCircle.setTranslateY(YToSet);
+
     }
 
     public void smallJoystickDragged(MouseEvent event) {
@@ -88,8 +89,8 @@ public class MainWindowController implements MainWindowView {
                 map.setPlaneAngle(newValue.doubleValue()));
 
 
-        vm.joystickX.bind(joystickCircle.translateXProperty().divide(this.limit));
-        vm.joystickY.bind(joystickCircle.translateYProperty().divide(-this.limit));
+        vm.aileronValue.bind(joystickCircle.translateXProperty().divide(this.limit));
+        vm.elevatorValue.bind(joystickCircle.translateYProperty().divide(-this.limit));
     }
 
 

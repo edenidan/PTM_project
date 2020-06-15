@@ -7,11 +7,10 @@ import utility.EmptyObservable;
 public class MainWindowViewModelImpl implements MainWindowViewModel {
 
 
-
     public StringProperty script = new SimpleStringProperty();
 
-    public DoubleProperty joystickX = new SimpleDoubleProperty();
-    public DoubleProperty joystickY = new SimpleDoubleProperty();
+    public DoubleProperty aileronValue = new SimpleDoubleProperty();
+    public DoubleProperty elevatorValue = new SimpleDoubleProperty();
     public DoubleProperty rudderValue = new SimpleDoubleProperty();
     public DoubleProperty throttleValue = new SimpleDoubleProperty();
 
@@ -20,6 +19,12 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
     public Double planeY = null;
     public EmptyObservable posChanged;
 
+    public MainWindowViewModelImpl() {
+        aileronValue.addListener((observable, oldValue, newValue) -> aileronChanged());
+        elevatorValue.addListener((observable, oldValue, newValue) -> elevatorChanged());
+        rudderValue.addListener((observable, oldValue, newValue) -> rudderChanged());
+        throttleValue.addListener((observable, oldValue, newValue) -> throttleChanged());
+    }
 
     @Override
     public void connect(String ip, int port) {
@@ -42,18 +47,19 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
     }
 
 
-    @Override
-    public void joystickChanged() {
+    private void aileronChanged() {
 
     }
 
-    @Override
-    public void rudderChanged() {
+    private void elevatorChanged() {
 
     }
 
-    @Override
-    public void throttleChanged() {
+    private void rudderChanged() {
+
+    }
+
+    private void throttleChanged() {
 
     }
 }

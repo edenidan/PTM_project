@@ -17,7 +17,5 @@ public interface MainWindowViewModel {
     //joystick xy
     //rudder value
     //throttle value
-    void joystickChanged();
-    void rudderChanged();
-    void throttleChanged();
+
 }
