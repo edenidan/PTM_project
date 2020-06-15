@@ -1,13 +1,15 @@
 package client_side.ui.models;
 
 import client_side.interpreter.Interpreter;
+import utility.EmptyObservable;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.Observable;
 
-public class ModelImpl implements Model {
+public class ModelImpl implements Model  {
 
     private final int DATA_SERVER_PORT = 5400;
 
@@ -67,22 +69,41 @@ public class ModelImpl implements Model {
         autopilotRunning = false;
     }
 
+    String pathCalculated=null;
+    EmptyObservable pathReadyObservable = new EmptyObservable();
+    @Override
+    public void calculatePath(String ip, int port, double[][] heights, int sourceRow, int sourceCol, int destRow, int destCol) {
 
+        new Thread(() -> {
+            try {
+                Socket conn = new Socket(ip, port);
+                PrintWriter out = new PrintWriter(new BufferedOutputStream(conn.getOutputStream()));
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+                for (int i = 0; i < heights.length; i++)
+                    out.println(
+                            String.join(",", Arrays.stream(heights[i]).mapToObj(Double::toString).toArray(String[]::new))
+                    );
+                out.println(sourceRow + "," + sourceCol);
+                out.println(destRow + "," + destCol);
+
+                this.pathCalculated = in.readLine();
+            }
+            catch (IOException e){
+                this.pathCalculated=null;
+            }
+            pathReadyObservable.setChangedAndNotify();
+        }).start();
+    }
 
     @Override
-    public String calculatePath(String ip, int port, double[][] heights, int sourceRow, int sourceCol, int destRow, int destCol) throws IOException {
-        Socket conn = new Socket(ip, port);
-        PrintWriter out = new PrintWriter(new BufferedOutputStream(conn.getOutputStream()));
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+    public String getPath() {
+        return pathCalculated;
+    }
 
-        for (int i = 0; i < heights.length; i++)
-            out.println(
-                    String.join(",", Arrays.stream(heights[i]).mapToObj(Double::toString).toArray(String[]::new))
-            );
-        out.println(sourceRow + "," + sourceCol);
-        out.println(destRow + "," + destCol);
-
-        return in.readLine();
+    @Override
+    public EmptyObservable getPathDoneObservable() {
+        return this.pathReadyObservable;
     }
 
     @Override

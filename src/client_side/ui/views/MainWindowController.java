@@ -26,11 +26,7 @@ public class MainWindowController implements MainWindowView {
 
     private MainWindowViewModelImpl vm;
 
-    DoubleProperty joystickX = new SimpleDoubleProperty();
-    DoubleProperty joystickY = new SimpleDoubleProperty();
-
     private double limit;
-
 
     private void handleJoystickDragged(double x,double y){
         double mouseDistanceSquared = Math.pow(x, 2) + Math.pow(y, 2);
@@ -73,10 +69,13 @@ public class MainWindowController implements MainWindowView {
     private void initialize(){
         this.limit = bigJoystickCircle.getRadius() - joystickCircle.getRadius();
     }
+
+    boolean pathCalculationInProgress = false;
+    //on click findPath check if bool above is true
+    //save source and dest of last path calculation
     @Override
     public void setViewModel(MainWindowViewModelImpl vm) {
         this.vm = vm;
-
 
         vm.script.bind(scriptTextArea.textProperty());
         vm.rudderValue.bind(rudderSlider.valueProperty());
@@ -84,11 +83,14 @@ public class MainWindowController implements MainWindowView {
         vm.aileronValue.bind(joystickCircle.translateXProperty().divide(this.limit));
         vm.elevatorValue.bind(joystickCircle.translateYProperty().divide(-this.limit));
 
+
         vm.posChanged.addObserver((o, arg) ->
                 map.setPlanePosition(getRow(vm.planeY), getCol(vm.planeX)));
 
         vm.planeHeading.addListener((observable, oldValue, newValue) ->
                 map.setPlaneAngle(newValue.doubleValue()));
+
+        vm.pathCalculated.addListener((observable, oldValue, newValue) -> {return;});//map.drawPath(source,dest,path)
 
 
 
