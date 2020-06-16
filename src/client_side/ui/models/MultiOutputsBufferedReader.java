@@ -7,46 +7,51 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class MultiOutputsBufferedReader {
-    private BufferedReader in;
+    private final BufferedReader in;
     private List<BlockingQueue<String>> outputs;
-    private boolean stop=false;
+    private boolean stop = false;
 
-    public MultiOutputsBufferedReader(BufferedReader out){
+    public MultiOutputsBufferedReader(BufferedReader in) {
         this.in = in;
 
         new Thread(this::backgroundJob).start();
     }
 
-    private void backgroundJob(){
+    private void backgroundJob() {
         String line;
-        while(!stop)
+        while (!stop)
             try {
                 Thread.sleep(100);
-                while (!"bye".equals(line = in.readLine()) && line != null)
+                while (true) {
+                    line = in.readLine();
+                    if (line == null) break;
                     for (BlockingQueue<String> q : outputs) {
                         try {
                             Thread.sleep(300 / outputs.size());//maximum response time of 300 millis
-                        } catch (InterruptedException e) { }
+                        } catch (InterruptedException ignored) {
+                        }
 
                         q.put(line);
                     }
-            }catch (IOException | InterruptedException e){}
+                    if ("bye".equals(line))
+                        break;
+                }
+            } catch (IOException | InterruptedException ignored) {
+            }
     }
 
-    public BlockingQueue<String> getOutputChannel(){
+    public BlockingQueue<String> getOutputChannel() {
         BlockingQueue<String> newChannel = new LinkedBlockingDeque<>();
         outputs.add(newChannel);
         return newChannel;
     }
 
-    public void unsubscribe(BlockingQueue<String> q){
+    public void unsubscribe(BlockingQueue<String> q) {
         outputs.remove(q);
     }
 
     @Override
-    public void finalize(){
-        this.stop=true;
+    public void finalize() {
+        this.stop = true;
     }
-
-
 }
