@@ -153,7 +153,7 @@ public class ModelImpl implements Model  {
         this.commandOutput =new MultiSourcePrintWriter(new PrintWriter(commandsSocket.getOutputStream()));
 
 
-
+        this.commandOutputQ = commandOutput.getInputChannel();
         interpreter = new Interpreter(commandOutput.getInputChannel(), dataInput.getOutputChannel());
     }
 }
