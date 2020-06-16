@@ -16,17 +16,17 @@ import java.util.concurrent.ConcurrentMap;
 public class ConnectCommand implements Command {
     private final BlockingQueue<PropertyUpdate> updates;
     private final ConcurrentMap<String, Variable> symbolTable;
-    private Socket commandsConnection;
+    private BlockingQueue<String> commandsOutput;
 
     private Thread clientThread = null;
     private volatile boolean stop = false;
 
     private final Thread mainThread;
 
-    public ConnectCommand(BlockingQueue<PropertyUpdate> toUpdate, ConcurrentMap<String, Variable> symbolTable, Observable stopClient, Socket commandsConnection) {
+    public ConnectCommand(BlockingQueue<PropertyUpdate> toUpdate, ConcurrentMap<String, Variable> symbolTable, Observable stopClient, BlockingQueue<String> commandsOutput) {
         this.updates = toUpdate;
         this.symbolTable = symbolTable;
-        this.commandsConnection = commandsConnection;
+        this.commandsOutput = commandsOutput;
 
         stopClient.addObserver((o, arg) -> stopClientThread());
 
@@ -38,7 +38,7 @@ public class ConnectCommand implements Command {
     public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
         String ip = null;
         Double port = null;
-        if(this.commandsConnection == null) {
+        if(this.commandsOutput == null) {
             ip = tokens.get(startIndex + 1);
             port = ArithmeticParser.calc(tokens, startIndex + 2, symbolTable);
 
@@ -55,14 +55,14 @@ public class ConnectCommand implements Command {
         clientThread = new Thread(() -> client(finalIp, finalPort));
         clientThread.start();
 
-        if(this.commandsConnection == null)
+        if(this.commandsOutput == null)
             return ArithmeticParser.getEndOfExpression(tokens, startIndex + 2, symbolTable) + 1;
         return startIndex + 1;//if the commands connection is given then the ip,port are not given
     }
 
     private Writer connectAndGetWriter(String ip,Integer port) throws IOException {
-        if(ip == null && port == null)
-            return new BufferedWriter(new OutputStreamWriter(this.commandsConnection.getOutputStream()));
+        if(ip == null || port == null)
+            throw new IOException("invalid ip or port");
         Socket server = new Socket(ip, port);
         return new BufferedWriter(new OutputStreamWriter(server.getOutputStream()));
     }
@@ -71,7 +71,9 @@ public class ConnectCommand implements Command {
         // connect to the server
         Writer writer=null;
         try {
-            writer = connectAndGetWriter(ip,port);
+            if(this.commandsOutput==null) {
+                writer = connectAndGetWriter(ip, port);
+            }
             // send set messages every time a property is updated
             while (!stop) {
                 PropertyUpdate update;
@@ -81,8 +83,12 @@ public class ConnectCommand implements Command {
                     continue;
                 }
 
-                writer.write(getSetString(update));
-                writer.flush();
+                if(this.commandsOutput != null)
+                    this.commandsOutput.put(getSetString(update));
+                else {
+                    writer.write(getSetString(update));
+                    writer.flush();
+                }
             }
 
             writer.write("bye\n");
@@ -90,11 +96,11 @@ public class ConnectCommand implements Command {
 
 
 
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             mainThread.interrupt();
         }
         finally {
-            if(this.commandsConnection == null) {
+            if(this.commandsOutput == null) {
                 try {
                     writer.close();
                 } catch (IOException e) { }

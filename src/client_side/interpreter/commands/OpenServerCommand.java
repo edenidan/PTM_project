@@ -11,22 +11,23 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Observable;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentMap;
 
 public class OpenServerCommand implements Command {
     private final ConcurrentMap<String, Variable> symbolTable;
     private final ConcurrentMap<String, Property> properties;
-    private Socket dataConnection;
+    private BlockingQueue<String> dataInput;
 
     private Thread serverThread = null;
     private volatile boolean stop = false;
 
     private final Thread mainThread;
 
-    public OpenServerCommand(Observable stopServer, ConcurrentMap<String, Variable> symbolTable, ConcurrentMap<String, Property> properties, Socket dataConnection) {
+    public OpenServerCommand(Observable stopServer, ConcurrentMap<String, Variable> symbolTable, ConcurrentMap<String, Property> properties, BlockingQueue<String> dataInput) {
         this.symbolTable = symbolTable;
         this.properties = properties;
-        this.dataConnection = dataConnection;
+        this.dataInput = dataInput;
 
         stopServer.addObserver((o, arg) -> stopServerThread());
 
@@ -43,7 +44,7 @@ public class OpenServerCommand implements Command {
     public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
         // blocking call until starting to receive data
         Double port = null;
-        if (dataConnection == null) {
+        if (dataInput == null) {
             port = ArithmeticParser.calc(tokens, startIndex + 1, symbolTable);
             if (!Classifier.isPort(port))
                 throw new CannotInterpretException("illegal port", startIndex);
@@ -62,7 +63,7 @@ public class OpenServerCommand implements Command {
         } catch (InterruptedException ignored) {
         }
 
-        if (dataConnection != null)
+        if (dataInput != null)
             return startIndex + 1;
         //else:
         int endOfPortExpression = ArithmeticParser.getEndOfExpression(tokens, startIndex + 1, symbolTable);
@@ -87,11 +88,18 @@ public class OpenServerCommand implements Command {
                     if (port != null) {
                         Socket client = server.accept();
                         in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                    } else
-                        in = new BufferedReader(new InputStreamReader(dataConnection.getInputStream()));
+                    }
 
                     String line;
-                    while (!"bye".equals((line = in.readLine())) && line != null) {
+                    while (true) {
+
+                        if(this.dataInput == null)
+                            line = in.readLine();
+                        else
+                            line = this.dataInput.poll();
+
+                        if(line == null || "bye".equals(line))
+                            break;
 
                         try {
                             String[] properties = line.split(",");
@@ -101,7 +109,7 @@ public class OpenServerCommand implements Command {
 
                         } catch (NumberFormatException ignored) {
                         } finally {
-                            if (this.dataConnection == null)
+                            if (this.dataInput == null)
                                 in.close();
                         }
 
@@ -118,7 +126,7 @@ public class OpenServerCommand implements Command {
         } catch (IOException e) {
             mainThread.interrupt();
         } finally {
-            if (this.dataConnection == null)
+            if (this.dataInput == null)
                 try {
                     server.close();
                 } catch (IOException e) {

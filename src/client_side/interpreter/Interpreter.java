@@ -22,22 +22,25 @@ public class Interpreter {
     private final EmptyObservable stopServer = new EmptyObservable();
     private final EmptyObservable stopClient = new EmptyObservable();
 
+    ConcurrentMap<String, Property> properties = new ConcurrentHashMap<>();
+
+
     public Interpreter(){
         initInterpreter(null,null);
     }
 
-    public Interpreter(Socket commandsConnection,Socket dataConnection){
-        initInterpreter(commandsConnection,dataConnection);
+    public Interpreter(BlockingQueue<String> commandsOutput,BlockingQueue<String> dataInput){
+        initInterpreter(commandsOutput,dataInput);
     }
 
-    public void initInterpreter(Socket commandsConnection,Socket dataConnection) {
+
+    public void initInterpreter(BlockingQueue<String> commandsOutput,BlockingQueue<String> dataInput) {
         ConcurrentMap<String, Variable> symbolTable = new ConcurrentHashMap<>();
-        ConcurrentMap<String, Property> properties = new ConcurrentHashMap<>();
 
         BlockingQueue<PropertyUpdate> toUpdate = new LinkedBlockingDeque<>();
 
-        commands.put("openDataServer", new OpenServerCommand(stopServer, symbolTable, properties,dataConnection));
-        commands.put("connect", new ConnectCommand(toUpdate, symbolTable, stopClient,commandsConnection));
+        commands.put("openDataServer", new OpenServerCommand(stopServer, symbolTable, properties,dataInput));
+        commands.put("connect", new ConnectCommand(toUpdate, symbolTable, stopClient,commandsOutput));
         commands.put("disconnect", new DisconnectCommand(stopClient));
         commands.put("sleep", new SleepCommand(symbolTable));
         commands.put("var", new DefineVarCommand(symbolTable));
