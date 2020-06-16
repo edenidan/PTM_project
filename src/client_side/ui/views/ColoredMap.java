@@ -55,11 +55,12 @@ public class ColoredMap extends Canvas {
     }
 
     private void draw() {
+        GraphicsContext g = getGraphicsContext2D();
+        g.clearRect(0, 0, getWidth(), getHeight());
+
         if (elevationColors == null) return;
         cellWidth = getWidth() / elevationColors.get(0).size();
         cellHeight = getHeight() / elevationColors.size();
-
-        GraphicsContext g = getGraphicsContext2D();
 
         // draw grid
         for (int row = 0; row < elevationColors.size(); row++) {
