@@ -28,7 +28,8 @@ public class MainTrain {
         int rand = r.nextInt(1000);
 
         String[] test1 = {
-                "return " + rand + " * 5 - (8+2)"
+                "connect 127.0.0.1 5402"+
+                        "var v = bind "
         };
 
         if (MyInterpreter.interpret(test1) != rand * 5 - (8 + 2))

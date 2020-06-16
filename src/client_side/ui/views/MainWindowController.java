@@ -71,6 +71,7 @@ public class MainWindowController implements MainWindowView {
 
     boolean pathCalculationInProgress = false;
 
+    //TODO:
     //on click findPath check if bool above is true
     //save source and dest of last path calculation
     @Override
