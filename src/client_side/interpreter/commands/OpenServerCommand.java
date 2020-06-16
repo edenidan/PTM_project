@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentMap;
 public class OpenServerCommand implements Command {
     private final ConcurrentMap<String, Variable> symbolTable;
     private final ConcurrentMap<String, Property> properties;
-    private BlockingQueue<String> dataInput;
+    private final BlockingQueue<String> dataInput;
 
     private Thread serverThread = null;
     private volatile boolean stop = false;
@@ -54,7 +54,7 @@ public class OpenServerCommand implements Command {
 
         stopServerThread();
         stop = false;
-        final Integer finalPort = port.intValue();
+        final Integer finalPort = port != null ? port.intValue() : null;
         serverThread = new Thread(() -> runServer(finalPort));
         serverThread.start();
 
@@ -93,12 +93,12 @@ public class OpenServerCommand implements Command {
                     String line;
                     while (true) {
 
-                        if(this.dataInput == null)
+                        if (this.dataInput == null)
                             line = in.readLine();
                         else
                             line = this.dataInput.take();
 
-                        if(line == null || "bye".equals(line))
+                        if (line == null || "bye".equals(line))
                             break;
 
                         try {
@@ -118,10 +118,10 @@ public class OpenServerCommand implements Command {
                             mainThread.interrupt();
                         }
                     }
-                } catch (SocketTimeoutException ignored) {
+                } catch (SocketTimeoutException | InterruptedException ignored) {
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (InterruptedException e) { }
+                }
             }
         } catch (IOException e) {
             mainThread.interrupt();
@@ -129,7 +129,7 @@ public class OpenServerCommand implements Command {
             if (this.dataInput == null)
                 try {
                     server.close();
-                } catch (IOException e) {
+                } catch (IOException ignored) {
                 }
         }
     }
@@ -139,7 +139,6 @@ public class OpenServerCommand implements Command {
 
         if (serverThread != null) {
             serverThread.interrupt();
-
         }
     }
 }
