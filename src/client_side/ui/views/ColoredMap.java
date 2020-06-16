@@ -87,7 +87,7 @@ public class ColoredMap extends Canvas {
 
         // draw marker
         if (markerImage != null && markerPosition != null) {
-            double markerWidth = cellWidth / 2, markerHeight = cellHeight / 2;
+            double markerWidth = 20, markerHeight = 20;
             g.drawImage(markerImage,
                     markerPosition.getColumn() * cellWidth + cellWidth / 2 - markerWidth / 2,
                     markerPosition.getRow() * cellHeight + cellHeight / 2 - markerHeight / 2,
@@ -97,7 +97,7 @@ public class ColoredMap extends Canvas {
 
         // draw airplane
         if (planeImage != null && planePosition.get() != null) {
-            double planeWidth = cellWidth / 1.5, planeHeight = cellHeight / 1.5;
+            double planeWidth = 30, planeHeight = 30;
 
             g.save();
             g.translate(planePosition.get().getColumn() * cellWidth + cellWidth / 2,
