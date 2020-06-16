@@ -93,6 +93,8 @@ public class MainWindowController implements MainWindowView {
         vm.pathCalculated.addListener((observable, oldValue, newValue) -> {
             //map.drawPath(source,dest,path)
         });
+
+
     }
 
     private double heading = 0;

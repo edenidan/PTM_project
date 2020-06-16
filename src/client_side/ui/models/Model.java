@@ -19,6 +19,12 @@ public interface Model {
     String getPath();
     EmptyObservable getPathDoneObservable();
 
+    double getPlaneX();
+
+    double getPlaneY();
+
+    EmptyObservable getPositionChangedObservable();
+
     void connect(String ip, int port) throws IOException;
 
 

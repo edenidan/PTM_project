@@ -32,8 +32,15 @@ public class ModelImpl implements Model  {
         Socket dataSocket = dataServer.accept();
         this.dataInput =new MultiOutputsBufferedReader(new BufferedReader(new InputStreamReader(dataSocket.getInputStream())));
 
-        //TODO: new thread to read from a data input q and send position
-
+        new Thread(()->{
+            while(true){
+                try {
+                    String data = dataInputQ.take();
+                    //TODO: set this.planeX and this.PlaneY
+                    this.positionChanged.setChangedAndNotify();
+                } catch (InterruptedException e) { }
+            }
+        }).start();
 
 
 
@@ -120,7 +127,23 @@ public class ModelImpl implements Model  {
     @Override
     public EmptyObservable getPathDoneObservable() {
         return this.pathReadyObservable;
+    }
 
+    private double planeX = 0;
+    private double planeY = 0;
+    private EmptyObservable positionChanged = new EmptyObservable();
+    @Override
+    public double getPlaneX() {
+        return planeX;
+    }
+    @Override
+    public double getPlaneY() {
+        return planeY;
+    }
+
+    @Override
+    public EmptyObservable getPositionChangedObservable() {
+        return this.positionChanged;
     }
 
     @Override

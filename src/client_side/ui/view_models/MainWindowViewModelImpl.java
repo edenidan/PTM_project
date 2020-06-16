@@ -17,11 +17,13 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
     private final DoubleProperty rudderValue = new SimpleDoubleProperty();
     private final DoubleProperty throttleValue = new SimpleDoubleProperty();
 
+
     private final ReadOnlyDoubleWrapper planeHeading = new ReadOnlyDoubleWrapper();
     private final ReadOnlyObjectWrapper<Point2D> planePosition = new ReadOnlyObjectWrapper<>();
 
     public StringProperty pathCalculated = new SimpleStringProperty();
     Observable PathDoneObservable;
+    Observable positionChangedObservable;
 
     public MainWindowViewModelImpl(Model m) {
         this.m = m;
@@ -31,8 +33,13 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
         rudderValue.addListener((observable, oldValue, newValue) -> rudderChanged());
         throttleValue.addListener((observable, oldValue, newValue) -> throttleChanged());
 
-        this.PathDoneObservable =  m.getPathDoneObservable();
+        this.PathDoneObservable = m.getPathDoneObservable();
         PathDoneObservable.addObserver((o, arg) -> pathCalculated.setValue(m.getPath()));
+
+        this.positionChangedObservable = m.getPositionChangedObservable();
+        PathDoneObservable.addObserver((o, arg) -> {
+            //TODO: set position and notify view
+        });
     }
 
     @Override
@@ -57,19 +64,35 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
 
 
     private void aileronChanged() {
-        m.setAileron(aileronValue.get());
+        try {
+            m.setAileron(aileronValue.get());
+        } catch (IllegalAccessException | InterruptedException e) {
+            //TODO: trigger an errorEmptyObservable no notify the view
+        }
     }
 
     private void elevatorChanged() {
-        m.setElevator(elevatorValue.get());
+        try {
+            m.setElevator(elevatorValue.get());
+        } catch (IllegalAccessException | InterruptedException e) {
+            //TODO: trigger an errorEmptyObservable no notify the view
+        }
     }
 
     private void rudderChanged() {
-        m.setRudder(rudderValue.get());
+        try {
+            m.setRudder(rudderValue.get());
+        } catch (IllegalAccessException | InterruptedException e) {
+            //TODO: trigger an errorEmptyObservable no notify the view
+        }
     }
 
     private void throttleChanged() {
-        m.setThrottle(throttleValue.get());
+        try {
+            m.setThrottle(throttleValue.get());
+        } catch (IllegalAccessException | InterruptedException e) {
+            //TODO: trigger an errorEmptyObservable no notify the view
+        }
     }
 
     public StringProperty scriptProperty() {
