@@ -102,12 +102,15 @@ public class MainWindowController implements MainWindowView {
     @FXML
     private void loadDataFromCSV() {
         // TODO
-        map.setElevations(new double[][]{{1, 5}, {2, 10}});
+        double[][] c = new double[1024][1024];
+        for (int i = 0; i < c.length; i++)
+            Arrays.fill(c[i], i);
         map.setPlanePosition(new Position(0, 0));
         map.setPlaneHeading(heading += 20);
         map.setPath(Arrays.asList(
                 new Position(0, 0),
                 new Position(0, 1),
                 new Position(1, 1)));
+        map.setElevations(c);
     }
 }
