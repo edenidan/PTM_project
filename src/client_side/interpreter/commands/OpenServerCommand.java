@@ -96,7 +96,7 @@ public class OpenServerCommand implements Command {
                         if(this.dataInput == null)
                             line = in.readLine();
                         else
-                            line = this.dataInput.poll();
+                            line = this.dataInput.take();
 
                         if(line == null || "bye".equals(line))
                             break;
@@ -121,7 +121,7 @@ public class OpenServerCommand implements Command {
                 } catch (SocketTimeoutException ignored) {
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
+                } catch (InterruptedException e) { }
             }
         } catch (IOException e) {
             mainThread.interrupt();
