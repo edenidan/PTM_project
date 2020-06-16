@@ -1,53 +1,46 @@
 package client_side.ui.models;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class MultiSourcePrintWriter {
     private final PrintWriter out;
-    private List<BlockingQueue<String>> inputs;
+    private final BlockingQueue<String> inputs = new LinkedBlockingQueue<>();
     private boolean stop = false;
+    private final Thread thread;
 
     public MultiSourcePrintWriter(PrintWriter out) {
         this.out = out;
 
-        new Thread(this::backgroundJob).start();
+        thread = new Thread(this::backgroundJob);
+        thread.start();
     }
 
     private void backgroundJob() {
         while (!stop) {
+            String line = null;
             try {
-                Thread.sleep(100);
-            } catch (InterruptedException ignored) {
+                line = inputs.take();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            for (BlockingQueue<String> q : inputs) {
-                try {
-                    Thread.sleep(300 / inputs.size());//maximum response time of 300 millis
-                } catch (InterruptedException ignored) {
-                }
-                String line = q.poll();
-                if (line == null)
-                    continue;
-                this.out.println(line);
-            }
+            this.out.println(line);
+            this.out.flush();
         }
     }
 
     public BlockingQueue<String> getInputChannel() {
-        BlockingQueue<String> newChannel = new LinkedBlockingDeque<>();
-        inputs.add(newChannel);
-        return newChannel;
-    }
-
-    public void unsubscribe(BlockingQueue<String> q) {
-        inputs.remove(q);
+        return inputs;
     }
 
     @Override
     public void finalize() {
         this.stop = true;
+        thread.interrupt();
     }
 
 }

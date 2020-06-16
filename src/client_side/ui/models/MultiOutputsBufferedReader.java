@@ -2,19 +2,22 @@ package client_side.ui.models;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class MultiOutputsBufferedReader {
     private final BufferedReader in;
-    private List<BlockingQueue<String>> outputs;
+    private final List<BlockingQueue<String>> outputs = new ArrayList<>();
     private boolean stop = false;
+    private final Thread thread;
 
     public MultiOutputsBufferedReader(BufferedReader in) {
         this.in = in;
 
-        new Thread(this::backgroundJob).start();
+        thread = new Thread(this::backgroundJob);
+        thread.start();
     }
 
     private void backgroundJob() {
@@ -25,16 +28,8 @@ public class MultiOutputsBufferedReader {
                 while (true) {
                     line = in.readLine();
                     if (line == null) break;
-                    for (BlockingQueue<String> q : outputs) {
-                        try {
-                            Thread.sleep(300 / outputs.size());//maximum response time of 300 millis
-                        } catch (InterruptedException ignored) {
-                        }
-
+                    for (BlockingQueue<String> q : outputs)
                         q.put(line);
-                    }
-                    if ("bye".equals(line))
-                        break;
                 }
             } catch (IOException | InterruptedException ignored) {
             }
@@ -53,5 +48,6 @@ public class MultiOutputsBufferedReader {
     @Override
     public void finalize() {
         this.stop = true;
+        thread.interrupt();
     }
 }

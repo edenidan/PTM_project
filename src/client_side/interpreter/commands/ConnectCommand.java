@@ -51,7 +51,7 @@ public class ConnectCommand implements Command {
         stop = false;
 
         final String finalIp = ip;
-        final Integer finalPort = port.intValue();
+        final Integer finalPort = port != null ? port.intValue() : null;
         clientThread = new Thread(() -> client(finalIp, finalPort));
         clientThread.start();
 

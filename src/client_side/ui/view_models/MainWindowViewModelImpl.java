@@ -37,9 +37,7 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
         PathDoneObservable.addObserver((o, arg) -> pathCalculated.setValue(m.getPath()));
 
         this.positionChangedObservable = m.getPositionChangedObservable();
-        PathDoneObservable.addObserver((o, arg) -> {
-            //TODO: set position and notify view
-        });
+        positionChangedObservable.addObserver((o, arg) -> planePosition.set(new Point2D(m.getPlaneX(), m.getPlaneY())));
     }
 
     @Override

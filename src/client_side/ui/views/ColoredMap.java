@@ -113,16 +113,8 @@ public class ColoredMap extends Canvas {
         return Color.rgb(255 - normalizedElevation, normalizedElevation, 0);
     }
 
-    public void setPlanePosition(Position planePosition) {
-        this.planePosition.set(planePosition);
-    }
-
     public ObjectProperty<Position> planePositionProperty() {
         return planePosition;
-    }
-
-    public void setPlaneHeading(double planeHeading) {
-        this.planeHeading.set(planeHeading);
     }
 
     public DoubleProperty planeHeadingProperty() {

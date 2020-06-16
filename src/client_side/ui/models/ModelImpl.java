@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentMap;
 
-public class ModelImpl implements Model  {
+public class ModelImpl implements Model {
 
     private final int DATA_SERVER_PORT = 5400;
 
@@ -30,48 +30,50 @@ public class ModelImpl implements Model  {
     public ModelImpl() throws IOException {
         ServerSocket dataServer = new ServerSocket(DATA_SERVER_PORT);
         Socket dataSocket = dataServer.accept();
-        this.dataInput =new MultiOutputsBufferedReader(new BufferedReader(new InputStreamReader(dataSocket.getInputStream())));
+        this.dataInput = new MultiOutputsBufferedReader(new BufferedReader(new InputStreamReader(dataSocket.getInputStream())));
 
-        new Thread(()->{
-            while(true){
+        dataInputQ = dataInput.getOutputChannel();
+        new Thread(() -> {
+            while (true) {
                 try {
                     String data = dataInputQ.take();
+//                    System.out.println(data);
                     //TODO: set this.planeX and this.PlaneY
                     this.positionChanged.setChangedAndNotify();
-                } catch (InterruptedException e) { }
+                } catch (InterruptedException ignored) {
+                }
             }
         }).start();
-
 
 
     }
 
     private void sendSetCommand(String property, double value) throws IllegalAccessException, InterruptedException {
-        if(commandOutput == null)
+        if (commandOutput == null)
             throw new IllegalAccessException("cannot send a command to the simulator without a working connection");
-        commandOutputQ.put("set " + property + " " + value + "\n");
+        commandOutputQ.put("set " + property + " " + value);
     }
 
     @Override
-    public void setThrottle(double throttle) throws IllegalAccessException, InterruptedException{
+    public void setThrottle(double throttle) throws IllegalAccessException, InterruptedException {
         if (-1 <= throttle && throttle <= 1)
-            sendSetCommand("/controls/engines/engine/throttle", throttle);
+            sendSetCommand("/controls/engines/current-engine/throttle", throttle);
     }
 
     @Override
-    public void setRudder(double rudder)throws IllegalAccessException, InterruptedException {
+    public void setRudder(double rudder) throws IllegalAccessException, InterruptedException {
         if (-1 <= rudder && rudder <= 1)
             sendSetCommand("/controls/flight/rudder", rudder);
     }
 
     @Override
-    public void setElevator(double elevator)throws IllegalAccessException, InterruptedException {
+    public void setElevator(double elevator) throws IllegalAccessException, InterruptedException {
         if (-1 <= elevator && elevator <= 1)
             sendSetCommand("/controls/flight/elevator", elevator);
     }
 
     @Override
-    public void setAileron(double aileron)throws IllegalAccessException, InterruptedException {
+    public void setAileron(double aileron) throws IllegalAccessException, InterruptedException {
         if (-1 <= aileron && aileron <= 1)
             sendSetCommand("/controls/flight/aileron", aileron);
     }
@@ -81,9 +83,9 @@ public class ModelImpl implements Model  {
         if (autopilotRunning)
             throw new IllegalAccessException("an autopilot script is already running.");
         autopilotRunning = true;
-        
+
         interpreter = new Interpreter(commandOutput.getInputChannel(), dataInput.getOutputChannel());
-        interpreter.interpret("connect openDataServer "+script);
+        interpreter.interpret("connect openDataServer " + script);
     }
 
     @Override
@@ -93,8 +95,9 @@ public class ModelImpl implements Model  {
         autopilotRunning = false;
     }
 
-    String pathCalculated=null;
+    String pathCalculated = null;
     EmptyObservable pathReadyObservable = new EmptyObservable();
+
     @Override
     public void calculatePath(String ip, int port, double[][] heights, int sourceRow, int sourceCol, int destRow, int destCol) {
 
@@ -104,17 +107,16 @@ public class ModelImpl implements Model  {
                 PrintWriter out = new PrintWriter(new BufferedOutputStream(conn.getOutputStream()));
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-                for (int i = 0; i < heights.length; i++)
+                for (double[] height : heights)
                     out.println(
-                            String.join(",", Arrays.stream(heights[i]).mapToObj(Double::toString).toArray(String[]::new))
+                            String.join(",", Arrays.stream(height).mapToObj(Double::toString).toArray(String[]::new))
                     );
                 out.println(sourceRow + "," + sourceCol);
                 out.println(destRow + "," + destCol);
 
                 this.pathCalculated = in.readLine();
-            }
-            catch (IOException e){
-                this.pathCalculated=null;
+            } catch (IOException e) {
+                this.pathCalculated = null;
             }
             pathReadyObservable.setChangedAndNotify();
         }).start();
@@ -132,11 +134,13 @@ public class ModelImpl implements Model  {
 
     private double planeX = 0;
     private double planeY = 0;
-    private EmptyObservable positionChanged = new EmptyObservable();
+    private final EmptyObservable positionChanged = new EmptyObservable();
+
     @Override
     public double getPlaneX() {
         return planeX;
     }
+
     @Override
     public double getPlaneY() {
         return planeY;
@@ -151,7 +155,7 @@ public class ModelImpl implements Model  {
     public void connect(String ip, int port) throws IOException {
 
         Socket commandsSocket = new Socket(ip, port);
-        this.commandOutput =new MultiSourcePrintWriter(new PrintWriter(commandsSocket.getOutputStream()));
+        this.commandOutput = new MultiSourcePrintWriter(new PrintWriter(commandsSocket.getOutputStream()));
 
         this.commandOutputQ = commandOutput.getInputChannel();
     }

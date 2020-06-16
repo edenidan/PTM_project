@@ -62,8 +62,8 @@ public class AssignmentCommand implements Command {
 
     private static int getEndOfPropertyName(List<String> tokens, int startIndex) throws IllegalArgumentException {
         for (int i = startIndex; i < tokens.size() - 1; i++)
-            if (!tokens.get(i).equals("/")) // word
-                if (!tokens.get(i + 1).equals("/")) // isn't followed by /
+            if (!tokens.get(i).equals("/") && !tokens.get(i).equals("-")) // word
+                if (!tokens.get(i + 1).equals("/") && !tokens.get(i + 1).equals("-")) // isn't followed by /
                     return i;
 
         if (!tokens.get(tokens.size() - 1).equals("/"))
