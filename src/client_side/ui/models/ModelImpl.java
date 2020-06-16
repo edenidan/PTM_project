@@ -81,8 +81,9 @@ public class ModelImpl implements Model  {
         if (autopilotRunning)
             throw new IllegalAccessException("an autopilot script is already running.");
         autopilotRunning = true;
+        
+        interpreter = new Interpreter(commandOutput.getInputChannel(), dataInput.getOutputChannel());
         interpreter.interpret("connect openDataServer "+script);
-
     }
 
     @Override
@@ -152,8 +153,6 @@ public class ModelImpl implements Model  {
         Socket commandsSocket = new Socket(ip, port);
         this.commandOutput =new MultiSourcePrintWriter(new PrintWriter(commandsSocket.getOutputStream()));
 
-
         this.commandOutputQ = commandOutput.getInputChannel();
-        interpreter = new Interpreter(commandOutput.getInputChannel(), dataInput.getOutputChannel());
     }
 }
