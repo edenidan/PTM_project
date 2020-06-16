@@ -38,7 +38,7 @@ public class ConnectCommand implements Command {
     public int doCommand(List<String> tokens, int startIndex) throws CannotInterpretException {
         String ip = null;
         Double port = null;
-        if(this.commandsOutput == null) {
+        if (this.commandsOutput == null) {
             ip = tokens.get(startIndex + 1);
             port = ArithmeticParser.calc(tokens, startIndex + 2, symbolTable);
 
@@ -55,13 +55,13 @@ public class ConnectCommand implements Command {
         clientThread = new Thread(() -> client(finalIp, finalPort));
         clientThread.start();
 
-        if(this.commandsOutput == null)
+        if (this.commandsOutput == null)
             return ArithmeticParser.getEndOfExpression(tokens, startIndex + 2, symbolTable) + 1;
         return startIndex + 1;//if the commands connection is given then the ip,port are not given
     }
 
-    private Writer connectAndGetWriter(String ip,Integer port) throws IOException {
-        if(ip == null || port == null)
+    private Writer connectAndGetWriter(String ip, Integer port) throws IOException {
+        if (ip == null || port == null)
             throw new IOException("invalid ip or port");
         Socket server = new Socket(ip, port);
         return new BufferedWriter(new OutputStreamWriter(server.getOutputStream()));
@@ -69,9 +69,9 @@ public class ConnectCommand implements Command {
 
     private void client(String ip, Integer port) {
         // connect to the server
-        Writer writer=null;
+        Writer writer = null;
         try {
-            if(this.commandsOutput==null) {
+            if (this.commandsOutput == null) {
                 writer = connectAndGetWriter(ip, port);
             }
             // send set messages every time a property is updated
@@ -83,27 +83,30 @@ public class ConnectCommand implements Command {
                     continue;
                 }
 
-                if(this.commandsOutput != null)
+                if (this.commandsOutput != null) {
                     this.commandsOutput.put(getSetString(update));
-                else {
+                } else {
                     writer.write(getSetString(update));
                     writer.flush();
                 }
             }
 
-            writer.write("bye\n");
-            writer.flush();
-
+            if (this.commandsOutput != null) {
+                this.commandsOutput.put("bye\n");
+            } else {
+                writer.write("bye\n");
+                writer.flush();
+            }
 
 
         } catch (IOException | InterruptedException e) {
             mainThread.interrupt();
-        }
-        finally {
-            if(this.commandsOutput == null) {
+        } finally {
+            if (this.commandsOutput == null) {
                 try {
                     writer.close();
-                } catch (IOException e) { }
+                } catch (IOException e) {
+                }
             }
         }
     }
@@ -115,7 +118,13 @@ public class ConnectCommand implements Command {
     private void stopClientThread() {
         stop = true;
 
-        if (clientThread != null)
+        if (clientThread != null) {
             clientThread.interrupt();
+            try {
+                clientThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

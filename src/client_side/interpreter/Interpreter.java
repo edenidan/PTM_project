@@ -76,8 +76,7 @@ public class Interpreter {
             try {
                 //Thread.sleep(2000);
                 Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (InterruptedException ignored) {
             }
         }
         return -1;//error value

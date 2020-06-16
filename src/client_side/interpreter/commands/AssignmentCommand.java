@@ -47,7 +47,7 @@ public class AssignmentCommand implements Command {
         }
 
         if (!properties.containsKey(propertyName))
-            throw new CannotInterpretException("property does not exist", startIndex);
+            properties.put(propertyName, new Property(propertyName, 0));
 
         String variableName = tokens.get(startIndex - 1);
         symbolTable.get(variableName).setBoundProperty(properties.get(propertyName));

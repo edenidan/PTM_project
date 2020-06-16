@@ -2,13 +2,21 @@ package client_side.interpreter.commands;
 
 import client_side.interpreter.*;
 import client_side.interpreter.math.ArithmeticParser;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.concurrent.BlockingQueue;
@@ -23,6 +31,7 @@ public class OpenServerCommand implements Command {
     private volatile boolean stop = false;
 
     private final Thread mainThread;
+    private final List<String> propertyNames;
 
     public OpenServerCommand(Observable stopServer, ConcurrentMap<String, Variable> symbolTable, ConcurrentMap<String, Property> properties, BlockingQueue<String> dataInput) {
         this.symbolTable = symbolTable;
@@ -32,12 +41,34 @@ public class OpenServerCommand implements Command {
         stopServer.addObserver((o, arg) -> stopServerThread());
 
         this.mainThread = Thread.currentThread();
+
+        propertyNames = parseGenericSmallXML();
     }
 
     private void initPropertiesDefault() {
-        this.properties.put("simX", new Property("simX", 0.0));
-        this.properties.put("simY", new Property("simY", 0.0));
-        this.properties.put("simZ", new Property("simZ", 0.0));
+        for (String name : propertyNames)
+            properties.put(name, new Property(name, 0));
+//        this.properties.put("simX", new Property("simX", 0.0));
+//        this.properties.put("simY", new Property("simY", 0.0));
+//        this.properties.put("simZ", new Property("simZ", 0.0));
+    }
+
+    private List<String> parseGenericSmallXML() {
+        List<String> propertyNames = new ArrayList<>();
+        String genericSmallFile = "resources/generic_small.xml";
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(new File(genericSmallFile));
+
+            NodeList names = document.getElementsByTagName("name");
+            for (int i = 0; i < names.getLength(); i++) {
+                propertyNames.add(names.item(i).getTextContent());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return propertyNames;
     }
 
     @Override
@@ -103,9 +134,11 @@ public class OpenServerCommand implements Command {
 
                         try {
                             String[] properties = line.split(",");
-                            this.properties.get("simX").setValue(Double.parseDouble(properties[0]));
-                            this.properties.get("simY").setValue(Double.parseDouble(properties[1]));
-                            this.properties.get("simZ").setValue(Double.parseDouble(properties[2]));
+                            for (int i = 0; i < this.propertyNames.size(); i++)
+                                this.properties.get(propertyNames.get(i)).setValue(Double.parseDouble(properties[i]));
+//                            this.properties.get("simX").setValue(Double.parseDouble(properties[0]));
+//                            this.properties.get("simY").setValue(Double.parseDouble(properties[1]));
+//                            this.properties.get("simZ").setValue(Double.parseDouble(properties[2]));
 
                         } catch (NumberFormatException ignored) {
                         } finally {
@@ -139,6 +172,11 @@ public class OpenServerCommand implements Command {
 
         if (serverThread != null) {
             serverThread.interrupt();
+            try {
+                serverThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
