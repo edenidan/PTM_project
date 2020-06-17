@@ -165,6 +165,8 @@ public class ModelImpl implements Model {
                     commandOutputQ.put("dump /position");
                     String data = commandInputQ.take();
                     //todo: set this.planeX and this.PlaneY
+                    //see more info: http://wiki.flightgear.org/Telnet_usage#dump
+                    this.positionChanged.setChangedAndNotify();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
