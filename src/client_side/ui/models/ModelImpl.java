@@ -164,15 +164,11 @@ public class ModelImpl implements Model {
         InputStream positionInput =positionClient.getInputStream();
         PrintWriter positionOutput =new PrintWriter(positionClient.getOutputStream());
 
-        System.out.println("test1");
         new Thread(()->{
-            System.out.println("test2");
 
             while(true){
-                System.out.println("test3");
 
                 try {
-                    System.out.println("test4");
 
                     positionOutput.println("dump /position");
                     positionOutput.flush();
