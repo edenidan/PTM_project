@@ -69,12 +69,15 @@ public class Interpreter {
         } catch (Exception e) {
             System.out.println("unknown error: " + e.getMessage());
         } finally {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ignored) {
+            }
             stopClient.setChangedAndNotify();
             stopServer.setChangedAndNotify();
 
             // Give time for the threads to close, otherwise the ports may be still taken
             try {
-                //Thread.sleep(2000);
                 Thread.sleep(1);
             } catch (InterruptedException ignored) {
             }

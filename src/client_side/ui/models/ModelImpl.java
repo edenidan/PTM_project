@@ -6,6 +6,7 @@ import utility.EmptyObservable;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import java.util.concurrent.BlockingQueue;
@@ -80,9 +81,10 @@ public class ModelImpl implements Model {
         if (autopilotRunning)
             throw new IllegalAccessException("an autopilot script is already running.");
         autopilotRunning = true;
-
-        interpreter = new Interpreter(commandOutput.getInputChannel(), dataInput.getOutputChannel());
+        BlockingQueue<String> dataInputQInterpreter = this.dataInput.getOutputChannel();
+        interpreter = new Interpreter(commandOutput.getInputChannel(), dataInputQInterpreter);
         interpreter.interpret("connect openDataServer " + script);
+        this.dataInput.unsubscribe(dataInputQInterpreter);
     }
 
     @Override
@@ -155,23 +157,38 @@ public class ModelImpl implements Model {
         this.commandOutput = new MultiSourcePrintWriter(new PrintWriter(commandsSocket.getOutputStream()));
         this.commandOutputQ = commandOutput.getInputChannel();
 
+        Socket positionClient = new Socket(ip, port);
 
         BlockingQueue<String> commandInputQ;
 
-        commandInputQ = new MultiOutputsBufferedReader(new BufferedReader(new InputStreamReader(commandsSocket.getInputStream()))).getOutputChannel();
+        InputStream positionInput =positionClient.getInputStream();
+        PrintWriter positionOutput =new PrintWriter(positionClient.getOutputStream());
+
+        System.out.println("test1");
         new Thread(()->{
+            System.out.println("test2");
+
             while(true){
+                System.out.println("test3");
+
                 try {
-                    commandOutputQ.put("dump /position");
-                    String data = commandInputQ.take();
+                    System.out.println("test4");
+
+                    positionOutput.println("dump /position");
+                    positionOutput.flush();
+
+                    byte[] data = new byte[1024];
+                    positionInput.read(data,0,1024);
+                    String dataXml = new String(data, StandardCharsets.UTF_8);
+                    System.out.println(dataXml);
                     //todo: set this.planeX and this.PlaneY
                     //see more info: http://wiki.flightgear.org/Telnet_usage#dump
                     this.positionChanged.setChangedAndNotify();
-                } catch (InterruptedException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
                 try {
-                    Thread.sleep(50);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) { }
             }
         }).start();
