@@ -107,7 +107,8 @@ public class MainWindowController implements MainWindowView {
         map.planeHeadingProperty().bind(vm.planeHeadingProperty());
 
         vm.pathCalculated.addListener((observable, oldValue, newValue) -> {
-            //map.drawPath(source,dest,path)
+            //translate path to list<position>
+            // map.drawPath(path)
         });
 
 

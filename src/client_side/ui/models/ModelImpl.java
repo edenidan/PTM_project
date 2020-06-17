@@ -170,11 +170,8 @@ public class ModelImpl implements Model {
         PrintWriter positionOutput = new PrintWriter(positionClient.getOutputStream());
 
         new Thread(() -> {
-
             while (true) {
-
                 try {
-
                     positionOutput.println("dump /position");
                     positionOutput.flush();
 
@@ -182,17 +179,15 @@ public class ModelImpl implements Model {
                     positionInput.read(data, 0, 1024);
                     String dataXml = new String(data, StandardCharsets.UTF_8);
 
-                    System.out.println(positionXmlToPlaneX(dataXml) + " " +positionXmlToPlaneY(dataXml));
-                    //todo: set this.planeX and this.PlaneY
-                    //see more info: http://wiki.flightgear.org/Telnet_usage#dump
+                    this.planeX = positionXmlToPlaneX(dataXml);
+                    this.planeY = positionXmlToPlaneY(dataXml);
 
                     this.positionChanged.setChangedAndNotify();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException | WrongDocumentException ignored) {
                 }
                 try {
                     Thread.sleep(100);
-                } catch (InterruptedException e) {
+                } catch (InterruptedException ignored) {
                 }
             }
         }).start();
@@ -218,8 +213,9 @@ public class ModelImpl implements Model {
             throw new WrongDocumentException("invalid or wrong xml document");
 
         int startIndex = xml.indexOf(tag) + tag.length();
-        int endIndex = xml.substring(startIndex).indexOf("<") - 1;
+        int endIndex = xml.substring(startIndex).indexOf("<") - 1 + startIndex;
 
-        return Double.parseDouble(tag.substring(startIndex, endIndex));
+        String res = xml.substring(startIndex, endIndex);
+        return Double.parseDouble(res);
     }
 }
