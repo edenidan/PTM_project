@@ -46,8 +46,7 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
     }
 
     @Override
-    public void calculatePath(String ip, int port, double[][] heights, int sourceRow, int sourceCol, int destRow, int destCol) {
-
+    public void calculatePath(String ip, int port, int[][] heights, int sourceRow, int sourceCol, int destRow, int destCol) {
         m.calculatePath(ip, port, heights, sourceRow, sourceCol, destRow, destCol);
     }
 

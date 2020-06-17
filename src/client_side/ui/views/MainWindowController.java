@@ -6,16 +6,21 @@ import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
+import javafx.stage.FileChooser;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.List;
 
 public class MainWindowController implements MainWindowView {
@@ -95,9 +100,8 @@ public class MainWindowController implements MainWindowView {
         vm.elevatorValueProperty().bind(smallJoystickCircle.translateYProperty().divide(-this.limit));
 
         map.planePositionProperty().bind(Bindings.createObjectBinding(() -> {
-            if (!loadedData) return null;
-
             Point2D planePosition = vm.getPlanePosition();
+            if (planePosition == null) return null;
             int row = getRow(planePosition.getY());
             int column = getCol(planePosition.getX());
             return new Position(row, column);
@@ -106,30 +110,36 @@ public class MainWindowController implements MainWindowView {
 
         vm.pathCalculated.addListener((observable, oldValue, newValue) -> {
             List<Position> path = TranslatePath(newValue);
+            System.out.println(newValue);
             map.setPath(path);
             this.pathCalculationInProgress = false;
         });
-
-
     }
 
 
+    int[][] mapData = null;
 
-
-    private boolean loadedData = false;
-    double[][] mapData = null;
     @FXML
     private void loadDataFromCSV() {
-        loadedData = true;
-        // TODO
-        mapData = new double[256][256];
-        for (int i = 0; i < mapData.length; i++)
-            Arrays.fill(mapData[i], i);
-        map.setPath(Arrays.asList(
-                new Position(0, 0),
-                new Position(0, 1),
-                new Position(1, 1)));
-        map.setElevations(mapData);
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open CSV Data File");
+        fileChooser.setInitialDirectory(new File("./resources"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+        File csvFile = fileChooser.showOpenDialog(null);
+        if (csvFile == null) return;
+
+        try {
+            mapData = Files.readAllLines(csvFile.toPath()).stream()
+                    .skip(2)
+                    .map(line -> Arrays.stream(line.split(","))
+                            .mapToInt(Integer::parseInt)
+                            .toArray())
+                    .toArray(int[][]::new);
+
+            map.setElevations(mapData);
+        } catch (IOException e) {
+            new Alert(Alert.AlertType.ERROR, "Error reading file").show();
+        }
     }
 
     @FXML
@@ -163,9 +173,10 @@ public class MainWindowController implements MainWindowView {
 
     boolean pathCalculationInProgress = false;
     Position lastPathCalculationSource = null;
+
     @FXML
-    public void findPath(ActionEvent actionEvent) {
-        if(!this.loadedData || this.pathCalculationInProgress)//todo: show error message
+    public void findPath() {
+        if (this.pathCalculationInProgress)//todo: show error message
             return;
         this.pathCalculationInProgress = true;
 
@@ -176,7 +187,7 @@ public class MainWindowController implements MainWindowView {
         Position d = map.getMarkerPosition();
         this.lastPathCalculationSource = s;
 
-        vm.calculatePath(ip,port,mapData,s.getRow(),s.getColumn(),d.getRow(),d.getColumn());
+        vm.calculatePath(ip, port, mapData, s.getRow(), s.getColumn(), d.getRow(), d.getColumn());
     }
 
     private List<Position> TranslatePath(String pathStr) {
@@ -184,23 +195,23 @@ public class MainWindowController implements MainWindowView {
         result.add(this.lastPathCalculationSource);
 
         String[] path = pathStr.split(",");
-        Position prev=result.get(0);
-        for (String step :path) {
+        Position prev = result.get(0);
+        for (String step : path) {
             int prevR = prev.getRow();
             int prevC = prev.getColumn();
             Position newPos = null;
 
-            if(step.equals("Up"))
-                newPos = new Position(prevR-1,prevC);
+            if (step.equals("Up"))
+                newPos = new Position(prevR - 1, prevC);
 
-            if(step.equals("Down"))
-                newPos =new Position(prevR+1,prevC);
+            if (step.equals("Down"))
+                newPos = new Position(prevR + 1, prevC);
 
-            if(step.equals("Right"))
-                newPos =new Position(prevR,prevC+1);
+            if (step.equals("Right"))
+                newPos = new Position(prevR, prevC + 1);
 
-            if(step.equals("Up"))
-                newPos =new Position(prevR,prevC-1);
+            if (step.equals("Up"))
+                newPos = new Position(prevR, prevC - 1);
             prev = newPos;
             result.add(newPos);
         }

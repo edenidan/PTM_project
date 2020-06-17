@@ -7,7 +7,7 @@ public interface MainWindowViewModel {
     //searching server ip,port
     void connect(String ip, int port) throws IOException;
 
-    void calculatePath(String ip, int port, double[][] heights, int sourceRow, int sourceCol, int destRow, int destCol);
+    void calculatePath(String ip, int port, int[][] heights, int sourceRow, int sourceCol, int destRow, int destCol);
     //void loadData();
 
     //script

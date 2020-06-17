@@ -1,6 +1,7 @@
 package client_side.ui.views;
 
 import client_side.ui.Position;
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -15,6 +16,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalDouble;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
 
 public class ColoredMap extends Canvas {
@@ -55,6 +57,10 @@ public class ColoredMap extends Canvas {
     }
 
     private void draw() {
+        Platform.runLater(this::realDraw);
+    }
+
+    private void realDraw() {
         GraphicsContext g = getGraphicsContext2D();
         g.clearRect(0, 0, getWidth(), getHeight());
 
@@ -125,10 +131,10 @@ public class ColoredMap extends Canvas {
         return planeHeading;
     }
 
-    public void setElevations(double[][] elevations) {
-        OptionalDouble max = Arrays.stream(elevations).flatMapToDouble(Arrays::stream).max();
+    public void setElevations(int[][] elevations) {
+        OptionalInt max = Arrays.stream(elevations).flatMapToInt(Arrays::stream).max();
         if (!max.isPresent()) return;
-        double maxElevation = max.getAsDouble();
+        double maxElevation = max.getAsInt();
 
         elevationColors = Arrays.stream(elevations)
                 .map(row -> Arrays.stream(row)

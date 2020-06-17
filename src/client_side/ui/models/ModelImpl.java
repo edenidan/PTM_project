@@ -2,12 +2,10 @@ package client_side.ui.models;
 
 import client_side.interpreter.Interpreter;
 
-import javafx.beans.property.DoubleProperty;
 import sun.plugin.dom.exception.WrongDocumentException;
 import utility.EmptyObservable;
 
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -15,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.stream.Collectors;
 
 public class ModelImpl implements Model {
 
@@ -22,7 +21,7 @@ public class ModelImpl implements Model {
 
     private boolean autopilotRunning = false;
 
-    MultiOutputsBufferedReader dataInput = null;
+    MultiOutputsBufferedReader dataInput;
     MultiSourcePrintWriter commandOutput = null;
 
     BlockingQueue<String> commandOutputQ;
@@ -103,7 +102,7 @@ public class ModelImpl implements Model {
     EmptyObservable pathReadyObservable = new EmptyObservable();
 
     @Override
-    public void calculatePath(String ip, int port, double[][] heights, int sourceRow, int sourceCol, int destRow, int destCol) {
+    public void calculatePath(String ip, int port, int[][] heights, int sourceRow, int sourceCol, int destRow, int destCol) {
 
         new Thread(() -> {
             try {
@@ -111,14 +110,12 @@ public class ModelImpl implements Model {
                 PrintWriter out = new PrintWriter(new BufferedOutputStream(conn.getOutputStream()));
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-                for (double[] height : heights)
-                    out.println(
-                            String.join(",", Arrays.stream(height).mapToObj(Double::toString).toArray(String[]::new))
-                    );
+                for (int[] height : heights)
+                    out.println(Arrays.stream(height).mapToObj(a -> Integer.toString(a + 1)).collect(Collectors.joining(",")));
                 out.println("end");
                 out.println(sourceRow + "," + sourceCol);
                 out.println(destRow + "," + destCol);
-
+                out.flush();
                 this.pathCalculated = in.readLine();
             } catch (IOException e) {
                 this.pathCalculated = null;
