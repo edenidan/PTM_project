@@ -157,7 +157,7 @@ public class MainWindowController implements MainWindowView {
             this.originLatitude = Double.parseDouble(lines.get(0).split(",")[0]);
             this.originLongitude = Double.parseDouble(lines.get(0).split(",")[1]);
 
-            this.mapCellSideLength = Double.parseDouble(lines.get(1).split(",")[0]);
+            this.mapCellSideLength = Math.sqrt(Double.parseDouble(lines.get(1).split(",")[0]));
 
             mapData = lines.stream()
                     .skip(2)
