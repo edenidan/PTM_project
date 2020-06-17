@@ -1,17 +1,14 @@
 package client_side.ui.models;
 
 import client_side.interpreter.Interpreter;
-import client_side.interpreter.Property;
 import utility.EmptyObservable;
 
-import javax.jnlp.UnavailableServiceException;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentMap;
 
 public class ModelImpl implements Model {
 
@@ -33,17 +30,17 @@ public class ModelImpl implements Model {
         this.dataInput = new MultiOutputsBufferedReader(new BufferedReader(new InputStreamReader(dataSocket.getInputStream())));
 
         dataInputQ = dataInput.getOutputChannel();
-        new Thread(() -> {
+        /*new Thread(() -> {
             while (true) {
                 try {
                     String data = dataInputQ.take();
-//                    System.out.println(data);
-                    //TODO: set this.planeX and this.PlaneY
+                    System.out.println(data);
+                    //TO DO: set this.planeX and this.PlaneY
                     this.positionChanged.setChangedAndNotify();
                 } catch (InterruptedException ignored) {
                 }
             }
-        }).start();
+        }).start();*/
 
 
     }
@@ -156,7 +153,25 @@ public class ModelImpl implements Model {
 
         Socket commandsSocket = new Socket(ip, port);
         this.commandOutput = new MultiSourcePrintWriter(new PrintWriter(commandsSocket.getOutputStream()));
-
         this.commandOutputQ = commandOutput.getInputChannel();
+
+
+        BlockingQueue<String> commandInputQ;
+
+        commandInputQ = new MultiOutputsBufferedReader(new BufferedReader(new InputStreamReader(commandsSocket.getInputStream()))).getOutputChannel();
+        new Thread(()->{
+            while(true){
+                try {
+                    commandOutputQ.put("dump /position");
+                    String data = commandInputQ.take();
+                    //todo: set this.planeX and this.PlaneY
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) { }
+            }
+        }).start();
     }
 }
