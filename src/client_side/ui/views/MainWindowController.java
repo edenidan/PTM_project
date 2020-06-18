@@ -141,8 +141,7 @@ public class MainWindowController implements MainWindowView {
         map.planeHeadingProperty().bind(vm.planeHeadingProperty());
 
         vm.pathCalculated.addListener((observable, oldValue, newValue) -> {
-            List<Position> path = TranslatePath(newValue);
-            System.out.println(newValue);
+            List<Position> path = translatePath(newValue);
             map.setPath(path);
             this.pathCalculationInProgress = false;
         });
@@ -230,7 +229,7 @@ public class MainWindowController implements MainWindowView {
         vm.calculatePath(ip, port, mapData, s.getRow(), s.getColumn(), d.getRow(), d.getColumn());
     }
 
-    private List<Position> TranslatePath(String pathStr) {
+    private List<Position> translatePath(String pathStr) {
         List<Position> result = new ArrayList<>();
         result.add(this.lastPathCalculationSource);
 
@@ -250,7 +249,7 @@ public class MainWindowController implements MainWindowView {
             if (step.equals("Right"))
                 newPos = new Position(prevR, prevC + 1);
 
-            if (step.equals("Up"))
+            if (step.equals("Left"))
                 newPos = new Position(prevR, prevC - 1);
             prev = newPos;
             result.add(newPos);
