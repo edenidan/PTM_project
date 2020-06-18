@@ -84,12 +84,13 @@ public class ModelImpl implements Model {
             throw new IllegalStateException("an autopilot script is already running.");
         autopilotRunning = true;
         BlockingQueue<String> dataInputQInterpreter = this.dataInput.getOutputChannel();
-        interpreter = new Interpreter(commandOutput.getInputChannel(), dataInputQInterpreter);
 
         new Thread(() -> {
+            interpreter = new Interpreter(commandOutput.getInputChannel(), dataInputQInterpreter);
             interpreter.interpret("connect openDataServer " + script);
             this.dataInput.unsubscribe(dataInputQInterpreter);
-        });
+            autopilotRunning = false;
+        }).start();
     }
 
     @Override

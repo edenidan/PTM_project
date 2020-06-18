@@ -104,6 +104,10 @@ public class OpenServerCommand implements Command {
 
 
     private void runServer(Integer port) {
+        try {
+            Thread.sleep(1);
+        } catch (InterruptedException ignored) {
+        }
         boolean first = true;
         ServerSocket server = null;
         BufferedReader in = null;
