@@ -11,7 +11,7 @@ public interface MainWindowViewModel {
     //void loadData();
 
     //script
-    void startAutoPilotScript() throws IllegalAccessException;
+    void startAutoPilotScript() throws IllegalStateException;
 
     void stopAutoPilotScript();
 

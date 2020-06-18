@@ -12,7 +12,7 @@ public interface Model {
     void setElevator(double elevator)throws IllegalAccessException, InterruptedException;
     void setAileron(double aileron)throws IllegalAccessException, InterruptedException;
 
-    void runScript(String script) throws IllegalAccessException;
+    void runScript(String script) throws IllegalStateException;
     void stopScript();
 
     void calculatePath(String ip, int port, int[][] heights, int sourceRow, int sourceCol, int destRow, int destCol);

@@ -101,25 +101,30 @@ public class MainWindowController implements MainWindowView {
         return earthRadiusKm * c;
     }
 
-    double xDistanceInKmBetweenEarthCoordinates(Coordinate c1, Coordinate c2) throws IllegalAccessException {
+    double xDistanceInKmBetweenEarthCoordinates(Coordinate c1, Coordinate c2) {
         double c1XKm = c1.getLatitude() * 110.574;
         double c2XKm = c2.getLatitude() * 110.574;
 
         return c1XKm - c2XKm;
     }
 
-    private int getRow(Coordinate current) throws IllegalAccessException {
+    private int getRow(Coordinate current) {
+        if (origin == null)
+            throw new IllegalStateException("cannot get row for coordinate when origin coordinate is null");
+
         double totalD = distanceInKmBetweenEarthCoordinates(current, origin);
         double dX = xDistanceInKmBetweenEarthCoordinates(current, origin);
 
         return (int) (Math.sqrt(totalD * totalD - dX * dX) / mapCellSideLength);
     }
 
-    private int getCol(Coordinate current) throws IllegalAccessException {
+    private int getCol(Coordinate current) {
+        if (origin == null)
+            throw new IllegalStateException("cannot get column for coordinate when origin coordinate is null");
+
         double dX = xDistanceInKmBetweenEarthCoordinates(current, origin);
         return (int) (dX / mapCellSideLength);
     }
-
 
     @Override
     public void setViewModel(MainWindowViewModelImpl vm) {
@@ -188,8 +193,7 @@ public class MainWindowController implements MainWindowView {
             vm.connect("127.0.0.1", 5402);
             connectButton.setDisable(true);
         } catch (IOException e) {
-            // TODO: open pop up
-            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "Error while connecting to flight gear").show();
         }
     }
 
@@ -198,9 +202,8 @@ public class MainWindowController implements MainWindowView {
         try {
             vm.startAutoPilotScript();
             scriptTextArea.setDisable(true);
-        } catch (IllegalAccessException e) {
-            // TODO: open popup script is already running
-            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            new Alert(Alert.AlertType.WARNING, "Already running a script").show();
         }
     }
 
@@ -215,8 +218,10 @@ public class MainWindowController implements MainWindowView {
 
     @FXML
     public void findPath() {
-        if (this.pathCalculationInProgress)//todo: show error message
+        if (this.pathCalculationInProgress) {
+            new Alert(Alert.AlertType.WARNING, "Already calculating a path").show();
             return;
+        }
         this.pathCalculationInProgress = true;
 
         String ip = "127.0.0.1";

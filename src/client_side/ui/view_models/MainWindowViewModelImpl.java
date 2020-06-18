@@ -51,7 +51,7 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
     }
 
     @Override
-    public void startAutoPilotScript() throws IllegalAccessException {
+    public void startAutoPilotScript() throws IllegalStateException {
         m.runScript(script.get());
     }
 

@@ -79,9 +79,9 @@ public class ModelImpl implements Model {
     }
 
     @Override
-    public void runScript(String script) throws IllegalAccessException {
+    public void runScript(String script) throws IllegalStateException {
         if (autopilotRunning)
-            throw new IllegalAccessException("an autopilot script is already running.");
+            throw new IllegalStateException("an autopilot script is already running.");
         autopilotRunning = true;
         BlockingQueue<String> dataInputQInterpreter = this.dataInput.getOutputChannel();
         interpreter = new Interpreter(commandOutput.getInputChannel(), dataInputQInterpreter);
