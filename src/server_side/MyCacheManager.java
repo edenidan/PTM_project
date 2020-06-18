@@ -20,7 +20,7 @@ public class MyCacheManager<T extends Serializable, U extends Serializable> impl
 
     @Override
     public boolean existsSolution(T problem) {
-        return existsSolutionInMemory(problem) || existsSolutionInFile(problem);
+        return existsSolutionInMemory(problem)/* || existsSolutionInFile(problem)*/;
     }
 
     @Override
@@ -28,24 +28,22 @@ public class MyCacheManager<T extends Serializable, U extends Serializable> impl
         if (memoryCache.containsKey(problem))
             return memoryCache.get(problem);
 
-        if (!cacheFile.exists())
-            return null;
+//        if (!cacheFile.exists())
+//            return null;
+//        try {
+//            String problemInBase64 = serializeToBase64String(problem);
+//            Optional<String[]> problemAndSolution = Files.lines(cacheFile.toPath())
+//                    .map(s -> s.split(","))
+//                    .filter(strings -> strings[0].equals(problemInBase64))
+//                    .findFirst();
+//
+//            if (problemAndSolution.isPresent())
+//                return deserializeFromBase64String(problemAndSolution.get()[1]);
+//        } catch (IOException | ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
 
-        try {
-            String problemInBase64 = serializeToBase64String(problem);
-            Optional<String[]> problemAndSolution = Files.lines(cacheFile.toPath())
-                    .map(s -> s.split(","))
-                    .filter(strings -> strings[0].equals(problemInBase64))
-                    .findFirst();
-
-            if (problemAndSolution.isPresent())
-                return deserializeFromBase64String(problemAndSolution.get()[1]);
-            else
-                return null;
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return null;
     }
 
     @Override
@@ -54,17 +52,17 @@ public class MyCacheManager<T extends Serializable, U extends Serializable> impl
 
         memoryCache.put(problem, solution);
 
-        if (!existsSolutionInFile(problem)) {
-            try {
-                if (!cacheFile.exists())
-                    resetCache();
-
-                String toWrite = serializeToBase64String(problem) + "," + serializeToBase64String(solution) + "\r\n";
-                Files.write(cacheFile.toPath(), toWrite.getBytes(), StandardOpenOption.APPEND);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (!existsSolutionInFile(problem)) {
+//            try {
+//                if (!cacheFile.exists())
+//                    resetCache();
+//
+//                String toWrite = serializeToBase64String(problem) + "," + serializeToBase64String(solution) + "\r\n";
+//                Files.write(cacheFile.toPath(), toWrite.getBytes(), StandardOpenOption.APPEND);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     private boolean existsSolutionInMemory(T problem) {

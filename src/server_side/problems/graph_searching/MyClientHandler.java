@@ -48,15 +48,14 @@ public class MyClientHandler implements ClientHandler {
             return;
         }
 
-//        String solution = cacheManager.getSolution(problemData);
-//        if (solution == null) {
-//            Searchable<MatrixPosition> problem = new MatrixSearchable(problemData.matrix, problemData.startRow, problemData.startColumn, problemData.endRow, problemData.endColumn);
-//            solution = solver.solve(problem);
-//            cacheManager.saveSolution(problemData, solution);
-//        }
-        Searchable<MatrixPosition> problem = new MatrixSearchable(problemData.matrix, problemData.startRow, problemData.startColumn, problemData.endRow, problemData.endColumn);
-        String solution = solver.solve(problem);
-        System.out.println(solution);
+        String solution = cacheManager.getSolution(problemData);
+        if (solution == null) {
+            Searchable<MatrixPosition> problem = new MatrixSearchable(problemData.matrix, problemData.startRow, problemData.startColumn, problemData.endRow, problemData.endColumn);
+            solution = solver.solve(problem);
+            cacheManager.saveSolution(problemData, solution);
+        }
+//        Searchable<MatrixPosition> problem = new MatrixSearchable(problemData.matrix, problemData.startRow, problemData.startColumn, problemData.endRow, problemData.endColumn);
+//        String solution = solver.solve(problem);
 
         PrintWriter outputWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(outputStream))));
         outputWriter.println(solution);
