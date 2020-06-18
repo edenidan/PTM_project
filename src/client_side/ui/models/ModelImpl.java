@@ -1,8 +1,13 @@
 package client_side.ui.models;
 
 import client_side.interpreter.Interpreter;
+
+import javafx.beans.property.DoubleProperty;
+import sun.plugin.dom.exception.WrongDocumentException;
 import utility.EmptyObservable;
 
+
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -161,12 +166,12 @@ public class ModelImpl implements Model {
 
         BlockingQueue<String> commandInputQ;
 
-        InputStream positionInput =positionClient.getInputStream();
-        PrintWriter positionOutput =new PrintWriter(positionClient.getOutputStream());
+        InputStream positionInput = positionClient.getInputStream();
+        PrintWriter positionOutput = new PrintWriter(positionClient.getOutputStream());
 
-        new Thread(()->{
+        new Thread(() -> {
 
-            while(true){
+            while (true) {
 
                 try {
 
@@ -174,19 +179,47 @@ public class ModelImpl implements Model {
                     positionOutput.flush();
 
                     byte[] data = new byte[1024];
-                    positionInput.read(data,0,1024);
+                    positionInput.read(data, 0, 1024);
                     String dataXml = new String(data, StandardCharsets.UTF_8);
-                    System.out.println(dataXml);
+
+                    System.out.println(positionXmlToPlaneX(dataXml) + " " +positionXmlToPlaneY(dataXml));
                     //todo: set this.planeX and this.PlaneY
                     //see more info: http://wiki.flightgear.org/Telnet_usage#dump
+
                     this.positionChanged.setChangedAndNotify();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 try {
                     Thread.sleep(100);
-                } catch (InterruptedException e) { }
+                } catch (InterruptedException e) {
+                }
             }
         }).start();
+    }
+
+    private double positionXmlToPlaneX(String positionXml) throws WrongDocumentException {
+        return getValueByTag(positionXml, "<longitude-deg type=\"double\">");
+    }
+
+    private double positionXmlToPlaneY(String positionXml) throws WrongDocumentException {
+        return getValueByTag(positionXml, "<latitude-deg type=\"double\">");
+    }
+
+    private double getValueByTag(String xml, String tag) throws WrongDocumentException {
+
+        if (!tag.startsWith("<"))
+            tag = "<" + tag;
+
+        if (!tag.endsWith(">"))
+            tag = tag + ">";
+
+        if (!xml.contains(tag))
+            throw new WrongDocumentException("invalid or wrong xml document");
+
+        int startIndex = xml.indexOf(tag) + tag.length();
+        int endIndex = xml.substring(startIndex).indexOf("<") - 1;
+
+        return Double.parseDouble(tag.substring(startIndex, endIndex));
     }
 }
