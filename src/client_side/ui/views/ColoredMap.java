@@ -67,10 +67,10 @@ public class ColoredMap extends Canvas {
         // draw grid
         for (int row = 0; row < elevationColors.size(); row++) {
             List<Color> rowColors = elevationColors.get(row);
-            for (int col = 0; col < rowColors.size(); col++) {
-                Color color = rowColors.get(col);
+            for (int column = 0; column < rowColors.size(); column++) {
+                Color color = rowColors.get(column);
                 g.setFill(color);
-                g.fillRect(col * cellWidth, row * cellHeight, cellWidth, cellHeight);
+                g.fillRect(column * cellWidth, row * cellHeight, cellWidth, cellHeight);
             }
         }
 

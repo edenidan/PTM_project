@@ -118,7 +118,7 @@ public class MainWindowController implements MainWindowView {
         return (int) (Math.sqrt(totalD * totalD - dX * dX) / mapCellSideLength);
     }
 
-    private int getCol(Coordinate current) {
+    private int getColumn(Coordinate current) {
         if (origin == null)
             throw new IllegalStateException("cannot get column for coordinate when origin coordinate is null");
 
@@ -140,7 +140,7 @@ public class MainWindowController implements MainWindowView {
             Coordinate planePosition = vm.getPlanePosition();
             if (planePosition == null) return null;
             int row = getRow(planePosition);
-            int column = getCol(planePosition);
+            int column = getColumn(planePosition);
             return new Position(row, column);
         }, vm.planePositionProperty()));
         map.planeHeadingProperty().bind(vm.planeHeadingProperty());

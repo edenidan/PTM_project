@@ -100,7 +100,7 @@ public class ModelImpl implements Model {
     EmptyObservable pathReadyObservable = new EmptyObservable();
 
     @Override
-    public void calculatePath(String ip, int port, int[][] heights, int sourceRow, int sourceCol, int destRow, int destCol) {
+    public void calculatePath(String ip, int port, int[][] heights, int sourceRow, int sourceColumn, int destinationRow, int destinationColumn) {
 
         new Thread(() -> {
             try {
@@ -111,8 +111,8 @@ public class ModelImpl implements Model {
                 for (int[] height : heights)
                     out.println(Arrays.stream(height).mapToObj(a -> Integer.toString(a + 1)).collect(Collectors.joining(",")));
                 out.println("end");
-                out.println(sourceRow + "," + sourceCol);
-                out.println(destRow + "," + destCol);
+                out.println(sourceRow + "," + sourceColumn);
+                out.println(destinationRow + "," + destinationColumn);
                 out.flush();
                 this.pathCalculated = in.readLine();
             } catch (IOException e) {

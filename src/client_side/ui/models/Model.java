@@ -15,7 +15,7 @@ public interface Model {
     void runScript(String script) throws IllegalStateException;
     void stopScript();
 
-    void calculatePath(String ip, int port, int[][] heights, int sourceRow, int sourceCol, int destRow, int destCol);
+    void calculatePath(String ip, int port, int[][] heights, int sourceRow, int sourceColumn, int destinationRow, int destinationColumn);
     String getPath();
     EmptyObservable getPathDoneObservable();
 
