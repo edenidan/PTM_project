@@ -109,7 +109,7 @@ public class ModelImpl implements Model {
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
                 for (int[] height : heights)
-                    out.println(Arrays.stream(height).mapToObj(a -> Integer.toString(a + 1)).collect(Collectors.joining(",")));
+                    out.println(Arrays.stream(height).mapToObj(Integer::toString).collect(Collectors.joining(",")));
                 out.println("end");
                 out.println(sourceRow + "," + sourceColumn);
                 out.println(destinationRow + "," + destinationColumn);

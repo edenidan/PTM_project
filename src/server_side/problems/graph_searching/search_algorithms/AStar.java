@@ -28,19 +28,14 @@ public class AStar<TState> extends CommonSearcher<TState> {
             if (searchable.isGoalState(node.getState()))
                 return backtrace(node);
 
-            //node.setCost(node.getCost() + heuristic.applyAsDouble(node.getState()));
             _openList.remove(node);
             for (Node<TState> successor : searchable.getAllPossibleNodes(node)) {
-                //successor.setCost(successor.getCost() + heuristic.applyAsDouble(successor.getState()));
-                boolean inOpen = _openList.contains(successor);
                 double alternativeCost = successor.getCostComingFrom(node);
-                if (alternativeCost < successor.getCost()) {
-                    //_openList.remove(successor);
-
+                if (alternativeCost <= successor.getCost()) {
+                    _openList.remove(successor); // remove and then add again to update priority in queue
                     successor.setCameFrom(node);
                     successor.setCost(alternativeCost);
-                    if (!_openList.contains(successor))
-                        _openList.add(successor);
+                    _openList.add(successor);
                 }
             }
         }
