@@ -2,10 +2,9 @@ package server_side.problems.graph_searching;
 
 import server_side.CacheManager;
 import server_side.ClientHandler;
-import server_side.FileCacheManager;
+import server_side.MyCacheManager;
 import server_side.Solver;
 import server_side.problems.graph_searching.search_algorithms.AStar;
-import server_side.problems.graph_searching.search_algorithms.BestFirstSearch;
 
 import java.io.*;
 import java.util.Arrays;
@@ -14,7 +13,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 public class MyClientHandler implements ClientHandler {
-    private final CacheManager<ProblemData, String> cacheManager = new FileCacheManager<>("MyClientHandler_cache");
+    private final CacheManager<ProblemData, String> cacheManager = new MyCacheManager<>("MyClientHandler_cache");
 
     @Override
     public void handleClient(InputStream inputStream, OutputStream outputStream) {
