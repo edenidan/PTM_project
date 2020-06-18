@@ -81,33 +81,51 @@ public class MainWindowController implements MainWindowView {
         handleJoystickDragged(0, 0);
     }
 
-    Double originLatitude = null;
-    Double originLongitude = null;
+
+    Coordinate origin = null;
     Double mapCellSideLength = null;
-    private int getRow(Coordinate current) throws IllegalAccessException {
 
 
-        if(originLatitude == null || originLongitude == null)
-            throw new IllegalAccessException("load from csv first");
 
-        double originYKm =  111.320 * originLongitude * Math.cos(originLatitude);
-        double currentYKm = 111.320 * current.getLongitude() * Math.cos(current.getLatitude());
+    double degreesToRadians(double degrees) {
+        return degrees * Math.PI / 180;
+    }
 
-        double dY = currentYKm - originYKm;
+    double distanceInKmBetweenEarthCoordinates(Coordinate c1, Coordinate c2) {
+        double earthRadiusKm = 6371;
 
-        return (int) (dY/mapCellSideLength);
+        double dLat = degreesToRadians(c2.getLatitude()-c1.getLatitude());
+        double dLon = degreesToRadians(c2.getLongitude()-c1.getLongitude());
+
+        double lat1 = degreesToRadians(c1.getLatitude());
+        double lat2 = degreesToRadians(c2.getLatitude());
+
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return earthRadiusKm * c;
+    }
+
+    double xDistanceInKmBetweenEarthCoordinates(Coordinate c1, Coordinate c2) throws IllegalAccessException {
+
+        double c1XKm = c1.getLatitude() * 110.574;
+        double c2XKm = c2.getLatitude() * 110.574;
+
+        return c1XKm - c2XKm;
+
+    }
+
+        private int getRow(Coordinate current) throws IllegalAccessException {
+
+        double totalD = distanceInKmBetweenEarthCoordinates(current,origin);
+        double dX = xDistanceInKmBetweenEarthCoordinates(current,origin);
+
+        return (int)Math.sqrt(totalD*totalD - dX*dX);
     }
 
     private int getCol(Coordinate current) throws IllegalAccessException {
 
-        if(originLatitude == null || originLongitude == null)
-            throw new IllegalAccessException("load from csv first");
-
-        double originXKm = originLatitude * 110.574;
-        double currentXKm = current.getLatitude() * 110.574;
-
-        double dX = currentXKm - originXKm;
-
+        double dX = xDistanceInKmBetweenEarthCoordinates(current,origin);
         return (int) (dX/mapCellSideLength);
     }
 
@@ -154,8 +172,9 @@ public class MainWindowController implements MainWindowView {
         try {
 
             List<String> lines = Files.readAllLines(csvFile.toPath());
-            this.originLatitude = Double.parseDouble(lines.get(0).split(",")[0]);
-            this.originLongitude = Double.parseDouble(lines.get(0).split(",")[1]);
+            this.origin = new Coordinate(
+                    Double.parseDouble(lines.get(0).split(",")[0]),
+                    Double.parseDouble(lines.get(0).split(",")[1]));
 
             this.mapCellSideLength = Math.sqrt(Double.parseDouble(lines.get(1).split(",")[0]));
 
