@@ -42,7 +42,7 @@ public class MyClientHandler implements ClientHandler {
                     secondLine[0], secondLine[1]);
 
             solver = new MatrixSearcherSolver(new AStar<>(position ->
-                    distance(position.getRow(), position.getColumn(), secondLine[0], secondLine[1])));
+                    Math.pow(distance(position.getRow(), position.getColumn(), secondLine[0], secondLine[1]),2)));
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -70,13 +70,14 @@ public class MyClientHandler implements ClientHandler {
     }
 
     private IntStream lineToIntStream(String line) {
-        return Arrays.stream(line.split(",")).mapToInt(Integer::parseInt);
+        return Arrays.stream(line.split(",")).mapToInt(a->Integer.parseInt(a));
     }
 
     private double distance(int row1, int col1, int row2, int col2) {
-        int rowDiffSquared = (row2 - row1) * (row2 - row1);
-        int colDiffSquared = (col2 - col1) * (col2 - col1);
-        return Math.sqrt(rowDiffSquared + colDiffSquared);
+        return Math.abs(row1-row2) + Math.abs(col1-col2);
+        //int rowDiffSquared = (row2 - row1) * (row2 - row1);
+        //int colDiffSquared = (col2 - col1) * (col2 - col1);
+        //return Math.sqrt(rowDiffSquared + colDiffSquared);
     }
 
     private static class ProblemData implements Serializable {

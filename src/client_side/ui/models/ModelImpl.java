@@ -100,13 +100,14 @@ public class ModelImpl implements Model {
     EmptyObservable pathReadyObservable = new EmptyObservable();
 
     private int[][] minimizeMat(int[][] mat) {
-        int rowsCount = (int) Math.ceil(mat.length / 3.0);
-        int colsCount = (int) Math.ceil(mat[0].length / 3.0);
-        int[][] res = new int[rowsCount][colsCount];
 
-        for (int i = 0; i < rowsCount; i++)
-            for (int j = 0; j < colsCount; j++)
-                res[i][j] = mat[i*3][j*3];
+        int[][] res = new int[mat.length][mat[0].length];
+
+        for (int i = 0; i < res.length; i++)
+            for (int j = 0; j < res[0].length; j++)
+            {res[i][j] = (int) (0.02 * mat[i][j]);
+                res[i][j]++;
+            }
         return res;
     }
 
@@ -114,6 +115,12 @@ public class ModelImpl implements Model {
     public void calculatePath(String ip, int port, int[][] heights, int sourceRow, int sourceColumn, int destinationRow, int destinationColumn) {
 
         int[][] _heights = minimizeMat(heights);
+        int _sourceRow = sourceRow;///5;
+        int _sourceColumn= sourceColumn;///5;
+
+        int _destinationRow = destinationRow;///5;
+        int _destinationColumn=destinationColumn;///5;
+
         new Thread(() -> {
             try {
                 Socket conn = new Socket(ip, port);
@@ -123,12 +130,12 @@ public class ModelImpl implements Model {
                 for (int[] height : _heights)
                     out.println(Arrays.stream(height).mapToObj(a -> Integer.toString(a + 1)).collect(Collectors.joining(",")));
                 out.println("end");
-                out.println(sourceRow + "," + sourceColumn);
-                out.println(destinationRow + "," + destinationColumn);
+                out.println(_sourceRow + "," + _sourceColumn);
+                out.println(_destinationRow + "," + _destinationColumn);
                 out.flush();
 
                 String path = in.readLine();
-                this.pathCalculated = path.replaceAll("Up|Down|Left|Right","$0,$0,$0");
+                this.pathCalculated = path;//.replaceAll("Up|Down|Left|Right","$0,$0,$0,$0,$0");
             } catch (IOException e) {
                 this.pathCalculated = null;
             }
@@ -207,6 +214,7 @@ public class ModelImpl implements Model {
                     String headingResponse = positionReader.readLine();
 
                     this.heading = GetHeadingFromResponse(headingResponse);
+                    System.out.println(heading);
                     this.headingChanged.setChangedAndNotify();
 
                 } catch (IOException | WrongDocumentException ignored) {
