@@ -4,10 +4,8 @@ import client_side.ui.Coordinate;
 import client_side.ui.Position;
 import client_side.ui.view_models.MainWindowViewModelImpl;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
@@ -21,8 +19,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.List;
 
 public class MainWindowController implements MainWindowView {
@@ -86,7 +82,6 @@ public class MainWindowController implements MainWindowView {
     Double mapCellSideLength = null;
 
 
-
     double degreesToRadians(double degrees) {
         return degrees * Math.PI / 180;
     }
@@ -94,39 +89,35 @@ public class MainWindowController implements MainWindowView {
     double distanceInKmBetweenEarthCoordinates(Coordinate c1, Coordinate c2) {
         double earthRadiusKm = 6371;
 
-        double dLat = degreesToRadians(c2.getLatitude()-c1.getLatitude());
-        double dLon = degreesToRadians(c2.getLongitude()-c1.getLongitude());
+        double dLat = degreesToRadians(c2.getLatitude() - c1.getLatitude());
+        double dLon = degreesToRadians(c2.getLongitude() - c1.getLongitude());
 
         double lat1 = degreesToRadians(c1.getLatitude());
         double lat2 = degreesToRadians(c2.getLatitude());
 
-        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return earthRadiusKm * c;
     }
 
     double xDistanceInKmBetweenEarthCoordinates(Coordinate c1, Coordinate c2) throws IllegalAccessException {
-
         double c1XKm = c1.getLatitude() * 110.574;
         double c2XKm = c2.getLatitude() * 110.574;
 
         return c1XKm - c2XKm;
-
     }
 
-        private int getRow(Coordinate current) throws IllegalAccessException {
+    private int getRow(Coordinate current) throws IllegalAccessException {
+        double totalD = distanceInKmBetweenEarthCoordinates(current, origin);
+        double dX = xDistanceInKmBetweenEarthCoordinates(current, origin);
 
-        double totalD = distanceInKmBetweenEarthCoordinates(current,origin);
-        double dX = xDistanceInKmBetweenEarthCoordinates(current,origin);
-
-        return (int)Math.sqrt(totalD*totalD - dX*dX);
+        return (int) (Math.sqrt(totalD * totalD - dX * dX) / mapCellSideLength);
     }
 
     private int getCol(Coordinate current) throws IllegalAccessException {
-
-        double dX = xDistanceInKmBetweenEarthCoordinates(current,origin);
-        return (int) (dX/mapCellSideLength);
+        double dX = xDistanceInKmBetweenEarthCoordinates(current, origin);
+        return (int) (dX / mapCellSideLength);
     }
 
 

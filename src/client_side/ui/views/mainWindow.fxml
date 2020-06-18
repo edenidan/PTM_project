@@ -55,7 +55,7 @@
             <RowConstraints />
         </rowConstraints>
         <Circle fx:id="bigJoystickCircle" fill="#e6e6e6" onMouseReleased="#resetJoystick" onMouseDragged="#bigJoystickDragged" radius="100.0" stroke="#202020" strokeType="INSIDE" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-        <Circle fx:id="smallJoystickCircle" fill="#898989" onMouseReleased="#resetJoystick" onMouseDragged="#smallJoystickDragged" radius="45.0" stroke="#040404" strokeType="INSIDE" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+        <Circle fx:id="smallJoystickCircle" fill="#898989" onMouseReleased="#resetJoystick" onMouseDragged="#smallJoystickDragged" radius="30.0" stroke="#040404" strokeType="INSIDE" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
         <HBox alignment="CENTER" GridPane.rowIndex="1">
             <Group>
                 <Label layoutY="40.0" rotate="-90.0" text="throttle">

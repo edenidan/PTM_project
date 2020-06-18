@@ -3,7 +3,6 @@ package client_side.ui.view_models;
 import client_side.ui.Coordinate;
 import client_side.ui.models.Model;
 import javafx.beans.property.*;
-import javafx.geometry.Point2D;
 
 import java.io.IOException;
 import java.util.Observable;

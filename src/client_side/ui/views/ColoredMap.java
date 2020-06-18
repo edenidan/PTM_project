@@ -3,19 +3,15 @@ package client_side.ui.views;
 import client_side.ui.Position;
 import javafx.application.Platform;
 import javafx.beans.property.*;
-import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.stream.Collectors;
 

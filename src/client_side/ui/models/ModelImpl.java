@@ -1,18 +1,15 @@
 package client_side.ui.models;
 
 import client_side.interpreter.Interpreter;
-
 import client_side.ui.Coordinate;
 import sun.plugin.dom.exception.WrongDocumentException;
 import utility.EmptyObservable;
-
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.stream.Collectors;
 
@@ -140,7 +137,9 @@ public class ModelImpl implements Model {
     private final EmptyObservable CoordinateChanged = new EmptyObservable();
 
     @Override
-    public Coordinate getPlaneCoordinate(){return this.planeCoordinate;}
+    public Coordinate getPlaneCoordinate() {
+        return this.planeCoordinate;
+    }
 
     @Override
     public EmptyObservable getPositionChangedObservable() {
