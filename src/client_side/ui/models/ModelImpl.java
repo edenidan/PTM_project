@@ -2,6 +2,7 @@ package client_side.ui.models;
 
 import client_side.interpreter.Interpreter;
 
+import client_side.ui.Coordinate;
 import sun.plugin.dom.exception.WrongDocumentException;
 import utility.EmptyObservable;
 
@@ -134,23 +135,16 @@ public class ModelImpl implements Model {
         return this.pathReadyObservable;
     }
 
-    private double planeX = 0;
-    private double planeY = 0;
-    private final EmptyObservable positionChanged = new EmptyObservable();
+
+    private Coordinate planeCoordinate = null;
+    private final EmptyObservable CoordinateChanged = new EmptyObservable();
 
     @Override
-    public double getPlaneX() {
-        return planeX;
-    }
-
-    @Override
-    public double getPlaneY() {
-        return planeY;
-    }
+    public Coordinate getPlaneCoordinate(){return this.planeCoordinate;}
 
     @Override
     public EmptyObservable getPositionChangedObservable() {
-        return this.positionChanged;
+        return this.CoordinateChanged;
     }
 
     @Override
@@ -177,10 +171,9 @@ public class ModelImpl implements Model {
                     positionInput.read(data, 0, 1024);
                     String dataXml = new String(data, StandardCharsets.UTF_8);
 
-                    this.planeX = positionXmlToPlaneX(dataXml);
-                    this.planeY = positionXmlToPlaneY(dataXml);
+                    this.planeCoordinate = new Coordinate(positionXmlToPlaneLatitude(dataXml), positionXmlToPlaneLongitude(dataXml));
 
-                    this.positionChanged.setChangedAndNotify();
+                    this.CoordinateChanged.setChangedAndNotify();
                 } catch (IOException | WrongDocumentException ignored) {
                 }
                 try {
@@ -191,11 +184,11 @@ public class ModelImpl implements Model {
         }).start();
     }
 
-    private double positionXmlToPlaneX(String positionXml) throws WrongDocumentException {
+    private double positionXmlToPlaneLatitude(String positionXml) throws WrongDocumentException {
         return getValueByTag(positionXml, "<longitude-deg type=\"double\">");
     }
 
-    private double positionXmlToPlaneY(String positionXml) throws WrongDocumentException {
+    private double positionXmlToPlaneLongitude(String positionXml) throws WrongDocumentException {
         return getValueByTag(positionXml, "<latitude-deg type=\"double\">");
     }
 

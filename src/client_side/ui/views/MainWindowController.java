@@ -1,8 +1,10 @@
 package client_side.ui.views;
 
+import client_side.ui.Coordinate;
 import client_side.ui.Position;
 import client_side.ui.view_models.MainWindowViewModelImpl;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -79,13 +81,34 @@ public class MainWindowController implements MainWindowView {
         handleJoystickDragged(0, 0);
     }
 
+    Double originLatitude = null;
+    Double originLongitude = null;
+    Double mapCellSideLength = null;
+    private int getRow(Coordinate current) throws IllegalAccessException {
 
-    private int getRow(double yKm) {
-        return 0;
+
+        if(originLatitude == null || originLongitude == null)
+            throw new IllegalAccessException("load from csv first");
+
+        double originYKm =  111.320 * originLongitude * Math.cos(originLatitude);
+        double currentYKm = 111.320 * current.getLongitude() * Math.cos(current.getLatitude());
+
+        double dY = currentYKm - originYKm;
+
+        return (int) (dY/mapCellSideLength);
     }
 
-    private int getCol(double xKm) {
-        return 0;
+    private int getCol(Coordinate current) throws IllegalAccessException {
+
+        if(originLatitude == null || originLongitude == null)
+            throw new IllegalAccessException("load from csv first");
+
+        double originXKm = originLatitude * 110.574;
+        double currentXKm = current.getLatitude() * 110.574;
+
+        double dX = currentXKm - originXKm;
+
+        return (int) (dX/mapCellSideLength);
     }
 
 
@@ -100,10 +123,10 @@ public class MainWindowController implements MainWindowView {
         vm.elevatorValueProperty().bind(smallJoystickCircle.translateYProperty().divide(-this.limit));
 
         map.planePositionProperty().bind(Bindings.createObjectBinding(() -> {
-            Point2D planePosition = vm.getPlanePosition();
+            Coordinate planePosition = vm.getPlanePosition();
             if (planePosition == null) return null;
-            int row = getRow(planePosition.getY());
-            int column = getCol(planePosition.getX());
+            int row = getRow(planePosition);
+            int column = getCol(planePosition);
             return new Position(row, column);
         }, vm.planePositionProperty()));
         map.planeHeadingProperty().bind(vm.planeHeadingProperty());
@@ -129,7 +152,14 @@ public class MainWindowController implements MainWindowView {
         if (csvFile == null) return;
 
         try {
-            mapData = Files.readAllLines(csvFile.toPath()).stream()
+
+            List<String> lines = Files.readAllLines(csvFile.toPath());
+            this.originLatitude = Double.parseDouble(lines.get(0).split(",")[0]);
+            this.originLongitude = Double.parseDouble(lines.get(0).split(",")[1]);
+
+            this.mapCellSideLength = Double.parseDouble(lines.get(1).split(",")[0]);
+
+            mapData = lines.stream()
                     .skip(2)
                     .map(line -> Arrays.stream(line.split(","))
                             .mapToInt(Integer::parseInt)

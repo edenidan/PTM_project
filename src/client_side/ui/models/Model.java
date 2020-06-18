@@ -1,5 +1,6 @@
 package client_side.ui.models;
 
+import client_side.ui.Coordinate;
 import utility.EmptyObservable;
 
 import java.io.IOException;
@@ -18,9 +19,7 @@ public interface Model {
     String getPath();
     EmptyObservable getPathDoneObservable();
 
-    double getPlaneX();
-
-    double getPlaneY();
+    Coordinate getPlaneCoordinate();
 
     EmptyObservable getPositionChangedObservable();
 

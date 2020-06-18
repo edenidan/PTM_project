@@ -1,5 +1,6 @@
 package client_side.ui.view_models;
 
+import client_side.ui.Coordinate;
 import client_side.ui.models.Model;
 import javafx.beans.property.*;
 import javafx.geometry.Point2D;
@@ -19,7 +20,7 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
 
 
     private final ReadOnlyDoubleWrapper planeHeading = new ReadOnlyDoubleWrapper();
-    private final ReadOnlyObjectWrapper<Point2D> planePosition = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<Coordinate> planePosition = new ReadOnlyObjectWrapper<>();
 
     public StringProperty pathCalculated = new SimpleStringProperty();
     Observable PathDoneObservable;
@@ -37,7 +38,7 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
         PathDoneObservable.addObserver((o, arg) -> pathCalculated.setValue(m.getPath()));
 
         this.positionChangedObservable = m.getPositionChangedObservable();
-        positionChangedObservable.addObserver((o, arg) -> planePosition.set(new Point2D(m.getPlaneX(), m.getPlaneY())));
+        positionChangedObservable.addObserver((o, arg) -> planePosition.set(m.getPlaneCoordinate()));
     }
 
     @Override
@@ -121,11 +122,11 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
         return planeHeading.getReadOnlyProperty();
     }
 
-    public Point2D getPlanePosition() {
+    public Coordinate getPlanePosition() {
         return planePosition.get();
     }
 
-    public ReadOnlyObjectProperty<Point2D> planePositionProperty() {
+    public ReadOnlyObjectProperty<Coordinate> planePositionProperty() {
         return planePosition.getReadOnlyProperty();
     }
 }
