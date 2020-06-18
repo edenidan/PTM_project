@@ -115,6 +115,7 @@ public class ModelImpl implements Model {
                     out.println(
                             String.join(",", Arrays.stream(height).mapToObj(Double::toString).toArray(String[]::new))
                     );
+                out.println("end");
                 out.println(sourceRow + "," + sourceCol);
                 out.println(destRow + "," + destCol);
 

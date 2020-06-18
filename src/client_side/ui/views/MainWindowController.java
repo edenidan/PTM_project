@@ -6,15 +6,17 @@ import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class MainWindowController implements MainWindowView {
     @FXML
@@ -81,11 +83,7 @@ public class MainWindowController implements MainWindowView {
         return 0;
     }
 
-    boolean pathCalculationInProgress = false;
 
-    //TODO:
-    //on click findPath check if bool above is true
-    //save source and dest of last path calculation
     @Override
     public void setViewModel(MainWindowViewModelImpl vm) {
         this.vm = vm;
@@ -107,27 +105,31 @@ public class MainWindowController implements MainWindowView {
         map.planeHeadingProperty().bind(vm.planeHeadingProperty());
 
         vm.pathCalculated.addListener((observable, oldValue, newValue) -> {
-            //translate path to list<position>
-            // map.drawPath(path)
+            List<Position> path = TranslatePath(newValue);
+            map.setPath(path);
+            this.pathCalculationInProgress = false;
         });
 
 
     }
 
 
+
+
     private boolean loadedData = false;
+    double[][] mapData = null;
     @FXML
     private void loadDataFromCSV() {
         loadedData = true;
         // TODO
-        double[][] c = new double[256][256];
-        for (int i = 0; i < c.length; i++)
-            Arrays.fill(c[i], i);
+        mapData = new double[256][256];
+        for (int i = 0; i < mapData.length; i++)
+            Arrays.fill(mapData[i], i);
         map.setPath(Arrays.asList(
                 new Position(0, 0),
                 new Position(0, 1),
                 new Position(1, 1)));
-        map.setElevations(c);
+        map.setElevations(mapData);
     }
 
     @FXML
@@ -157,5 +159,52 @@ public class MainWindowController implements MainWindowView {
     void manualClicked() {
         vm.stopAutoPilotScript();
         scriptTextArea.setDisable(false);
+    }
+
+    boolean pathCalculationInProgress = false;
+    Position lastPathCalculationSource = null;
+    @FXML
+    public void findPath(ActionEvent actionEvent) {
+        if(!this.loadedData || this.pathCalculationInProgress)//todo: show error message
+            return;
+        this.pathCalculationInProgress = true;
+
+        String ip = "127.0.0.1";
+        int port = 1234;
+
+        Position s = map.getPlanePosition();
+        Position d = map.getMarkerPosition();
+        this.lastPathCalculationSource = s;
+
+        vm.calculatePath(ip,port,mapData,s.getRow(),s.getColumn(),d.getRow(),d.getColumn());
+    }
+
+    private List<Position> TranslatePath(String pathStr) {
+        List<Position> result = new ArrayList<>();
+        result.add(this.lastPathCalculationSource);
+
+        String[] path = pathStr.split(",");
+        Position prev=result.get(0);
+        for (String step :path) {
+            int prevR = prev.getRow();
+            int prevC = prev.getColumn();
+            Position newPos = null;
+
+            if(step.equals("Up"))
+                newPos = new Position(prevR-1,prevC);
+
+            if(step.equals("Down"))
+                newPos =new Position(prevR+1,prevC);
+
+            if(step.equals("Right"))
+                newPos =new Position(prevR,prevC+1);
+
+            if(step.equals("Up"))
+                newPos =new Position(prevR,prevC-1);
+            prev = newPos;
+            result.add(newPos);
+        }
+
+        return result;
     }
 }

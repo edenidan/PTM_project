@@ -21,7 +21,7 @@
     <HBox alignment="CENTER" spacing="5.0">
         <Button maxWidth="1.7976931348623157E308" text="Connect" HBox.hgrow="ALWAYS" fx:id="connectButton" onAction="#connect" />
         <Button maxWidth="1.7976931348623157E308" text="Load data" HBox.hgrow="ALWAYS" onAction="#loadDataFromCSV" />
-        <Button maxWidth="1.7976931348623157E308" text="Calculate path" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="1.7976931348623157E308" text="Calculate path" HBox.hgrow="ALWAYS" onAction="#findPath" />
     </HBox>
     <!--<fx:define>-->
     <!--    <ToggleGroup fx:id="flightModeToggleGroup"/>-->

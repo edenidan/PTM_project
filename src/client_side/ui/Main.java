@@ -10,11 +10,37 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import server_side.MySerialServer;
+import server_side.problems.graph_searching.MyClientHandler;
+
+import java.io.*;
+import java.net.Socket;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        boolean stop = true;
+        MySerialServer server = new MySerialServer();
+        server.start(1234, new MyClientHandler());
+
+//        Socket s = new Socket("127.0.0.1", 1234);
+//        PrintWriter out = new PrintWriter(new BufferedOutputStream(s.getOutputStream()));
+//        out.println("1,23,45");
+//        out.println("1,1,45");
+//        out.println("444,1,45");
+//        out.println("end");
+//
+//        out.println("0,0");
+//        out.println("2,1");
+//        out.flush();
+//
+//        BufferedReader in = new BufferedReader(new InputStreamReader(new BufferedInputStream(s.getInputStream())));
+//        System.out.println(in.readLine());
+//
+//        if (stop)
+//            return;
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("views/mainWindow.fxml"));
         Parent root = loader.load();
 
