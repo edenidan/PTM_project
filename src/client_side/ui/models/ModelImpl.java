@@ -99,22 +99,36 @@ public class ModelImpl implements Model {
     String pathCalculated = null;
     EmptyObservable pathReadyObservable = new EmptyObservable();
 
+    private int[][] minimizeMat(int[][] mat) {
+        int rowsCount = (int) Math.ceil(mat.length / 3.0);
+        int colsCount = (int) Math.ceil(mat[0].length / 3.0);
+        int[][] res = new int[rowsCount][colsCount];
+
+        for (int i = 0; i < rowsCount; i++)
+            for (int j = 0; j < colsCount; j++)
+                res[i][j] = mat[i*3][j*3];
+        return res;
+    }
+
     @Override
     public void calculatePath(String ip, int port, int[][] heights, int sourceRow, int sourceColumn, int destinationRow, int destinationColumn) {
 
+        int[][] _heights = minimizeMat(heights);
         new Thread(() -> {
             try {
                 Socket conn = new Socket(ip, port);
                 PrintWriter out = new PrintWriter(new BufferedOutputStream(conn.getOutputStream()));
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-                for (int[] height : heights)
+                for (int[] height : _heights)
                     out.println(Arrays.stream(height).mapToObj(a -> Integer.toString(a + 1)).collect(Collectors.joining(",")));
                 out.println("end");
                 out.println(sourceRow + "," + sourceColumn);
                 out.println(destinationRow + "," + destinationColumn);
                 out.flush();
-                this.pathCalculated = in.readLine();
+
+                String path = in.readLine();
+                this.pathCalculated = path.replaceAll("Up|Down|Left|Right","$0,$0,$0");
             } catch (IOException e) {
                 this.pathCalculated = null;
             }
@@ -135,7 +149,7 @@ public class ModelImpl implements Model {
 
     private Coordinate planeCoordinate = null;
     private final EmptyObservable CoordinateChanged = new EmptyObservable();
-    private Double heading=null;
+    private Double heading = null;
     private final EmptyObservable headingChanged = new EmptyObservable();
 
 
