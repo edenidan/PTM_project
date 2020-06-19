@@ -25,11 +25,6 @@ public class MatrixSearchable implements Searchable<MatrixPosition> {
     }
 
     @Override
-    public MatrixPosition getGoalState() {
-        return goalState;
-    }
-
-    @Override
     public List<Node<MatrixPosition>> getAllPossibleNodes(Node<MatrixPosition> node) {
         List<Node<MatrixPosition>> allPossibleNodes = new ArrayList<>(4);
 
