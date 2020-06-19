@@ -135,6 +135,9 @@ public class ModelImpl implements Model {
 
     private Coordinate planeCoordinate = null;
     private final EmptyObservable CoordinateChanged = new EmptyObservable();
+    private Double heading=null;
+    private final EmptyObservable headingChanged = new EmptyObservable();
+
 
     @Override
     public Coordinate getPlaneCoordinate() {
@@ -144,6 +147,16 @@ public class ModelImpl implements Model {
     @Override
     public EmptyObservable getPositionChangedObservable() {
         return this.CoordinateChanged;
+    }
+
+    @Override
+    public EmptyObservable getHeadingChangedObservable() {
+        return this.headingChanged;
+    }
+
+    @Override
+    public Double getHeading() {
+        return heading;
     }
 
     @Override
@@ -158,6 +171,7 @@ public class ModelImpl implements Model {
         BlockingQueue<String> commandInputQ;
 
         InputStream positionInput = positionClient.getInputStream();
+        BufferedReader positionReader = new BufferedReader(new InputStreamReader(positionInput));
         PrintWriter positionOutput = new PrintWriter(positionClient.getOutputStream());
 
         new Thread(() -> {
@@ -171,8 +185,16 @@ public class ModelImpl implements Model {
                     String dataXml = new String(data, StandardCharsets.UTF_8);
 
                     this.planeCoordinate = new Coordinate(positionXmlToPlaneLatitude(dataXml), positionXmlToPlaneLongitude(dataXml));
-
                     this.CoordinateChanged.setChangedAndNotify();
+
+
+                    positionOutput.println("get /instrumentation/heading-indicator/indicated-heading-deg");
+                    positionOutput.flush();
+                    String headingResponse = positionReader.readLine();
+
+                    this.heading = GetHeadingFromResponse(headingResponse);
+                    this.headingChanged.setChangedAndNotify();
+
                 } catch (IOException | WrongDocumentException ignored) {
                 }
                 try {
@@ -181,6 +203,10 @@ public class ModelImpl implements Model {
                 }
             }
         }).start();
+    }
+
+    private Double GetHeadingFromResponse(String headingResponse) {
+        return Double.parseDouble(headingResponse.split("'")[1]);
     }
 
     private double positionXmlToPlaneLatitude(String positionXml) throws WrongDocumentException {

@@ -23,6 +23,10 @@ public interface Model {
 
     EmptyObservable getPositionChangedObservable();
 
+    EmptyObservable getHeadingChangedObservable();
+
+    Double getHeading();
+
     void connect(String ip, int port) throws IOException;
 
 

@@ -24,6 +24,7 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
     public StringProperty pathCalculated = new SimpleStringProperty();
     Observable PathDoneObservable;
     Observable positionChangedObservable;
+    Observable headingChanged;
 
     public MainWindowViewModelImpl(Model m) {
         this.m = m;
@@ -38,6 +39,10 @@ public class MainWindowViewModelImpl implements MainWindowViewModel {
 
         this.positionChangedObservable = m.getPositionChangedObservable();
         positionChangedObservable.addObserver((o, arg) -> planePosition.set(m.getPlaneCoordinate()));
+
+        this.headingChanged = m.getHeadingChangedObservable();
+        headingChanged.addObserver((o, arg) -> planeHeading.set(m.getHeading()));
+
     }
 
     @Override
