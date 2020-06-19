@@ -85,8 +85,11 @@ public class ModelImpl implements Model {
         autopilotRunning = true;
         BlockingQueue<String> dataInputQInterpreter = this.dataInput.getOutputChannel();
         interpreter = new Interpreter(commandOutput.getInputChannel(), dataInputQInterpreter);
-        interpreter.interpret("connect openDataServer " + script);
-        this.dataInput.unsubscribe(dataInputQInterpreter);
+
+        new Thread(() -> {
+            interpreter.interpret("connect openDataServer " + script);
+            this.dataInput.unsubscribe(dataInputQInterpreter);
+        });
     }
 
     @Override
@@ -104,8 +107,8 @@ public class ModelImpl implements Model {
         int[][] res = new int[mat.length][mat[0].length];
 
         for (int i = 0; i < res.length; i++)
-            for (int j = 0; j < res[0].length; j++)
-            {res[i][j] = (int) (0.02 * mat[i][j]);
+            for (int j = 0; j < res[0].length; j++) {
+                res[i][j] = (int) (0.02 * mat[i][j]);
                 res[i][j]++;
             }
         return res;
@@ -116,10 +119,10 @@ public class ModelImpl implements Model {
 
         int[][] _heights = minimizeMat(heights);
         int _sourceRow = sourceRow;///5;
-        int _sourceColumn= sourceColumn;///5;
+        int _sourceColumn = sourceColumn;///5;
 
         int _destinationRow = destinationRow;///5;
-        int _destinationColumn=destinationColumn;///5;
+        int _destinationColumn = destinationColumn;///5;
 
         new Thread(() -> {
             try {
