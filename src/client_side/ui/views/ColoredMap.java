@@ -111,8 +111,8 @@ public class ColoredMap extends Canvas {
     }
 
     private Color elevationToColor(double elevation, double maxElevation) {
-        int normalizedElevation = (int) (elevation * 255 / maxElevation);
-        return Color.rgb(255 - normalizedElevation, normalizedElevation, 0);
+        double normalizedElevation = elevation / maxElevation;
+        return Color.hsb(normalizedElevation * 120, 1, 1);
     }
 
     public Position getPlanePosition() {
